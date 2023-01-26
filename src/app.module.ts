@@ -3,21 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { ConfigModule } from '@nestjs/config';
+import { dataSourceConfig } from './data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'assets_wallet',
-      password: 'awd9571',
-      database: 'assets_wallet',
-      entities: ['/**/*.entity{.ts,.js}'],
-      synchronize: false,
-      migrationsTableName: 'orm_migration',
-      migrations: ['dist/migration/*.[tj]s'],
-    }),
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot(dataSourceConfig),
     PortfolioModule,
   ],
   controllers: [AppController],
