@@ -13,13 +13,13 @@ export class PortfolioService {
     private readonly assetService: AssetService,
   ) {}
 
-  findById(id: string): Promise<PortfolioEntity> {
+  findById(id: string): Promise<PortfolioEntity | null> {
     return this.portfolioRepository.findOneBy({ id });
   }
 
   prepareAssetsSnapshot(
     portfolio: PortfolioEntity,
-    date: Date = null,
+    date?: Date,
   ): Promise<AssetSnapshotDto[]> {
     const promises = portfolio.assets.map((asset) =>
       this.assetService.prepareAssetSnapshot(asset, date),

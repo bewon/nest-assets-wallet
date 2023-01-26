@@ -4,6 +4,7 @@ import { AssetEntity } from '../entity/asset.entity';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { AssetBalanceChangeEntity } from '../entity/asset-balance-change.entity';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
+import { PortfolioEntity } from '../entity/portfolio.entity';
 
 @Injectable()
 export class AssetService {
@@ -17,7 +18,7 @@ export class AssetService {
   async prepareAssetSnapshot(
     asset: AssetEntity,
     date?: Date,
-  ): Promise<AssetSnapshotDto | null> {
+  ): Promise<AssetSnapshotDto> {
     const change =
       date == null
         ? await this.findLastChangeForAsset(asset)
@@ -31,6 +32,16 @@ export class AssetService {
     snapshot.profit = change?.getProfit();
     snapshot.date = change?.date;
     return snapshot;
+  }
+
+  findGroupsForPortfolio(portfolio: PortfolioEntity): Promise<string[]> {
+    return this.assetRepository
+      .createQueryBuilder('asset')
+      .select('asset.group', 'group')
+      .distinct(true)
+      .where('asset.portfolioId = :portfolioId', { portfolioId: portfolio.id })
+      .getRawMany()
+      .then((rows) => rows.map((row) => row.group));
   }
 
   private findLastChangeForAsset(
