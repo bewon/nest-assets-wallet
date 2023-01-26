@@ -35,4 +35,8 @@ export class AssetBalanceChangeEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  getProfit(): number {
+    return this.value - this.capital;
+  }
 }
