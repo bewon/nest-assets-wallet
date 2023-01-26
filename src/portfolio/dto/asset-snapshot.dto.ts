@@ -1,7 +1,7 @@
 export class AssetSnapshotDto {
   id: string;
-  name?: string;
-  group?: string;
+  name: string | null;
+  group: string | null;
   capital?: number;
   value?: number;
   profit?: number;

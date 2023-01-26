@@ -16,10 +16,10 @@ export class AssetService {
 
   async prepareAssetSnapshot(
     asset: AssetEntity,
-    date: Date = null,
+    date?: Date,
   ): Promise<AssetSnapshotDto | null> {
     const change =
-      date === null
+      date == null
         ? await this.findLastChangeForAsset(asset)
         : await this.findChangeForAsset(asset, date);
     const snapshot = new AssetSnapshotDto();
@@ -37,7 +37,7 @@ export class AssetService {
     asset: AssetEntity,
   ): Promise<AssetBalanceChangeEntity | null> {
     return this.assetBalanceChangeRepository.findOne({
-      where: { asset },
+      where: { assetId: asset.id },
       order: { date: 'DESC' },
     });
   }
@@ -47,7 +47,7 @@ export class AssetService {
     date: Date,
   ): Promise<AssetBalanceChangeEntity | null> {
     return this.assetBalanceChangeRepository.findOne({
-      where: { asset, date: LessThanOrEqual(date) },
+      where: { assetId: asset.id, date: LessThanOrEqual(date) },
       order: { date: 'DESC' },
     });
   }
