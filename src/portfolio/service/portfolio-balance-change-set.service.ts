@@ -1,5 +1,6 @@
-import { AssetBalanceChangeEntity } from './asset-balance-change.entity';
-import { BalanceChangeModel } from './balance-change.model';
+import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
+import { BalanceChangeModel } from '../model/balance-change.model';
+import { Injectable } from '@nestjs/common';
 
 export type AnnualizedCalculation = {
   annualizedTwr: number | null;
@@ -30,16 +31,28 @@ const subtractMonths = (date: Date, months: number) => {
 
 // This class is for calculate statistics from set of AssetBalanceChanges for Portfolio
 // This code will work ony for changes sorted by date!
-export class PortfolioBalanceChangeSetModel {
+@Injectable()
+export class PortfolioBalanceChangeSetService {
   protected groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]>;
 
   protected portfolioChanges: BalanceChangeModel[] = [];
 
   protected endDate: Date;
 
-  constructor(changes: AssetBalanceChangeEntity[], endDate: Date) {
-    this.endDate = endDate;
-    this.setAllChanges(changes);
+  // Divide changes into grouped assets changes and summed portfolio assets
+  setAllChanges(changes: AssetBalanceChangeEntity[]) {
+    let lastDate: Date | undefined;
+    changes.forEach((change) => {
+      // if date is switched then portfolio change needs to be calculated
+      if (lastDate != null && change.date > lastDate) {
+        this.saveChangeForPortfolio(lastDate);
+      }
+      this.groupedAssetChanges[change.assetId].push(change);
+      lastDate = change.date;
+    });
+    if (lastDate != null) {
+      this.saveChangeForPortfolio(lastDate);
+    }
     this.setChangesPredecessors();
   }
 
@@ -81,22 +94,6 @@ export class PortfolioBalanceChangeSetModel {
       historyForAssets[assetId] = this.prepareHistoryForPeriods(changes);
     });
     return historyForAssets;
-  }
-
-  // Divide changes into grouped assets changes and summed portfolio assets
-  private setAllChanges(changes: AssetBalanceChangeEntity[]) {
-    let lastDate: Date | undefined;
-    changes.forEach((change) => {
-      // if date is switched then portfolio change needs to be calculated
-      if (lastDate != null && change.date > lastDate) {
-        this.saveChangeForPortfolio(lastDate);
-      }
-      this.groupedAssetChanges[change.assetId].push(change);
-      lastDate = change.date;
-    });
-    if (lastDate != null) {
-      this.saveChangeForPortfolio(lastDate);
-    }
   }
 
   // It will set previousChange for all changes to make calculations easier
