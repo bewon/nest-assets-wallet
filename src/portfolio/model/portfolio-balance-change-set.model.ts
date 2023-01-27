@@ -1,10 +1,26 @@
 import { AssetBalanceChangeEntity } from './asset-balance-change.entity';
 import { BalanceChangeModel } from './balance-change.model';
 
-export type Calculation = {
+export type AnnualizedCalculation = {
   annualizedTwr: number | null;
   capitalChange?: number;
   profitChange?: number;
+};
+
+const periods = {
+  '1M': 1,
+  '1Y': 12,
+  '3Y': 36,
+};
+
+export type PeriodCalculation = {
+  [P in keyof typeof periods | 'total']?: AnnualizedCalculation | null;
+};
+
+const subtractMonths = (date: Date, months: number) => {
+  const _date = new Date(date);
+  _date.setMonth(_date.getMonth() - months);
+  return _date;
 };
 
 export class PortfolioBalanceChangeSetModel {
@@ -61,14 +77,14 @@ export class PortfolioBalanceChangeSetModel {
     changes: BalanceChangeModel[],
     withCapitalAndProfit = true,
     monthsInPeriod?: number,
-  ): Calculation | null {
+  ): AnnualizedCalculation | null {
     if (
       changes.length === 0 ||
       (changes.length === 1 && changes[0].previousChange === null)
     ) {
       return null;
     }
-    const calculation: Calculation = {
+    const calculation: AnnualizedCalculation = {
       annualizedTwr: this.calculateAnnualizedTwr(changes, monthsInPeriod),
     };
     if (withCapitalAndProfit) {
@@ -107,5 +123,29 @@ export class PortfolioBalanceChangeSetModel {
         .filter((r) => r)
         .reduce((acc, returnChange) => acc * returnChange, 1.0) - 1.0
     );
+  }
+
+  // make calculations (TWR, capital change, profit change) for all given changes and sub-periods of changes
+  private prepareCalculationForPeriods(
+    changes: BalanceChangeModel[],
+    withCapitalAndProfit = true,
+  ): PeriodCalculation {
+    const calculation: PeriodCalculation = {
+      total: this.prepareCalculationForChanges(changes, withCapitalAndProfit),
+    };
+    Object.entries(periods).forEach(([period, months]) => {
+      const minDate = subtractMonths(this.endDate, months);
+      const periodChanges = changes.filter((change) => change.date > minDate);
+      // if all changes are in periodChanges then there is no need to calculate it, because it is the same like 'total'
+      calculation[period] =
+        periodChanges.length < changes.length
+          ? this.prepareCalculationForChanges(
+              periodChanges,
+              withCapitalAndProfit,
+              months,
+            )
+          : calculation.total;
+    });
+    return calculation;
   }
 }
