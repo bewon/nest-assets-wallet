@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AssetEntity } from '../entity/asset.entity';
-import { LessThanOrEqual, Repository } from 'typeorm';
-import { AssetBalanceChangeEntity } from '../entity/asset-balance-change.entity';
+import { AssetEntity } from '../model/asset.entity';
+import { Between, LessThanOrEqual, Repository } from 'typeorm';
+import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
-import { PortfolioEntity } from '../entity/portfolio.entity';
+import { PortfolioEntity } from '../model/portfolio.entity';
 
 @Injectable()
 export class AssetService {
@@ -42,6 +42,36 @@ export class AssetService {
       .where('asset.portfolioId = :portfolioId', { portfolioId: portfolio.id })
       .getRawMany()
       .then((rows) => rows.map((row) => row.group));
+  }
+
+  findChangesInGivenYear(
+    asset: AssetEntity,
+    year: number,
+  ): Promise<AssetBalanceChangeEntity[]> {
+    const from = new Date(year, 0, 1);
+    const to = new Date(year, 11, 31, 23, 59, 59);
+    return this.assetBalanceChangeRepository.find({
+      where: { assetId: asset.id, date: Between(from, to) },
+      order: { date: 'ASC' },
+    });
+  }
+
+  findPortfolioChanges(
+    portfolio: PortfolioEntity,
+    date?: Date,
+    group?: string,
+  ): Promise<AssetBalanceChangeEntity[]> {
+    const query = this.assetBalanceChangeRepository
+      .createQueryBuilder('change')
+      .leftJoin('change.asset', 'asset')
+      .where('asset.portfolioId = :portfolioId', { portfolioId: portfolio.id });
+    if (date != null) {
+      query.andWhere('change.date <= :date', { date: date });
+    }
+    if (group != null) {
+      query.andWhere('asset.group = :group', { group: group });
+    }
+    return query.orderBy('change.date', 'ASC').getMany();
   }
 
   private findLastChangeForAsset(

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PortfolioEntity } from '../entity/portfolio.entity';
+import { PortfolioEntity } from '../model/portfolio.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';

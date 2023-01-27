@@ -8,9 +8,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AssetEntity } from './asset.entity';
+import { BalanceChangeInterface } from './balance-change.model';
 
 @Entity('asset_balance_change')
-export class AssetBalanceChangeEntity {
+export class AssetBalanceChangeEntity implements BalanceChangeInterface {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,6 +36,8 @@ export class AssetBalanceChangeEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  previousChange: AssetBalanceChangeEntity | null = null;
 
   getProfit(): number {
     return this.value - this.capital;
