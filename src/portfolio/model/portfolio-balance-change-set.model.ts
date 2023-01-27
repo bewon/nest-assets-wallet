@@ -17,12 +17,19 @@ export type PeriodCalculation = {
   [P in keyof typeof periods | 'total']?: AnnualizedCalculation | null;
 };
 
+export type PeriodHistory = {
+  change: BalanceChangeModel;
+  periodCalculation: PeriodCalculation;
+}[];
+
 const subtractMonths = (date: Date, months: number) => {
   const _date = new Date(date);
   _date.setMonth(_date.getMonth() - months);
   return _date;
 };
 
+// This class is for calculate statistics from set of AssetBalanceChanges for Portfolio
+// This code will work ony for changes sorted by date!
 export class PortfolioBalanceChangeSetModel {
   protected groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]>;
 
@@ -36,9 +43,51 @@ export class PortfolioBalanceChangeSetModel {
     this.setChangesPredecessors();
   }
 
+  // prepare calculations (e.g. TWR, capital change, profit change) for whole Portfolio
+  prepareCalculationsForPortfolio(
+    withCapitalAndProfit = true,
+  ): PeriodCalculation {
+    return this.prepareCalculationForPeriods(
+      this.portfolioChanges,
+      withCapitalAndProfit,
+    );
+  }
+
+  // prepare calculations (e.g. TWR, capital change, profit change) for all Portfolio Assets
+  prepareCalculationsForAssets(
+    withCapitalAndProfit = true,
+  ): Record<string, PeriodCalculation> {
+    const calculations: Record<string, PeriodCalculation> = {};
+    Object.entries(this.groupedAssetChanges)
+      .sort(([id1], [id2]) => id1.localeCompare(id2))
+      .forEach(([assetId, changes]) => {
+        calculations[assetId] = this.prepareCalculationForPeriods(
+          changes,
+          withCapitalAndProfit,
+        );
+      });
+    return calculations;
+  }
+
+  // prepare history/statistics for whole Portfolio
+  prepareHistoryForPortfolio(): PeriodHistory {
+    return this.prepareHistoryForPeriods(this.portfolioChanges);
+  }
+
+  // prepare history/statistics for all Portfolio Assets
+  prepareHistoryForAssets(): Record<string, PeriodHistory> {
+    const historyForAssets: Record<string, PeriodHistory> = {};
+    Object.entries(this.groupedAssetChanges).forEach(([assetId, changes]) => {
+      historyForAssets[assetId] = this.prepareHistoryForPeriods(changes);
+    });
+    return historyForAssets;
+  }
+
+  // Divide changes into grouped assets changes and summed portfolio assets
   private setAllChanges(changes: AssetBalanceChangeEntity[]) {
     let lastDate: Date | undefined;
     changes.forEach((change) => {
+      // if date is switched then portfolio change needs to be calculated
       if (lastDate != null && change.date > lastDate) {
         this.saveChangeForPortfolio(lastDate);
       }
@@ -50,17 +99,7 @@ export class PortfolioBalanceChangeSetModel {
     }
   }
 
-  private saveChangeForPortfolio(date: Date) {
-    let value = 0;
-    let capital = 0;
-    Object.entries(this.groupedAssetChanges).forEach(([, changes]) => {
-      const lastChange = changes[changes.length - 1];
-      value += lastChange.value;
-      capital += lastChange.capital;
-    });
-    this.portfolioChanges.push(new BalanceChangeModel(value, capital, date));
-  }
-
+  // It will set previousChange for all changes to make calculations easier
   private setChangesPredecessors() {
     [Object.values(this.groupedAssetChanges), this.portfolioChanges].forEach(
       (changes) => {
@@ -73,56 +112,16 @@ export class PortfolioBalanceChangeSetModel {
     );
   }
 
-  private prepareCalculationForChanges(
-    changes: BalanceChangeModel[],
-    withCapitalAndProfit = true,
-    monthsInPeriod?: number,
-  ): AnnualizedCalculation | null {
-    if (
-      changes.length === 0 ||
-      (changes.length === 1 && changes[0].previousChange === null)
-    ) {
-      return null;
-    }
-    const calculation: AnnualizedCalculation = {
-      annualizedTwr: this.calculateAnnualizedTwr(changes, monthsInPeriod),
-    };
-    if (withCapitalAndProfit) {
-      const oldestChange = changes[0].previousChange || changes[0];
+  // sum last changes for assets and create portfolio change
+  private saveChangeForPortfolio(date: Date) {
+    let value = 0;
+    let capital = 0;
+    Object.entries(this.groupedAssetChanges).forEach(([, changes]) => {
       const lastChange = changes[changes.length - 1];
-      calculation.capitalChange = lastChange.capital - oldestChange.capital;
-      calculation.profitChange =
-        lastChange.getProfit() - oldestChange.getProfit();
-    }
-    return calculation;
-  }
-
-  private calculateAnnualizedTwr(
-    changes: BalanceChangeModel[],
-    monthsInPeriod?: number,
-  ): number | null {
-    if (
-      changes.length === 0 ||
-      (changes.length === 1 && changes[0].previousChange == null) ||
-      (monthsInPeriod == null && this.endDate == changes[0].date)
-    ) {
-      return null;
-    }
-    const daysDifference =
-      (this.endDate.getTime() - changes[0].date.getTime()) /
-      (1000 * 60 * 60 * 24);
-    const pow =
-      monthsInPeriod != null ? 12.0 / monthsInPeriod : 365 / daysDifference;
-    return Math.pow(this.calculateTwr(changes) + 1.0, pow) - 1.0;
-  }
-
-  private calculateTwr(changes: BalanceChangeModel[]): number {
-    const returns = changes.map((change) => change.getPeriodReturn());
-    return (
-      returns
-        .filter((r) => r)
-        .reduce((acc, returnChange) => acc * returnChange, 1.0) - 1.0
-    );
+      value += lastChange.value;
+      capital += lastChange.capital;
+    });
+    this.portfolioChanges.push(new BalanceChangeModel(value, capital, date));
   }
 
   // make calculations (TWR, capital change, profit change) for all given changes and sub-periods of changes
@@ -147,5 +146,81 @@ export class PortfolioBalanceChangeSetModel {
           : calculation.total;
     });
     return calculation;
+  }
+
+  // calculate total TWR (True time-weighted rate of return) of changes
+  private calculateTwr(changes: BalanceChangeModel[]): number {
+    const returns = changes.map((change) => change.getPeriodReturn());
+    return (
+      returns
+        .filter((r) => r)
+        .reduce((acc, returnChange) => acc * returnChange, 1.0) - 1.0
+    );
+  }
+
+  // make calculations (TWR, capital change, profit change) for given changes in period
+  private prepareCalculationForChanges(
+    changes: BalanceChangeModel[],
+    withCapitalAndProfit = true,
+    monthsInPeriod?: number,
+  ): AnnualizedCalculation | null {
+    if (
+      changes.length === 0 ||
+      (changes.length === 1 && changes[0].previousChange === null)
+    ) {
+      return null;
+    }
+    const calculation: AnnualizedCalculation = {
+      annualizedTwr: this.calculateAnnualizedTwr(changes, monthsInPeriod),
+    };
+    if (withCapitalAndProfit) {
+      const oldestChange = changes[0].previousChange || changes[0];
+      const lastChange = changes[changes.length - 1];
+      calculation.capitalChange = lastChange.capital - oldestChange.capital;
+      calculation.profitChange =
+        lastChange.getProfit() - oldestChange.getProfit();
+    }
+    return calculation;
+  }
+
+  // make statistics/calculations for all historical dates for given changes in period
+  private prepareHistoryForPeriods(
+    changes: BalanceChangeModel[],
+  ): PeriodHistory {
+    const pastChanges: BalanceChangeModel[] = [];
+    let endDate = this.endDate;
+    const history = changes.map((change) => {
+      pastChanges.push(change);
+      endDate = change.date;
+      return {
+        change,
+        periodCalculation: this.prepareCalculationForPeriods(
+          pastChanges,
+          false,
+        ),
+      };
+    });
+    this.endDate = endDate;
+    return history;
+  }
+
+  // calculate TWR that is annualized by given number of months or in relation to this.endDate
+  private calculateAnnualizedTwr(
+    changes: BalanceChangeModel[],
+    monthsInPeriod?: number,
+  ): number | null {
+    if (
+      changes.length === 0 ||
+      (changes.length === 1 && changes[0].previousChange == null) ||
+      (monthsInPeriod == null && this.endDate == changes[0].date)
+    ) {
+      return null;
+    }
+    const daysDifference =
+      (this.endDate.getTime() - changes[0].date.getTime()) /
+      (1000 * 60 * 60 * 24);
+    const pow =
+      monthsInPeriod != null ? 12.0 / monthsInPeriod : 365 / daysDifference;
+    return Math.pow(this.calculateTwr(changes) + 1.0, pow) - 1.0;
   }
 }
