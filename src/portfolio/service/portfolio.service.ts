@@ -6,6 +6,8 @@ import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { AssetService } from './asset.service';
 import {
   AnnualizedCalculation,
+  PeriodHistory,
+  periods,
   PortfolioBalanceChangeSetService,
 } from './portfolio-balance-change-set.service';
 
@@ -42,12 +44,52 @@ export class PortfolioService {
   }
 
   // prepare summary of portfolio and it's asset changes
-  //   def prepare_performance_statistics(date=nil, group=nil, with_assets=true)
-  // preparePerformanceStatistics(
-  //   date?: Date,
-  //   group?: string,
-  //   withAssets?: boolean,
-  // ): Promise<AssetSnapshotDto[]> {}
+  async preparePerformanceStatistics(
+    portfolio: PortfolioEntity,
+    date?: Date,
+    group?: string,
+    withAssets?: boolean,
+  ): Promise<{
+    portfolio: Record<string, AnnualizedCalculation | null>;
+    assets?: { id: string; annualizedTwr: Record<string, number | null> }[];
+  }> {
+    const changes = await this.assetService.findPortfolioChanges(
+      portfolio,
+      group,
+      date,
+    );
+    this.portfolioBalanceChangeSetService.setAllChanges(changes);
+    this.portfolioBalanceChangeSetService.endDate = date ?? new Date();
+    return {
+      portfolio: this.preparePortfolioPerformance(),
+      assets: withAssets ? this.prepareAssetsPerformance() : undefined,
+    };
+  }
+
+  // prepare history/statistics of portfolio and it's asset changes
+  async prepareHistoryStatistics(
+    portfolio: PortfolioEntity,
+    group?: string,
+    withAssets?: boolean,
+  ): Promise<{
+    portfolio: (string | number | null)[][];
+    assets?: Record<string, any>[];
+  }> {
+    const changes = await this.assetService.findPortfolioChanges(
+      portfolio,
+      group,
+    );
+    this.portfolioBalanceChangeSetService.setAllChanges(changes);
+    this.portfolioBalanceChangeSetService.endDate = new Date();
+    return {
+      portfolio: this.transformHistoryStatistics(
+        this.portfolioBalanceChangeSetService.prepareHistoryForPortfolio(),
+      ),
+      assets: withAssets
+        ? await this.prepareAssetsHistoryStatistics()
+        : undefined,
+    };
+  }
 
   // prepare assets changes summary from changes Set
   private prepareAssetsPerformance() {
@@ -68,8 +110,7 @@ export class PortfolioService {
     });
   }
 
-  // # prepare portfolio changes summary from changes Set
-  //   def prepare_portfolio_performance
+  // prepare portfolio changes summary from changes Set
   private preparePortfolioPerformance(): Record<
     string,
     AnnualizedCalculation | null
@@ -93,7 +134,38 @@ export class PortfolioService {
     return result;
   }
 
-  // # transform history statistics generated from changes Set to flatten one
-  //   def transform_history_statistics(stats)
-  //   private transformHistoryStatistics(stats: any) {
+  // prepare history/statistics of asset changes from changes Set
+  private async prepareAssetsHistoryStatistics() {
+    const entries = Object.entries(
+      this.portfolioBalanceChangeSetService.prepareHistoryForAssets(),
+    ).map(async ([assetId, calculations]) => {
+      const lastCalculation = calculations[calculations.length - 1];
+      const asset = await this.assetService.findById(assetId);
+      return {
+        id: assetId,
+        name: asset?.name,
+        group: asset?.group,
+        values: this.transformHistoryStatistics(calculations),
+        value: lastCalculation?.change?.value,
+        capital: lastCalculation?.change?.capital,
+      };
+    });
+    return Promise.all(entries);
+  }
+
+  // transform history statistics generated from changes Set to flatten one
+  private transformHistoryStatistics(calculations: PeriodHistory) {
+    return calculations.map((record) => [
+      ...[
+        record?.change?.date?.toString(),
+        record?.change?.capital,
+        record?.change?.value,
+        record?.change?.getProfit(),
+        round(record?.periodCalculation?.total?.annualizedTwr ?? null, 4),
+      ],
+      ...Object.keys(periods).map((period) =>
+        round(record?.periodCalculation?.[period]?.annualizedTwr, 4),
+      ),
+    ]);
+  }
 }

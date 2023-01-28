@@ -34,6 +34,10 @@ export class AssetService {
     return snapshot;
   }
 
+  findById(id: string): Promise<AssetEntity | null> {
+    return this.assetRepository.findOneBy({ id });
+  }
+
   findGroupsForPortfolio(portfolio: PortfolioEntity): Promise<string[]> {
     return this.assetRepository
       .createQueryBuilder('asset')
@@ -58,8 +62,8 @@ export class AssetService {
 
   findPortfolioChanges(
     portfolio: PortfolioEntity,
-    date?: Date,
     group?: string,
+    date?: Date,
   ): Promise<AssetBalanceChangeEntity[]> {
     const query = this.assetBalanceChangeRepository
       .createQueryBuilder('change')

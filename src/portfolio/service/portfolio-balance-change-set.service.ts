@@ -8,7 +8,7 @@ export type AnnualizedCalculation = {
   profitChange?: number;
 };
 
-const periods = {
+export const periods = {
   '1M': 1,
   '1Y': 12,
   '3Y': 36,
@@ -37,7 +37,7 @@ export class PortfolioBalanceChangeSetService {
 
   protected portfolioChanges: BalanceChangeModel[] = [];
 
-  protected endDate: Date;
+  public endDate: Date;
 
   // Divide changes into grouped assets changes and summed portfolio assets
   setAllChanges(changes: AssetBalanceChangeEntity[]) {
