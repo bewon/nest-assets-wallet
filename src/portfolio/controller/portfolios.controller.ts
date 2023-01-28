@@ -29,6 +29,57 @@ export class PortfoliosController {
     );
   }
 
+  @Get(':id/performance-statistics')
+  async findPerformanceStatistics(
+    @Param('id') id: string,
+    @Param('date') date?: string,
+  ) {
+    const portfolio = await this.portfolioService.findById(id);
+    if (portfolio == null) {
+      return null;
+    }
+    return this.portfolioService.preparePerformanceStatistics(
+      portfolio,
+      date != null ? new Date(date) : undefined,
+    );
+  }
+
+  @Get(':id/group-performance')
+  async findGroupPerformance(
+    @Param('id') id: string,
+    @Param('date') date?: string,
+    @Param('group') group?: string,
+  ) {
+    const portfolio = await this.portfolioService.findById(id);
+    if (portfolio == null) {
+      return null;
+    }
+    return this.portfolioService.preparePerformanceStatistics(
+      portfolio,
+      date != null ? new Date(date) : undefined,
+      group,
+      false,
+    );
+  }
+
+  // def history_statistics
+  @Get(':id/history-statistics')
+  async findHistoryStatistics(
+    @Param('id') id: string,
+    @Param('group') group?: string,
+    @Param('withAssets') withAssets?: string,
+  ) {
+    const portfolio = await this.portfolioService.findById(id);
+    if (portfolio == null) {
+      return null;
+    }
+    return this.portfolioService.prepareHistoryStatistics(
+      portfolio,
+      group,
+      withAssets === 'true',
+    );
+  }
+
   @Get(':id/groups')
   async findGroups(@Param('id') id: string) {
     const portfolio = await this.portfolioService.findById(id);
