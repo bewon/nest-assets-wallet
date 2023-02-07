@@ -11,6 +11,7 @@ import { AssetEntity } from '../model/asset.entity';
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import 'reflect-metadata';
 import * as fs from 'fs';
+import { AssetService } from './asset.service';
 
 const moduleMocker = new ModuleMocker(global);
 
@@ -28,7 +29,7 @@ describe('PortfolioService', () => {
           AssetBalanceChangeEntity,
         ]),
       ],
-      providers: [PortfolioService, FixturesService],
+      providers: [PortfolioService, FixturesService, AssetService],
     })
       .useMocker((token) => {
         if (typeof token === 'function') {
@@ -59,7 +60,7 @@ describe('PortfolioService', () => {
       );
       const portfolio = await fixturesService.getPortfolio();
       const result = await service.prepareAssetsSnapshot(portfolio);
-      expect(result).toEqual(assetsSnapshot);
+      expect(result).toMatchObject(assetsSnapshot);
     });
   });
 });

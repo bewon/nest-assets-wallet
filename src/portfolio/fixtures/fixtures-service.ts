@@ -2,7 +2,7 @@ import { PortfolioEntity } from '../model/portfolio.entity';
 import { Repository } from 'typeorm';
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 import { AssetEntity } from '../model/asset.entity';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import 'reflect-metadata';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -56,31 +56,25 @@ export class FixturesService {
   }
 
   private async loadAssetsFixtures(portfolio: PortfolioEntity) {
-    fs.readFile(
+    const jsonString = await fs.readFile(
       'src/portfolio/fixtures/assets.json',
       'utf8',
-      (_, jsonString) => {
-        const assets = JSON.parse(jsonString);
-        assets.forEach((asset: AssetEntity) => {
-          asset.portfolio = portfolio;
-          this.assetRepository.save(asset);
-        });
-      },
     );
+    const assets = JSON.parse(jsonString);
+    for (const asset of assets) {
+      asset.portfolio = portfolio;
+      await this.assetRepository.save(asset);
+    }
   }
 
   private async loadAssetBalanceChangeFixtures() {
-    fs.readFile(
+    const jsonString = await fs.readFile(
       'src/portfolio/fixtures/asset-balance-changes.json',
       'utf8',
-      (_, jsonString) => {
-        const assetBalanceChanges = JSON.parse(jsonString);
-        assetBalanceChanges.forEach(
-          (assetBalanceChange: AssetBalanceChangeEntity) => {
-            this.assetBalanceChangeRepository.save(assetBalanceChange);
-          },
-        );
-      },
     );
+    const assetBalanceChanges = JSON.parse(jsonString);
+    for (const assetBalanceChange of assetBalanceChanges) {
+      await this.assetBalanceChangeRepository.save(assetBalanceChange);
+    }
   }
 }

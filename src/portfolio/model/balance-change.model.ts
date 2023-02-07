@@ -16,7 +16,7 @@ export class BalanceChangeModel implements BalanceChangeInterface {
     public previousChange: BalanceChangeInterface | null = null,
   ) {}
   getProfit(): number {
-    return this.value - this.capital;
+    return Math.round((this.value - this.capital) * 100) / 100;
   }
   getPeriodReturn(): number {
     if (this.previousChange === null) {

@@ -60,6 +60,10 @@ export class AssetService {
     });
   }
 
+  findAssetsForPortfolio(portfolio: PortfolioEntity): Promise<AssetEntity[]> {
+    return this.assetRepository.findBy({ portfolioId: portfolio.id });
+  }
+
   findPortfolioChanges(
     portfolio: PortfolioEntity,
     group?: string,

@@ -33,11 +33,12 @@ export class PortfolioService {
   }
 
   // Prepare snapshot for all portfolio assets
-  prepareAssetsSnapshot(
+  async prepareAssetsSnapshot(
     portfolio: PortfolioEntity,
     date?: Date,
   ): Promise<AssetSnapshotDto[]> {
-    const promises = portfolio.assets.map((asset) =>
+    const assets = await this.assetService.findAssetsForPortfolio(portfolio);
+    const promises = assets.map((asset) =>
       this.assetService.prepareAssetSnapshot(asset, date),
     );
     return Promise.all(promises);
