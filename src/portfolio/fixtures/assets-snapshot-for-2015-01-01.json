@@ -3,36 +3,36 @@
     "id": "47158934-82df-43ac-8a24-000000000001",
     "name": "Asset 1",
     "group": "Safe",
-    "capital": "116.0",
-    "value": "102.0",
-    "profit": "-14.0",
-    "updated_at": "2015-01-01"
+    "capital": 116.0,
+    "value": 102.0,
+    "profit": -14.0,
+    "date": "2015-01-01"
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000002",
     "name": "Asset 2",
     "group": "Safe",
-    "capital": "110.0",
-    "value": "122.5",
-    "profit": "12.5",
-    "updated_at": "2015-01-01"
+    "capital": 110.0,
+    "value": 122.5,
+    "profit": 12.5,
+    "date": "2015-01-01"
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000003",
     "name": "Asset 3",
     "group": "Risky",
-    "capital": "110.0",
-    "value": "133.5",
-    "profit": "23.5",
-    "updated_at": "2015-01-01"
+    "capital": 110.0,
+    "value": 133.5,
+    "profit": 23.5,
+    "date": "2015-01-01"
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000004",
     "name": "Asset 4",
     "group": "Risky",
-    "capital": "110.0",
-    "value": "144.5",
-    "profit": "34.5",
-    "updated_at": "2015-01-01"
+    "capital": 110.0,
+    "value": 144.5,
+    "profit": 34.5,
+    "date": "2015-01-01"
   }
 ]

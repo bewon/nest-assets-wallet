@@ -5,5 +5,5 @@ export class AssetSnapshotDto {
   capital?: number;
   value?: number;
   profit?: number;
-  date?: Date;
+  date?: string;
 }

@@ -17,20 +17,23 @@ export class AssetService {
 
   async prepareAssetSnapshot(
     asset: AssetEntity,
-    date?: Date,
-  ): Promise<AssetSnapshotDto> {
+    date?: string,
+  ): Promise<AssetSnapshotDto | null> {
     const change =
       date == null
         ? await this.findLastChangeForAsset(asset)
         : await this.findChangeForAsset(asset, date);
+    if (change == null) {
+      return null;
+    }
     const snapshot = new AssetSnapshotDto();
     snapshot.id = asset.id;
     snapshot.name = asset.name;
     snapshot.group = asset.group;
-    snapshot.capital = change?.capital;
-    snapshot.value = change?.value;
-    snapshot.profit = change?.getProfit();
-    snapshot.date = change?.date;
+    snapshot.capital = change.capital;
+    snapshot.value = change.value;
+    snapshot.profit = change.getProfit();
+    snapshot.date = change.date;
     return snapshot;
   }
 
@@ -52,8 +55,8 @@ export class AssetService {
     asset: AssetEntity,
     year: number,
   ): Promise<AssetBalanceChangeEntity[]> {
-    const from = new Date(year, 0, 1);
-    const to = new Date(year, 11, 31, 23, 59, 59);
+    const from = new Date(year, 0, 1).toISOString();
+    const to = new Date(year, 11, 31, 23, 59, 59).toISOString();
     return this.assetBalanceChangeRepository.find({
       where: { assetId: asset.id, date: Between(from, to) },
       order: { date: 'ASC' },
@@ -67,7 +70,7 @@ export class AssetService {
   findPortfolioChanges(
     portfolio: PortfolioEntity,
     group?: string,
-    date?: Date,
+    date?: string,
   ): Promise<AssetBalanceChangeEntity[]> {
     const query = this.assetBalanceChangeRepository
       .createQueryBuilder('change')
@@ -93,7 +96,7 @@ export class AssetService {
 
   private findChangeForAsset(
     asset: AssetEntity,
-    date: Date,
+    date: string,
   ): Promise<AssetBalanceChangeEntity | null> {
     return this.assetBalanceChangeRepository.findOne({
       where: { assetId: asset.id, date: LessThanOrEqual(date) },

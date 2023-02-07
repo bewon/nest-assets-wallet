@@ -50,7 +50,7 @@ export class AssetBalanceChangeEntity extends BalanceChangeModel {
   value: number;
 
   @Column('date', { nullable: false })
-  date: Date;
+  date: string;
 
   @CreateDateColumn()
   createdAt: Date;

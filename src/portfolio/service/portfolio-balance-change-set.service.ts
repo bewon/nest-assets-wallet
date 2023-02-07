@@ -23,30 +23,32 @@ export type PeriodHistory = {
   periodCalculation: PeriodCalculation;
 }[];
 
-const subtractMonths = (date: Date, months: number) => {
+const subtractMonths = (date: string, months: number): string => {
   const _date = new Date(date);
   _date.setMonth(_date.getMonth() - months);
-  return _date;
+  return _date.toISOString().slice(0, 10);
 };
 
 // This class is for calculate statistics from set of AssetBalanceChanges for Portfolio
 // This code will work ony for changes sorted by date!
 @Injectable()
 export class PortfolioBalanceChangeSetService {
-  protected groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]>;
+  protected groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]> =
+    {};
 
   protected portfolioChanges: BalanceChangeModel[] = [];
 
-  public endDate: Date;
+  public endDate: string;
 
   // Divide changes into grouped assets changes and summed portfolio assets
   setAllChanges(changes: AssetBalanceChangeEntity[]) {
-    let lastDate: Date | undefined;
+    let lastDate: string | undefined;
     changes.forEach((change) => {
       // if date is switched then portfolio change needs to be calculated
-      if (lastDate != null && change.date > lastDate) {
+      if (lastDate != null && new Date(change.date) > new Date(lastDate)) {
         this.saveChangeForPortfolio(lastDate);
       }
+      this.groupedAssetChanges[change.assetId] ??= [];
       this.groupedAssetChanges[change.assetId].push(change);
       lastDate = change.date;
     });
@@ -110,7 +112,7 @@ export class PortfolioBalanceChangeSetService {
   }
 
   // sum last changes for assets and create portfolio change
-  private saveChangeForPortfolio(date: Date) {
+  private saveChangeForPortfolio(date: string) {
     let value = 0;
     let capital = 0;
     Object.entries(this.groupedAssetChanges).forEach(([, changes]) => {
@@ -131,7 +133,9 @@ export class PortfolioBalanceChangeSetService {
     };
     Object.entries(periods).forEach(([period, months]) => {
       const minDate = subtractMonths(this.endDate, months);
-      const periodChanges = changes.filter((change) => change.date > minDate);
+      const periodChanges = changes.filter(
+        (change) => new Date(change.date) > new Date(minDate),
+      );
       // if all changes are in periodChanges then there is no need to calculate it, because it is the same like 'total'
       calculation[period] =
         periodChanges.length < changes.length
@@ -214,7 +218,7 @@ export class PortfolioBalanceChangeSetService {
       return null;
     }
     const daysDifference =
-      (this.endDate.getTime() - changes[0].date.getTime()) /
+      (Date.parse(this.endDate) - Date.parse(changes[0].date)) /
       (1000 * 60 * 60 * 24);
     const pow =
       monthsInPeriod != null ? 12.0 / monthsInPeriod : 365 / daysDifference;

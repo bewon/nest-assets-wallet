@@ -35,19 +35,22 @@ export class PortfolioService {
   // Prepare snapshot for all portfolio assets
   async prepareAssetsSnapshot(
     portfolio: PortfolioEntity,
-    date?: Date,
+    date?: string,
   ): Promise<AssetSnapshotDto[]> {
     const assets = await this.assetService.findAssetsForPortfolio(portfolio);
     const promises = assets.map((asset) =>
       this.assetService.prepareAssetSnapshot(asset, date),
     );
-    return Promise.all(promises);
+    const snapshots = await Promise.all(promises);
+    return snapshots.filter(
+      (snapshot) => snapshot != null,
+    ) as AssetSnapshotDto[];
   }
 
   // prepare summary of portfolio and it's asset changes
   async preparePerformanceStatistics(
     portfolio: PortfolioEntity,
-    date?: Date,
+    date?: string,
     group?: string,
     withAssets?: boolean,
   ): Promise<{
@@ -60,7 +63,8 @@ export class PortfolioService {
       date,
     );
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
-    this.portfolioBalanceChangeSetService.endDate = date ?? new Date();
+    this.portfolioBalanceChangeSetService.endDate =
+      date ?? new Date().toISOString().slice(0, 10);
     return {
       portfolio: this.preparePortfolioPerformance(),
       assets: withAssets ? this.prepareAssetsPerformance() : undefined,
@@ -81,7 +85,10 @@ export class PortfolioService {
       group,
     );
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
-    this.portfolioBalanceChangeSetService.endDate = new Date();
+    this.portfolioBalanceChangeSetService.endDate = new Date()
+      .toISOString()
+      .slice(0, 10);
+
     return {
       portfolio: this.transformHistoryStatistics(
         this.portfolioBalanceChangeSetService.prepareHistoryForPortfolio(),

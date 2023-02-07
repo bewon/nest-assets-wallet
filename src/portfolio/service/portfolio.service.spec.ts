@@ -12,6 +12,7 @@ import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import 'reflect-metadata';
 import * as fs from 'fs';
 import { AssetService } from './asset.service';
+import { PortfolioBalanceChangeSetService } from './portfolio-balance-change-set.service';
 
 const moduleMocker = new ModuleMocker(global);
 
@@ -29,7 +30,12 @@ describe('PortfolioService', () => {
           AssetBalanceChangeEntity,
         ]),
       ],
-      providers: [PortfolioService, FixturesService, AssetService],
+      providers: [
+        PortfolioService,
+        FixturesService,
+        AssetService,
+        PortfolioBalanceChangeSetService,
+      ],
     })
       .useMocker((token) => {
         if (typeof token === 'function') {
@@ -61,6 +67,39 @@ describe('PortfolioService', () => {
       const portfolio = await fixturesService.getPortfolio();
       const result = await service.prepareAssetsSnapshot(portfolio);
       expect(result).toMatchObject(assetsSnapshot);
+    });
+
+    it('should prepare proper assets snapshot for given date', async () => {
+      const assetsSnapshot = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/assets-snapshot-for-2015-01-01.json',
+          'utf8',
+        ),
+      );
+      const result = await service.prepareAssetsSnapshot(
+        await fixturesService.getPortfolio(),
+        '2015-01-01',
+      );
+      expect(result).toMatchObject(assetsSnapshot);
+    });
+  });
+  describe('preparePerformanceStatistics', () => {
+    beforeEach(async () => {
+      await fixturesService.loadFixtures();
+    });
+
+    it('should prepare proper newest performance statistics', async () => {
+      const performanceStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/performance-statistics.json',
+          'utf8',
+        ),
+      );
+      const result = await service.preparePerformanceStatistics(
+        await fixturesService.getPortfolio(),
+        '2016-03-31',
+      );
+      expect(result).toMatchObject(performanceStatistics);
     });
   });
 });
