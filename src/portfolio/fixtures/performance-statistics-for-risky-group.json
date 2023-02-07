@@ -1,0 +1,18 @@
+{
+  "assets": [
+    {
+      "id": "47158934-82df-43ac-8a24-000000000003",
+      "annualized_twr": { "total": 0.0327, "1Y": -0.022, "3Y": 0.0327 }
+    },
+    {
+      "id": "47158934-82df-43ac-8a24-000000000004",
+      "annualized_twr": { "total": 0.0797, "1Y": 0.0452, "3Y": 0.0797 }
+    }
+  ],
+  "portfolio": {
+    "total": {"annualized_twr": 0.1434,"capital_change": "115.0","profit_change": "53.5"},
+    "1M": {},
+    "1Y": {"annualized_twr": 0.0131,"capital_change": "5.0","profit_change": "4.0"},
+    "3Y": {"annualized_twr": 0.1434,"capital_change": "115.0","profit_change": "53.5"}
+  }
+}

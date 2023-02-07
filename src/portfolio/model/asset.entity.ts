@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { PortfolioEntity } from './portfolio.entity';
+import { AssetBalanceChangeEntity } from './asset-balance-change.entity';
 
 @Entity('asset')
 export class AssetEntity {
@@ -15,10 +17,10 @@ export class AssetEntity {
   id: string;
 
   @Column({ nullable: true })
-  name: string | null;
+  name?: string;
 
   @Column({ nullable: true })
-  group: string | null;
+  group?: string;
 
   @ManyToOne(() => PortfolioEntity)
   portfolio: PortfolioEntity;
@@ -26,6 +28,11 @@ export class AssetEntity {
   @Column({ nullable: true })
   @RelationId((asset: AssetEntity) => asset.portfolio)
   portfolioId: string;
+
+  @OneToMany(() => AssetBalanceChangeEntity, (change) => change.asset, {
+    cascade: ['insert', 'update', 'remove'],
+  })
+  balanceChanges: AssetBalanceChangeEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
