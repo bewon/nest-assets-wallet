@@ -10,6 +10,8 @@ import {
   periods,
   PortfolioBalanceChangeSetService,
 } from './portfolio-balance-change-set.service';
+import { defaultDateFormat } from '../../app.module';
+import * as dayjs from 'dayjs';
 
 const round = (value: number | null, precision: number): number | null => {
   if (value == null) {
@@ -52,7 +54,7 @@ export class PortfolioService {
     portfolio: PortfolioEntity,
     date?: string,
     group?: string,
-    withAssets?: boolean,
+    withAssets = true,
   ): Promise<{
     portfolio: Record<string, AnnualizedCalculation | null>;
     assets?: { id: string; annualizedTwr: Record<string, number | null> }[];
@@ -64,7 +66,7 @@ export class PortfolioService {
     );
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
     this.portfolioBalanceChangeSetService.endDate =
-      date ?? new Date().toISOString().slice(0, 10);
+      date ?? dayjs().format(defaultDateFormat);
     return {
       portfolio: this.preparePortfolioPerformance(),
       assets: withAssets ? this.prepareAssetsPerformance() : undefined,
@@ -85,9 +87,8 @@ export class PortfolioService {
       group,
     );
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
-    this.portfolioBalanceChangeSetService.endDate = new Date()
-      .toISOString()
-      .slice(0, 10);
+    this.portfolioBalanceChangeSetService.endDate =
+      dayjs().format(defaultDateFormat);
 
     return {
       portfolio: this.transformHistoryStatistics(

@@ -23,10 +23,7 @@ export class PortfoliosController {
     if (portfolio == null) {
       return null;
     }
-    return this.portfolioService.prepareAssetsSnapshot(
-      portfolio,
-      date != null ? new Date(date) : undefined,
-    );
+    return this.portfolioService.prepareAssetsSnapshot(portfolio, date);
   }
 
   @Get(':id/performance-statistics')
@@ -38,10 +35,7 @@ export class PortfoliosController {
     if (portfolio == null) {
       return null;
     }
-    return this.portfolioService.preparePerformanceStatistics(
-      portfolio,
-      date != null ? new Date(date) : undefined,
-    );
+    return this.portfolioService.preparePerformanceStatistics(portfolio, date);
   }
 
   @Get(':id/group-performance')
@@ -56,7 +50,7 @@ export class PortfoliosController {
     }
     return this.portfolioService.preparePerformanceStatistics(
       portfolio,
-      date != null ? new Date(date) : undefined,
+      date,
       group,
       false,
     );

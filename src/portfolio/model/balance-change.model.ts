@@ -5,7 +5,7 @@ export interface BalanceChangeInterface {
   previousChange: BalanceChangeInterface | null;
   getProfit(): number;
 
-  getPeriodReturn(): number;
+  getPeriodReturn(): number | null;
 }
 
 export class BalanceChangeModel implements BalanceChangeInterface {
@@ -18,9 +18,9 @@ export class BalanceChangeModel implements BalanceChangeInterface {
   getProfit(): number {
     return Math.round((this.value - this.capital) * 100) / 100;
   }
-  getPeriodReturn(): number {
-    if (this.previousChange === null) {
-      throw new Error('Previous change is not set');
+  getPeriodReturn(): number | null {
+    if (this.previousChange == null) {
+      return null;
     }
     if (this.previousChange.value === 0) {
       return 1.0;

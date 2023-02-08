@@ -1,6 +1,8 @@
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { BalanceChangeModel } from '../model/balance-change.model';
 import { Injectable } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import { defaultDateFormat } from '../../app.module';
 
 export type AnnualizedCalculation = {
   annualizedTwr: number | null;
@@ -24,9 +26,8 @@ export type PeriodHistory = {
 }[];
 
 const subtractMonths = (date: string, months: number): string => {
-  const _date = new Date(date);
-  _date.setMonth(_date.getMonth() - months);
-  return _date.toISOString().slice(0, 10);
+  const _date = dayjs(date).subtract(months, 'months');
+  return _date.format(defaultDateFormat);
 };
 
 // This class is for calculate statistics from set of AssetBalanceChanges for Portfolio
@@ -45,7 +46,7 @@ export class PortfolioBalanceChangeSetService {
     let lastDate: string | undefined;
     changes.forEach((change) => {
       // if date is switched then portfolio change needs to be calculated
-      if (lastDate != null && new Date(change.date) > new Date(lastDate)) {
+      if (lastDate != null && Date.parse(change.date) > Date.parse(lastDate)) {
         this.saveChangeForPortfolio(lastDate);
       }
       this.groupedAssetChanges[change.assetId] ??= [];
@@ -100,7 +101,7 @@ export class PortfolioBalanceChangeSetService {
 
   // It will set previousChange for all changes to make calculations easier
   private setChangesPredecessors() {
-    [Object.values(this.groupedAssetChanges), this.portfolioChanges].forEach(
+    [...Object.values(this.groupedAssetChanges), this.portfolioChanges].forEach(
       (changes) => {
         let previousChange: BalanceChangeModel | null = null;
         changes.forEach((change) => {
@@ -120,7 +121,7 @@ export class PortfolioBalanceChangeSetService {
       value += lastChange.value;
       capital += lastChange.capital;
     });
-    this.portfolioChanges.push(new BalanceChangeModel(value, capital, date));
+    this.portfolioChanges.push(new BalanceChangeModel(capital, value, date));
   }
 
   // make calculations (TWR, capital change, profit change) for all given changes and sub-periods of changes
@@ -134,7 +135,7 @@ export class PortfolioBalanceChangeSetService {
     Object.entries(periods).forEach(([period, months]) => {
       const minDate = subtractMonths(this.endDate, months);
       const periodChanges = changes.filter(
-        (change) => new Date(change.date) > new Date(minDate),
+        (change) => Date.parse(change.date) > Date.parse(minDate),
       );
       // if all changes are in periodChanges then there is no need to calculate it, because it is the same like 'total'
       calculation[period] =
@@ -151,12 +152,10 @@ export class PortfolioBalanceChangeSetService {
 
   // calculate total TWR (True time-weighted rate of return) of changes
   private calculateTwr(changes: BalanceChangeModel[]): number {
-    const returns = changes.map((change) => change.getPeriodReturn());
-    return (
-      returns
-        .filter((r) => r)
-        .reduce((acc, returnChange) => acc * returnChange, 1.0) - 1.0
-    );
+    const returns = changes
+      .map((change) => change.getPeriodReturn())
+      .filter((r) => r != null) as number[];
+    return returns.reduce((acc, returnChange) => acc * returnChange, 1.0) - 1.0;
   }
 
   // make calculations (TWR, capital change, profit change) for given changes in period
@@ -167,7 +166,7 @@ export class PortfolioBalanceChangeSetService {
   ): AnnualizedCalculation | null {
     if (
       changes.length === 0 ||
-      (changes.length === 1 && changes[0].previousChange === null)
+      (changes.length === 1 && changes[0].previousChange == null)
     ) {
       return null;
     }

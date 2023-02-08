@@ -6,6 +6,8 @@ import { PortfolioModule } from './portfolio/portfolio.module';
 import { ConfigModule } from '@nestjs/config';
 import { dataSourceConfig } from './data-source';
 
+export const defaultDateFormat = 'YYYY-MM-DD';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),

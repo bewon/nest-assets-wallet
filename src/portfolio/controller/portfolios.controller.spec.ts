@@ -30,7 +30,7 @@ describe('PortfoliosController', () => {
                 id: portfolio.id,
                 name: 'abc',
                 group: 'abc',
-                date: date ? new Date(date) : new Date(),
+                date: date,
               } as AssetSnapshotDto),
           },
         },
@@ -68,7 +68,7 @@ describe('PortfoliosController', () => {
       id: portfolio.id,
       name: 'abc',
       group: 'abc',
-      date: new Date('2020-01-01'),
+      date: '2020-01-01',
     } as AssetSnapshotDto);
   });
 });
