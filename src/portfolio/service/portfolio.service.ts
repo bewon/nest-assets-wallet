@@ -13,9 +13,12 @@ import {
 import { defaultDateFormat } from '../../app.module';
 import * as dayjs from 'dayjs';
 
-const round = (value: number | null, precision: number): number | null => {
+const round = (
+  value: number | undefined,
+  precision: number,
+): number | undefined => {
   if (value == null) {
-    return null;
+    return undefined;
   }
   const multiplier = Math.pow(10, precision);
   return Math.round(value * multiplier) / multiplier;
@@ -56,8 +59,11 @@ export class PortfolioService {
     group?: string,
     withAssets = true,
   ): Promise<{
-    portfolio: Record<string, AnnualizedCalculation | null>;
-    assets?: { id: string; annualizedTwr: Record<string, number | null> }[];
+    portfolio: Record<string, AnnualizedCalculation | undefined>;
+    assets?: {
+      id: string;
+      annualizedTwr: Record<string, number | undefined>;
+    }[];
   }> {
     const changes = await this.assetService.findPortfolioChanges(
       portfolio,
@@ -79,7 +85,7 @@ export class PortfolioService {
     group?: string,
     withAssets?: boolean,
   ): Promise<{
-    portfolio: (string | number | null)[][];
+    portfolio: (string | number | undefined)[][];
     assets?: Record<string, any>[];
   }> {
     const changes = await this.assetService.findPortfolioChanges(
@@ -107,13 +113,11 @@ export class PortfolioService {
     return Object.entries(calculations).map(([assetId, calculation]) => {
       const result: {
         id: string;
-        annualizedTwr: Record<string, number | null>;
+        annualizedTwr: Record<string, number | undefined>;
       } = { id: assetId, annualizedTwr: {} };
       Object.entries(calculation).forEach(([period, periodCalculation]) => {
-        result.annualizedTwr[period] = round(
-          periodCalculation?.annualizedTwr ?? null,
-          4,
-        );
+        result.annualizedTwr[period] =
+          round(periodCalculation?.annualizedTwr, 4) ?? undefined;
       });
       return result;
     });
@@ -122,7 +126,7 @@ export class PortfolioService {
   // prepare portfolio changes summary from changes Set
   private preparePortfolioPerformance(): Record<
     string,
-    AnnualizedCalculation | null
+    AnnualizedCalculation | undefined
   > {
     const calculations =
       this.portfolioBalanceChangeSetService.prepareCalculationsForPortfolio(
@@ -131,7 +135,7 @@ export class PortfolioService {
     const result: ReturnType<typeof this.preparePortfolioPerformance> = {};
     Object.entries(calculations).forEach(([period, calculation]) => {
       if (calculation == null) {
-        result[period] = null;
+        result[period] = undefined;
       } else {
         result[period] = {
           annualizedTwr: round(calculation.annualizedTwr, 4),
@@ -170,7 +174,7 @@ export class PortfolioService {
         record?.change?.capital,
         record?.change?.value,
         record?.change?.getProfit(),
-        round(record?.periodCalculation?.total?.annualizedTwr ?? null, 4),
+        round(record?.periodCalculation?.total?.annualizedTwr, 4),
       ],
       ...Object.keys(periods).map((period) =>
         round(record?.periodCalculation?.[period]?.annualizedTwr, 4),

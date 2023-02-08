@@ -5,7 +5,7 @@ import * as dayjs from 'dayjs';
 import { defaultDateFormat } from '../../app.module';
 
 export type AnnualizedCalculation = {
-  annualizedTwr: number | null;
+  annualizedTwr?: number;
   capitalChange?: number;
   profitChange?: number;
 };
@@ -208,13 +208,13 @@ export class PortfolioBalanceChangeSetService {
   private calculateAnnualizedTwr(
     changes: BalanceChangeModel[],
     monthsInPeriod?: number,
-  ): number | null {
+  ): number | undefined {
     if (
       changes.length === 0 ||
       (changes.length === 1 && changes[0].previousChange == null) ||
       (monthsInPeriod == null && this.endDate == changes[0].date)
     ) {
-      return null;
+      return undefined;
     }
     const daysDifference =
       (Date.parse(this.endDate) - Date.parse(changes[0].date)) /

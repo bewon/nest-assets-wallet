@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PortfolioService } from './portfolio.service';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import {
   FixturesService,
   testDataSourceConfig,
@@ -13,12 +13,14 @@ import 'reflect-metadata';
 import * as fs from 'fs';
 import { AssetService } from './asset.service';
 import { PortfolioBalanceChangeSetService } from './portfolio-balance-change-set.service';
+import { Repository } from 'typeorm';
 
 const moduleMocker = new ModuleMocker(global);
 
 describe('PortfolioService', () => {
   let service: PortfolioService;
   let fixturesService: FixturesService;
+  let portfolioRepository: Repository<PortfolioEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,6 +51,9 @@ describe('PortfolioService', () => {
       .compile();
     fixturesService = module.get<FixturesService>(FixturesService);
     service = module.get<PortfolioService>(PortfolioService);
+    portfolioRepository = module.get<Repository<PortfolioEntity>>(
+      getRepositoryToken(PortfolioEntity),
+    );
   });
 
   it('should be defined', () => {
@@ -66,7 +71,7 @@ describe('PortfolioService', () => {
       );
       const portfolio = await fixturesService.getPortfolio();
       const result = await service.prepareAssetsSnapshot(portfolio);
-      expect(result).toMatchObject(assetsSnapshot);
+      expect(result).toEqual(assetsSnapshot);
     });
 
     it('should prepare proper assets snapshot for given date', async () => {
@@ -80,7 +85,7 @@ describe('PortfolioService', () => {
         await fixturesService.getPortfolio(),
         '2015-01-01',
       );
-      expect(result).toMatchObject(assetsSnapshot);
+      expect(result).toEqual(assetsSnapshot);
     });
   });
   describe('preparePerformanceStatistics', () => {
@@ -99,7 +104,64 @@ describe('PortfolioService', () => {
         await fixturesService.getPortfolio(),
         '2016-03-31',
       );
-      expect(result).toMatchObject(performanceStatistics);
+      expect(result).toEqual(performanceStatistics);
+    });
+
+    it('should prepare proper performance statistics for given group', async () => {
+      const performanceStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/performance-statistics-for-risky-group.json',
+          'utf8',
+        ),
+      );
+      const result = await service.preparePerformanceStatistics(
+        await fixturesService.getPortfolio(),
+        '2016-03-31',
+        'Risky',
+      );
+      expect(result).toEqual(performanceStatistics);
+    });
+
+    it('should prepare proper newest performance statistics without assets', async () => {
+      const performanceStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/performance-statistics.json',
+          'utf8',
+        ),
+      );
+      delete performanceStatistics.assets;
+      const result = await service.preparePerformanceStatistics(
+        await fixturesService.getPortfolio(),
+        '2016-03-31',
+        undefined,
+        false,
+      );
+      expect(result).toEqual(performanceStatistics);
+    });
+
+    it('should prepare proper performance statistics for given date', async () => {
+      const performanceStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/performance-statistics-for-2015-01-01.json',
+          'utf8',
+        ),
+      );
+      const result = await service.preparePerformanceStatistics(
+        await fixturesService.getPortfolio(),
+        '2015-01-01',
+      );
+      expect(result).toEqual(performanceStatistics);
+    });
+
+    it('should prepare proper performance statistics for empty portfolio', async () => {
+      const performanceStatistics = {
+        assets: [],
+        portfolio: {},
+      };
+      const portfolio = new PortfolioEntity();
+      await portfolioRepository.save(portfolio);
+      const result = await service.preparePerformanceStatistics(portfolio);
+      expect(result).toEqual(performanceStatistics);
     });
   });
 });

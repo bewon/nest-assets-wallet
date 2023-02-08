@@ -2,25 +2,25 @@
   "assets": [
     {
       "id": "47158934-82df-43ac-8a24-000000000001",
-      "annualized_twr": { "total": 0.0163, "1M": -0.057, "1Y": -0.0722, "3Y": 0.0163 }
+      "annualizedTwr": { "total": 0.0163, "1M": -0.057, "1Y": -0.0722, "3Y": 0.0163 }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000002",
-      "annualized_twr": { "total": 0.1382, "1M": 0.7832, "1Y": 0.1538, "3Y": 0.1382 }
+      "annualizedTwr": { "total": 0.1382, "1M": 0.7832, "1Y": 0.1538, "3Y": 0.1382 }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000003",
-      "annualized_twr": { "total": 0.0839, "1M": 0.7014, "1Y": 0.0839, "3Y": 0.0839 }
+      "annualizedTwr": { "total": 0.0839, "1M": 0.7014, "1Y": 0.0839, "3Y": 0.0839 }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000004",
-      "annualized_twr": { "total": 0.1643, "1M": 0.6348, "1Y": 0.1643, "3Y": 0.1643 }
+      "annualizedTwr": { "total": 0.1643, "1M": 0.6348, "1Y": 0.1643, "3Y": 0.1643 }
     }
   ],
   "portfolio": {
-    "total": { "annualized_twr": 0.128, "capital_change": "336.0", "profit_change": "74.0" },
-    "1M": { "annualized_twr": 0.5111, "capital_change": "-15.0", "profit_change": "17.5" },
-    "1Y": { "annualized_twr": 0.2219, "capital_change": "221.0", "profit_change": "67.5" },
-    "3Y": { "annualized_twr": 0.128, "capital_change": "336.0", "profit_change": "74.0" }
+    "total": { "annualizedTwr": 0.128, "capitalChange": 336.0, "profitChange": 74.0 },
+    "1M": { "annualizedTwr": 0.5111, "capitalChange": -15.0, "profitChange": 17.5 },
+    "1Y": { "annualizedTwr": 0.2219, "capitalChange": 221.0, "profitChange": 67.5 },
+    "3Y": { "annualizedTwr": 0.128, "capitalChange": 336.0, "profitChange": 74.0 }
   }
 }
