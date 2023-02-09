@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { ConfigModule } from '@nestjs/config';
 import { dataSourceConfig } from './data-source';
+import { AuthModule } from './auth/auth.module';
 
 export const defaultDateFormat = 'YYYY-MM-DD';
 
@@ -13,8 +13,8 @@ export const defaultDateFormat = 'YYYY-MM-DD';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceConfig),
     PortfolioModule,
+    AuthModule,
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
