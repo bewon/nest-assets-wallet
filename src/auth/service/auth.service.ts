@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from './user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   async validateUser(
     email: string,
@@ -19,9 +23,9 @@ export class AuthService {
   async login(user?: Express.User) {
     const payload = { email: user?.email, sub: user?.id };
     return {
-      user: payload,
       // user: await this.prepareUserAccount(user.id),
-      // accessToken: this.jwtService.sign(payload),
+      user: payload,
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }
