@@ -2,12 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AssetService } from './asset.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import {
+  entities,
   FixturesService,
   testDataSourceConfig,
 } from '../fixtures/fixtures-service';
-import { PortfolioEntity } from '../model/portfolio.entity';
 import { AssetEntity } from '../model/asset.entity';
-import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import * as fs from 'fs';
 import { Repository } from 'typeorm';
@@ -22,11 +21,7 @@ describe('AssetService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(testDataSourceConfig),
-        TypeOrmModule.forFeature([
-          PortfolioEntity,
-          AssetEntity,
-          AssetBalanceChangeEntity,
-        ]),
+        TypeOrmModule.forFeature(entities),
       ],
       providers: [AssetService, FixturesService],
     })

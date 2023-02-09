@@ -7,6 +7,14 @@ import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import 'reflect-metadata';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
+import { UserEntity } from '../../auth/model/user.entity';
+
+export const entities = [
+  PortfolioEntity,
+  AssetEntity,
+  AssetBalanceChangeEntity,
+  UserEntity,
+];
 
 export const testDataSourceConfig: DataSourceOptions = {
   type: 'sqlite',
@@ -17,7 +25,7 @@ export const testDataSourceConfig: DataSourceOptions = {
   // username: 'assets_wallet',
   // password: 'awd9571',
   // database: 'assets_wallet_test',
-  entities: [PortfolioEntity, AssetEntity, AssetBalanceChangeEntity],
+  entities,
   synchronize: true,
 };
 
@@ -44,13 +52,7 @@ export class FixturesService {
     await this.assetBalanceChangeRepository.delete({});
     await this.assetRepository.delete({});
     await this.portfolioRepository.delete({});
-    const portfolio: PortfolioEntity = {
-      id: portfolioId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      assets: [],
-    };
-    await this.portfolioRepository.save(portfolio);
+    const portfolio = await this.portfolioRepository.save({ id: portfolioId });
     await this.loadAssetsFixtures(portfolio);
     await this.loadAssetBalanceChangeFixtures();
   }

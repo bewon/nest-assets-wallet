@@ -37,6 +37,10 @@ export class PortfolioService {
     return this.portfolioRepository.findOneBy({ id });
   }
 
+  findForUserId(userId: string): Promise<PortfolioEntity | null> {
+    return this.portfolioRepository.findOneBy({ userId });
+  }
+
   // Prepare snapshot for all portfolio assets
   async prepareAssetsSnapshot(
     portfolio: PortfolioEntity,
