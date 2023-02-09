@@ -18,22 +18,19 @@ export class AssetService {
   async prepareAssetSnapshot(
     asset: AssetEntity,
     date?: string,
-  ): Promise<AssetSnapshotDto | null> {
+  ): Promise<AssetSnapshotDto> {
     const change =
       date == null
         ? await this.findLastChangeForAsset(asset)
         : await this.findChangeForAsset(asset, date);
-    if (change == null) {
-      return null;
-    }
     const snapshot = new AssetSnapshotDto();
     snapshot.id = asset.id;
     snapshot.name = asset.name;
     snapshot.group = asset.group;
-    snapshot.capital = change.capital;
-    snapshot.value = change.value;
-    snapshot.profit = change.getProfit();
-    snapshot.date = change.date;
+    snapshot.capital = change?.capital;
+    snapshot.value = change?.value;
+    snapshot.profit = change?.getProfit();
+    snapshot.date = change?.date;
     return snapshot;
   }
 
