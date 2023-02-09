@@ -181,6 +181,10 @@ describe('PortfolioService', () => {
   });
 
   describe('prepareHistoryStatistics', () => {
+    beforeEach(async () => {
+      await fixturesService.loadFixtures();
+    });
+
     it('should prepare proper history statistics', async () => {
       const historyStatistics = JSON.parse(
         fs.readFileSync(

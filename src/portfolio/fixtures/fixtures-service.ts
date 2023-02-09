@@ -9,14 +9,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 
 export const testDataSourceConfig: DataSourceOptions = {
-  // type: 'sqlite',
-  // database: ':memory:',
-  type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'assets_wallet',
-  password: 'awd9571',
-  database: 'assets_wallet_test',
+  type: 'sqlite',
+  database: ':memory:',
+  // type: 'postgres',
+  // host: 'localhost',
+  // port: 5432,
+  // username: 'assets_wallet',
+  // password: 'awd9571',
+  // database: 'assets_wallet_test',
   entities: [PortfolioEntity, AssetEntity, AssetBalanceChangeEntity],
   synchronize: true,
 };
