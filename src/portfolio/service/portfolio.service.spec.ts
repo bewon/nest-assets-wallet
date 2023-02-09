@@ -195,5 +195,79 @@ describe('PortfolioService', () => {
       );
       expect(result).toEqual(historyStatistics);
     });
+
+    it('should prepare proper history statistics for given group', async () => {
+      const historyStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/history-statistics-for-risky-group.json',
+          'utf8',
+        ),
+      );
+      const result = await service.prepareHistoryStatistics(
+        await fixturesService.getPortfolio(),
+        'Risky',
+        true,
+      );
+      expect(result).toEqual(historyStatistics);
+    });
+
+    it('should prepare history statistics without assets by default', async () => {
+      const portfolio = await fixturesService.getPortfolio();
+      const result = await service.prepareHistoryStatistics(portfolio);
+      expect(result.assets).toBeUndefined();
+    });
+
+    it('should prepare proper history statistics for empty portfolio', async () => {
+      const portfolio = new PortfolioEntity();
+      await portfolioRepository.save(portfolio);
+      const historyStatistics = {
+        assets: [],
+        portfolio: [],
+      };
+      const result = await service.prepareHistoryStatistics(
+        portfolio,
+        undefined,
+        true,
+      );
+      expect(result).toEqual(historyStatistics);
+    });
+
+    it('should prepare proper history statistics for portfolio with only one change', async () => {
+      const portfolio: PortfolioEntity = new PortfolioEntity();
+      const asset = new AssetEntity();
+      const change = new AssetBalanceChangeEntity(110.0, 90.5, '2015-01-01');
+      asset.balanceChanges = [change];
+      portfolio.assets = [asset];
+      await portfolioRepository.save(portfolio);
+      const values = [
+        change.date,
+        change.capital,
+        change.value,
+        change.getProfit(),
+        null,
+        null,
+        null,
+        null,
+      ];
+      const historyStatistics = {
+        portfolio: [values],
+        assets: [
+          {
+            id: asset.id,
+            name: asset.name,
+            group: asset.group,
+            values: [values],
+            value: change.value,
+            capital: change.capital,
+          },
+        ],
+      };
+      const result = await service.prepareHistoryStatistics(
+        portfolio,
+        undefined,
+        true,
+      );
+      expect(result).toEqual(historyStatistics);
+    });
   });
 });
