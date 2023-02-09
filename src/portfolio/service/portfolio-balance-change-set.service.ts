@@ -188,10 +188,10 @@ export class PortfolioBalanceChangeSetService {
     changes: BalanceChangeModel[],
   ): PeriodHistory {
     const pastChanges: BalanceChangeModel[] = [];
-    let endDate = this.endDate;
+    const endDate = this.endDate;
     const history = changes.map((change) => {
       pastChanges.push(change);
-      endDate = change.date;
+      this.endDate = change.date;
       return {
         change,
         periodCalculation: this.prepareCalculationForPeriods(

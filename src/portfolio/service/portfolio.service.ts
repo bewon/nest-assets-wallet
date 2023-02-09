@@ -85,7 +85,7 @@ export class PortfolioService {
     group?: string,
     withAssets?: boolean,
   ): Promise<{
-    portfolio: (string | number | undefined)[][];
+    portfolio: (string | number | null)[][];
     assets?: Record<string, any>[];
   }> {
     const changes = await this.assetService.findPortfolioChanges(
@@ -170,14 +170,15 @@ export class PortfolioService {
   private transformHistoryStatistics(calculations: PeriodHistory) {
     return calculations.map((record) => [
       ...[
-        record?.change?.date?.toString(),
-        record?.change?.capital,
-        record?.change?.value,
-        record?.change?.getProfit(),
-        round(record?.periodCalculation?.total?.annualizedTwr, 4),
+        record.change.date,
+        record.change.capital,
+        record.change.value,
+        record.change.getProfit(),
+        round(record?.periodCalculation?.total?.annualizedTwr, 4) ?? null,
       ],
-      ...Object.keys(periods).map((period) =>
-        round(record?.periodCalculation?.[period]?.annualizedTwr, 4),
+      ...Object.keys(periods).map(
+        (period) =>
+          round(record?.periodCalculation?.[period]?.annualizedTwr, 4) ?? null,
       ),
     ]);
   }

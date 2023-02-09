@@ -163,5 +163,37 @@ describe('PortfolioService', () => {
       const result = await service.preparePerformanceStatistics(portfolio);
       expect(result).toEqual(performanceStatistics);
     });
+
+    it('should prepare proper performance statistics for portfolio with only one change', async () => {
+      const portfolio: PortfolioEntity = new PortfolioEntity();
+      const asset = new AssetEntity();
+      const change = new AssetBalanceChangeEntity(1.0, 1.0, '2015-01-01');
+      asset.balanceChanges = [change];
+      portfolio.assets = [asset];
+      await portfolioRepository.save(portfolio);
+      const performanceStatistics = {
+        assets: [{ annualizedTwr: {}, id: asset.id }],
+        portfolio: {},
+      };
+      const result = await service.preparePerformanceStatistics(portfolio);
+      expect(result).toEqual(performanceStatistics);
+    });
+  });
+
+  describe('prepareHistoryStatistics', () => {
+    it('should prepare proper history statistics', async () => {
+      const historyStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/history-statistics.json',
+          'utf8',
+        ),
+      );
+      const result = await service.prepareHistoryStatistics(
+        await fixturesService.getPortfolio(),
+        undefined,
+        true,
+      );
+      expect(result).toEqual(historyStatistics);
+    });
   });
 });
