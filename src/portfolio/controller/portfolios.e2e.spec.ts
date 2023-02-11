@@ -72,10 +72,10 @@ describe('Portfolios', () => {
       const assetsSnapshot = JSON.parse(
         fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
       );
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/portfolios/default/assets-snapshot')
-        .expect(200)
-        .expect(assetsSnapshot);
+        .expect(200);
+      expect(response.body).toEqual(assetsSnapshot);
     });
 
     it('return json with sample assets-snapshot result for sample portfolio for given date', async () => {
@@ -85,11 +85,11 @@ describe('Portfolios', () => {
           'utf8',
         ),
       );
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/portfolios/default/assets-snapshot')
         .query({ date: '2015-01-01' })
-        .expect(200)
-        .expect(assetsSnapshot);
+        .expect(200);
+      expect(response.body).toEqual(assetsSnapshot);
     });
   });
 
@@ -105,11 +105,11 @@ describe('Portfolios', () => {
           'utf8',
         ),
       );
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/portfolios/default/performance-statistics')
         .query({ date: '2016-03-31' })
-        .expect(200)
-        .expect(performanceStatistics);
+        .expect(200);
+      expect(response.body).toEqual(performanceStatistics);
     });
 
     it('return json with performance-statistics result for sample portfolio for given date', async () => {
@@ -123,10 +123,6 @@ describe('Portfolios', () => {
         .get('/portfolios/default/performance-statistics')
         .query({ date: '2015-01-01' })
         .expect(200);
-      console.log([
-        performanceStatistics.portfolio.total,
-        response.body.portfolio.total,
-      ]);
       expect(response.body.portfolio.total).toEqual(
         performanceStatistics.portfolio.total,
       );
@@ -142,11 +138,11 @@ describe('Portfolios', () => {
         ),
       );
       delete groupPerformance.assets;
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/portfolios/default/group-performance')
         .query({ date: '2016-03-31', group: 'Risky' })
-        .expect(200)
-        .expect(groupPerformance);
+        .expect(200);
+      expect(response.body).toEqual(groupPerformance);
     });
   });
 
@@ -158,11 +154,41 @@ describe('Portfolios', () => {
           'utf8',
         ),
       );
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/portfolios/default/history-statistics')
         .query({ date: '2016-03-31', withAssets: true })
-        .expect(200)
-        .expect(historyStatistics);
+        .expect(200);
+      expect(response.body).toEqual(historyStatistics);
+    });
+
+    it('return json with newest history-statistics result for risky group', async () => {
+      const historyStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/history-statistics-for-risky-group.json',
+          'utf8',
+        ),
+      );
+      const response = await request(app.getHttpServer())
+        .get('/portfolios/default/history-statistics')
+        .query({ date: '2016-03-31', group: 'Risky', withAssets: true })
+        .expect(200);
+      expect(response.body).toEqual(historyStatistics);
+    });
+
+    it('return json with history_statistics only for portfolio by default', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/portfolios/default/history-statistics')
+        .expect(200);
+      expect(Object.keys(response.body)).toEqual(['portfolio']);
+    });
+  });
+
+  describe('/GET /portfolios/:id/groups', () => {
+    it('return proper groups for portfolio (without null values)', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/portfolios/default/groups')
+        .expect(200);
+      expect(response.body).toEqual(['Safe', 'Risky']);
     });
   });
 });

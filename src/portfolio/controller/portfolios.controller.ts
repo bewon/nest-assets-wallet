@@ -30,7 +30,6 @@ export class PortfoliosController {
     @Param('id') id: string,
     @Query('date') date?: string,
   ) {
-    console.log('findAssetsSnapshot', id, date);
     const portfolio = await this.getPortfolio(req.user?.id, id);
     return this.portfolioService.prepareAssetsSnapshot(portfolio, date);
   }

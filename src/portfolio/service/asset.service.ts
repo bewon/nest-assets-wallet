@@ -45,7 +45,9 @@ export class AssetService {
       .distinct(true)
       .where('asset.portfolioId = :portfolioId', { portfolioId: portfolio.id })
       .getRawMany()
-      .then((rows) => rows.map((row) => row.group));
+      .then((rows) =>
+        rows.map((row) => row.group).filter((group) => group != null),
+      );
   }
 
   findChangesInGivenYear(
