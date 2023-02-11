@@ -92,6 +92,7 @@ describe('Portfolios', () => {
         .expect(assetsSnapshot);
     });
   });
+
   describe(`/GET /portfolios/:id/performance-statistics`, () => {
     beforeEach(async () => {
       await fixturesService.loadFixtures();
@@ -129,6 +130,39 @@ describe('Portfolios', () => {
       expect(response.body.portfolio.total).toEqual(
         performanceStatistics.portfolio.total,
       );
+    });
+  });
+
+  describe('/GET /portfolios/:id/group-performance', () => {
+    it('return json with performance_statistics result for sample portfolio and group', async () => {
+      const groupPerformance = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/performance-statistics-for-risky-group.json',
+          'utf8',
+        ),
+      );
+      delete groupPerformance.assets;
+      return request(app.getHttpServer())
+        .get('/portfolios/default/group-performance')
+        .query({ date: '2016-03-31', group: 'Risky' })
+        .expect(200)
+        .expect(groupPerformance);
+    });
+  });
+
+  describe('/GET /portfolios/:id/history-statistics', () => {
+    it('return json with newest history-statistics result for sample portfolio', async () => {
+      const historyStatistics = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/history-statistics.json',
+          'utf8',
+        ),
+      );
+      return request(app.getHttpServer())
+        .get('/portfolios/default/history-statistics')
+        .query({ date: '2016-03-31', withAssets: true })
+        .expect(200)
+        .expect(historyStatistics);
     });
   });
 });
