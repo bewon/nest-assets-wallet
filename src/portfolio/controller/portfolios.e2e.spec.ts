@@ -53,6 +53,15 @@ describe('Portfolios', () => {
     await app.init();
   });
 
+  it(`/GET /portfolios/default`, async () => {
+    const portfolio = await fixturesService.getPortfolio();
+    // has portfolio id key
+    const response = await request(app.getHttpServer())
+      .get('/portfolios/default')
+      .expect(200);
+    expect(response.body.id).toBe(portfolio.id);
+  });
+
   it(`/GET /portfolios/default/assets-snapshot`, async () => {
     const assetsSnapshot = JSON.parse(
       fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
