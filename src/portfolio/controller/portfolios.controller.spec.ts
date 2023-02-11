@@ -4,19 +4,22 @@ import { PortfolioService } from '../service/portfolio.service';
 import { PortfolioEntity } from '../model/portfolio.entity';
 import { ModuleMocker, MockFunctionMetadata } from 'jest-mock';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
+import { createMock } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 
 const moduleMocker = new ModuleMocker(global);
 describe('PortfoliosController', () => {
   let controller: PortfoliosController;
   let portfolio: PortfolioEntity;
+  let request: ExpressRequest;
 
   beforeEach(async () => {
-    portfolio = {
-      id: 'xyz',
-      assets: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    portfolio = new PortfolioEntity();
+    portfolio.id = 'xyz';
+    portfolio.assets = [];
+    portfolio.userId = 'user-id';
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PortfoliosController],
       providers: [
@@ -48,6 +51,7 @@ describe('PortfoliosController', () => {
       .compile();
 
     controller = module.get<PortfoliosController>(PortfoliosController);
+    request = createMock<ExpressRequest>({ user: { id: portfolio.userId } });
   });
 
   it('should be defined', () => {
@@ -55,15 +59,17 @@ describe('PortfoliosController', () => {
   });
 
   it('should return portfolio', async () => {
-    expect(await controller.findById(portfolio.id)).toBe(portfolio);
+    expect(await controller.findById(request, portfolio.id)).toBe(portfolio);
   });
 
-  it('should return null for non-existing portfolio', async () => {
-    expect(await controller.findById('abc')).toBeNull();
+  it('should throw NotFoundException for non-existing portfolio', async () => {
+    await expect(controller.findById(request, 'abc')).rejects.toThrow(
+      NotFoundException,
+    );
   });
   it('should return asset snapshot', async () => {
     expect(
-      await controller.findAssetsSnapshot(portfolio.id, '2020-01-01'),
+      await controller.findAssetsSnapshot(request, portfolio.id, '2020-01-01'),
     ).toEqual({
       id: portfolio.id,
       name: 'abc',
