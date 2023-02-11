@@ -5,6 +5,7 @@ import { Between, LessThanOrEqual, Repository } from 'typeorm';
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { PortfolioEntity } from '../model/portfolio.entity';
+import { CreateAssetDto } from '../dto/create-asset.dto';
 
 @Injectable()
 export class AssetService {
@@ -82,6 +83,20 @@ export class AssetService {
       query.andWhere('asset.group = :group', { group: group });
     }
     return query.orderBy('change.date', 'ASC').getMany();
+  }
+
+  async create(portfolioId: string, createAssetDto: CreateAssetDto) {
+    const asset = new AssetEntity();
+    asset.portfolioId = portfolioId;
+    asset.name = createAssetDto.name;
+    const change = new AssetBalanceChangeEntity(
+      createAssetDto.capital,
+      createAssetDto.value,
+      createAssetDto.date,
+    );
+    asset.balanceChanges = [change];
+    await this.assetRepository.save(asset);
+    return asset;
   }
 
   private findLastChangeForAsset(

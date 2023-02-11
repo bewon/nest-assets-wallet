@@ -1,5 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { PortfolioEntity } from '../model/portfolio.entity';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { defaultPortfolioId, PortfolioEntity } from '../model/portfolio.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
@@ -112,6 +116,24 @@ export class PortfolioService {
         ? await this.prepareAssetsHistoryStatistics()
         : undefined,
     };
+  }
+
+  async getAndCheckPortfolioForUser(
+    userId: string | undefined,
+    portfolioId: string,
+  ) {
+    if (userId != null) {
+      const portfolio =
+        portfolioId === defaultPortfolioId
+          ? await this.findForUserId(userId)
+          : await this.findById(portfolioId);
+      if (portfolio == null || portfolio.userId !== userId) {
+        throw new NotFoundException();
+      }
+      return portfolio;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   // prepare assets changes summary from changes Set

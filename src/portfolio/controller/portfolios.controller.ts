@@ -1,16 +1,7 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Query,
-  Request,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, Request } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { PortfolioService } from '../service/portfolio.service';
 import { AssetService } from '../service/asset.service';
-import { defaultPortfolioId } from '../model/portfolio.entity';
 
 @Controller('portfolios')
 export class PortfoliosController {
@@ -21,7 +12,10 @@ export class PortfoliosController {
 
   @Get(':id')
   async findById(@Request() req: ExpressRequest, @Param('id') id: string) {
-    return await this.getPortfolio(req.user?.id, id);
+    return await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
   }
 
   @Get(':id/assets-snapshot')
@@ -30,7 +24,10 @@ export class PortfoliosController {
     @Param('id') id: string,
     @Query('date') date?: string,
   ) {
-    const portfolio = await this.getPortfolio(req.user?.id, id);
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
     return this.portfolioService.prepareAssetsSnapshot(portfolio, date);
   }
 
@@ -40,7 +37,10 @@ export class PortfoliosController {
     @Param('id') id: string,
     @Query('date') date?: string,
   ) {
-    const portfolio = await this.getPortfolio(req.user?.id, id);
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
     return this.portfolioService.preparePerformanceStatistics(portfolio, date);
   }
 
@@ -51,7 +51,10 @@ export class PortfoliosController {
     @Query('date') date?: string,
     @Query('group') group?: string,
   ) {
-    const portfolio = await this.getPortfolio(req.user?.id, id);
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
     return this.portfolioService.preparePerformanceStatistics(
       portfolio,
       date,
@@ -68,7 +71,10 @@ export class PortfoliosController {
     @Query('group') group?: string,
     @Query('withAssets') withAssets?: string,
   ) {
-    const portfolio = await this.getPortfolio(req.user?.id, id);
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
     return this.portfolioService.prepareHistoryStatistics(
       portfolio,
       group,
@@ -78,22 +84,10 @@ export class PortfoliosController {
 
   @Get(':id/groups')
   async findGroups(@Request() req: ExpressRequest, @Param('id') id: string) {
-    const portfolio = await this.getPortfolio(req.user?.id, id);
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      id,
+    );
     return this.assetService.findGroupsForPortfolio(portfolio);
-  }
-
-  private async getPortfolio(userId: string | undefined, portfolioId: string) {
-    if (userId != null) {
-      const portfolio =
-        portfolioId === defaultPortfolioId
-          ? await this.portfolioService.findForUserId(userId)
-          : await this.portfolioService.findById(portfolioId);
-      if (portfolio == null || portfolio.userId !== userId) {
-        throw new NotFoundException();
-      }
-      return portfolio;
-    } else {
-      throw new UnauthorizedException();
-    }
   }
 }
