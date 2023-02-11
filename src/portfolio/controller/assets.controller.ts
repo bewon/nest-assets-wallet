@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Request,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { AssetService } from '../service/asset.service';
 import { CreateAssetDto } from '../dto/create-asset.dto';
 import { PortfolioService } from '../service/portfolio.service';
@@ -21,6 +30,18 @@ export class AssetsController {
       req.user?.id,
       portfolioId,
     );
-    return this.assetService.create(portfolioId, createAssetDto);
+    try {
+      return this.assetService.create(portfolioId, createAssetDto);
+    } catch (error) {
+      this.reThrowException(error);
+    }
+  }
+
+  private reThrowException(error: Error) {
+    if (error instanceof UnprocessableEntityException) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    } else {
+      throw error;
+    }
   }
 }
