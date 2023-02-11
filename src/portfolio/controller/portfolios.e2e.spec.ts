@@ -49,11 +49,11 @@ describe('Portfolios', () => {
 
     app = moduleRef.createNestApplication();
     fixturesService = moduleRef.get<FixturesService>(FixturesService);
-    await fixturesService.loadFixtures();
     await app.init();
   });
 
   it(`/GET /portfolios/default`, async () => {
+    await fixturesService.loadFixtures();
     const portfolio = await fixturesService.getPortfolio();
     // has portfolio id key
     const response = await request(app.getHttpServer())
@@ -62,13 +62,32 @@ describe('Portfolios', () => {
     expect(response.body.id).toBe(portfolio.id);
   });
 
-  it(`/GET /portfolios/default/assets-snapshot`, async () => {
-    const assetsSnapshot = JSON.parse(
-      fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
-    );
-    return request(app.getHttpServer())
-      .get('/portfolios/default/assets-snapshot')
-      .expect(200)
-      .expect(assetsSnapshot);
+  describe(`/GET /portfolios/:id/assets-snapshot`, () => {
+    beforeEach(async () => {
+      await fixturesService.loadFixtures();
+    });
+    it(`return json with sample assets-snapshot result for sample portfolio`, async () => {
+      const assetsSnapshot = JSON.parse(
+        fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
+      );
+      return request(app.getHttpServer())
+        .get('/portfolios/default/assets-snapshot')
+        .expect(200)
+        .expect(assetsSnapshot);
+    });
+
+    it('return json with sample assets-snapshot result for sample portfolio for given date', async () => {
+      const assetsSnapshot = JSON.parse(
+        fs.readFileSync(
+          'src/portfolio/fixtures/assets-snapshot-for-2015-01-01.json',
+          'utf8',
+        ),
+      );
+      return request(app.getHttpServer())
+        .get('/portfolios/default/assets-snapshot')
+        .query({ date: '2015-01-01' })
+        .expect(200)
+        .expect(assetsSnapshot);
+    });
   });
 });

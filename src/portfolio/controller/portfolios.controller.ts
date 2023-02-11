@@ -3,6 +3,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Query,
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -27,8 +28,9 @@ export class PortfoliosController {
   async findAssetsSnapshot(
     @Request() req: ExpressRequest,
     @Param('id') id: string,
-    @Param('date') date?: string,
+    @Query('date') date?: string,
   ) {
+    console.log('findAssetsSnapshot', id, date);
     const portfolio = await this.getPortfolio(req.user?.id, id);
     return this.portfolioService.prepareAssetsSnapshot(portfolio, date);
   }
@@ -37,7 +39,7 @@ export class PortfoliosController {
   async findPerformanceStatistics(
     @Request() req: ExpressRequest,
     @Param('id') id: string,
-    @Param('date') date?: string,
+    @Query('date') date?: string,
   ) {
     const portfolio = await this.getPortfolio(req.user?.id, id);
     return this.portfolioService.preparePerformanceStatistics(portfolio, date);
@@ -47,8 +49,8 @@ export class PortfoliosController {
   async findGroupPerformance(
     @Request() req: ExpressRequest,
     @Param('id') id: string,
-    @Param('date') date?: string,
-    @Param('group') group?: string,
+    @Query('date') date?: string,
+    @Query('group') group?: string,
   ) {
     const portfolio = await this.getPortfolio(req.user?.id, id);
     return this.portfolioService.preparePerformanceStatistics(
@@ -64,8 +66,8 @@ export class PortfoliosController {
   async findHistoryStatistics(
     @Request() req: ExpressRequest,
     @Param('id') id: string,
-    @Param('group') group?: string,
-    @Param('withAssets') withAssets?: string,
+    @Query('group') group?: string,
+    @Query('withAssets') withAssets?: string,
   ) {
     const portfolio = await this.getPortfolio(req.user?.id, id);
     return this.portfolioService.prepareHistoryStatistics(
