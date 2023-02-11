@@ -30,6 +30,7 @@ export const testDataSourceConfig: DataSourceOptions = {
 };
 
 const portfolioId = 'ef9f67ca-a5fe-11ed-afa1-0242ac120002';
+const userEmail = 'user1@domain.com';
 
 @Injectable()
 export class FixturesService {
@@ -40,6 +41,8 @@ export class FixturesService {
     private readonly assetRepository: Repository<AssetEntity>,
     @InjectRepository(AssetBalanceChangeEntity)
     private readonly assetBalanceChangeRepository: Repository<AssetBalanceChangeEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   public async getPortfolio(): Promise<PortfolioEntity> {
@@ -48,11 +51,22 @@ export class FixturesService {
     });
   }
 
+  public async getUser(): Promise<UserEntity> {
+    return this.userRepository.findOneOrFail({
+      where: { email: userEmail },
+    });
+  }
+
   public async loadFixtures() {
     await this.assetBalanceChangeRepository.delete({});
     await this.assetRepository.delete({});
     await this.portfolioRepository.delete({});
-    const portfolio = await this.portfolioRepository.save({ id: portfolioId });
+    await this.userRepository.delete({});
+    const user = await this.userRepository.save({ email: userEmail });
+    const portfolio = await this.portfolioRepository.save({
+      id: portfolioId,
+      user,
+    });
     await this.loadAssetsFixtures(portfolio);
     await this.loadAssetBalanceChangeFixtures();
   }

@@ -19,8 +19,9 @@ export const defaultDateFormat = 'YYYY-MM-DD';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: AppAuthGuard,
+      useExisting: AppAuthGuard,
     },
+    AppAuthGuard,
   ],
 })
 export class AppModule {}
