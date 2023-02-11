@@ -1,6 +1,5 @@
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { BalanceChangeModel } from '../model/balance-change.model';
-import { Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { defaultDateFormat } from '../../app.module';
 
@@ -32,7 +31,7 @@ const subtractMonths = (date: string, months: number): string => {
 
 // This class is for calculate statistics from set of AssetBalanceChanges for Portfolio
 // This code will work ony for changes sorted by date!
-@Injectable()
+
 export class PortfolioBalanceChangeSetService {
   protected groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]> =
     {};

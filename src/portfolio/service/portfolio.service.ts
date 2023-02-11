@@ -26,11 +26,11 @@ const round = (
 
 @Injectable()
 export class PortfolioService {
+  private portfolioBalanceChangeSetService: PortfolioBalanceChangeSetService;
   constructor(
     @InjectRepository(PortfolioEntity)
     private readonly portfolioRepository: Repository<PortfolioEntity>,
     private readonly assetService: AssetService,
-    private readonly portfolioBalanceChangeSetService: PortfolioBalanceChangeSetService,
   ) {}
 
   findById(id: string): Promise<PortfolioEntity | null> {
@@ -74,6 +74,8 @@ export class PortfolioService {
       group,
       date,
     );
+    this.portfolioBalanceChangeSetService =
+      new PortfolioBalanceChangeSetService();
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
     this.portfolioBalanceChangeSetService.endDate =
       date ?? dayjs().format(defaultDateFormat);
@@ -96,6 +98,8 @@ export class PortfolioService {
       portfolio,
       group,
     );
+    this.portfolioBalanceChangeSetService =
+      new PortfolioBalanceChangeSetService();
     this.portfolioBalanceChangeSetService.setAllChanges(changes);
     this.portfolioBalanceChangeSetService.endDate =
       dayjs().format(defaultDateFormat);
