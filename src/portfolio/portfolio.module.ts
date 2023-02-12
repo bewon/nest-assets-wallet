@@ -8,6 +8,7 @@ import { AssetEntity } from './model/asset.entity';
 import { AssetBalanceChangeEntity } from './model/asset-balance-change.entity';
 import { PortfolioBalanceChangeSetService } from './service/portfolio-balance-change-set.service';
 import { AssetsController } from './controller/assets.controller';
+import { BalanceChangesController } from './controller/balance-changes.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,11 @@ import { AssetsController } from './controller/assets.controller';
       AssetBalanceChangeEntity,
     ]),
   ],
-  controllers: [PortfoliosController, AssetsController],
+  controllers: [
+    PortfoliosController,
+    AssetsController,
+    BalanceChangesController,
+  ],
   providers: [PortfolioService, AssetService, PortfolioBalanceChangeSetService],
 })
 export class PortfolioModule {}

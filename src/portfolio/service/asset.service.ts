@@ -64,6 +64,13 @@ export class AssetService {
     });
   }
 
+  findAllChanges(asset: AssetEntity): Promise<AssetBalanceChangeEntity[]> {
+    return this.assetBalanceChangeRepository.find({
+      where: { assetId: asset.id },
+      order: { date: 'ASC' },
+    });
+  }
+
   findAssetsForPortfolio(portfolio: PortfolioEntity): Promise<AssetEntity[]> {
     return this.assetRepository.findBy({ portfolioId: portfolio.id });
   }

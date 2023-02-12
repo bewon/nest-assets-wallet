@@ -1,69 +1,35 @@
 import {
-  Body,
   Controller,
-  Delete,
+  Get,
   HttpException,
   HttpStatus,
   NotFoundException,
   Param,
-  Post,
-  Request,
   UnprocessableEntityException,
+  Request,
 } from '@nestjs/common';
 import { AssetService } from '../service/asset.service';
-import { CreateAssetDto } from '../dto/create-asset.dto';
 import { PortfolioService } from '../service/portfolio.service';
 import { Request as ExpressRequest } from 'express';
-import { UpdateAssetDto } from '../dto/update-asset.dto';
 
-@Controller()
-export class AssetsController {
+@Controller('assets/:assetId/balance-changes')
+export class BalanceChangesController {
   constructor(
     private readonly assetService: AssetService,
     private readonly portfolioService: PortfolioService,
   ) {}
 
-  @Post('portfolios/:portfolioId/assets')
-  async create(
-    @Request() req: ExpressRequest,
-    @Param('portfolioId') portfolioId: string,
-    @Body() createAssetDto: CreateAssetDto,
-  ) {
-    await this.portfolioService.getAndCheckPortfolioForUser(
-      req.user?.id,
-      portfolioId,
-    );
-    try {
-      return this.assetService.create(portfolioId, createAssetDto);
-    } catch (error) {
-      this.reThrowException(error);
-    }
-  }
-
-  @Post('assets/:assetId')
-  async update(
+  @Get()
+  async findAll(
     @Request() req: ExpressRequest,
     @Param('assetId') assetId: string,
-    @Body() updateAssetDto: UpdateAssetDto,
+    @Param('year') year?: string,
   ) {
     const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
-    try {
-      return this.assetService.update(asset, updateAssetDto);
-    } catch (error) {
-      this.reThrowException(error);
-    }
-  }
-
-  @Delete('assets/:assetId')
-  async remove(
-    @Request() req: ExpressRequest,
-    @Param('assetId') assetId: string,
-  ) {
-    const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
-    try {
-      await this.assetService.remove(asset);
-    } catch (error) {
-      this.reThrowException(error);
+    if (year != null) {
+      return this.assetService.findChangesInGivenYear(asset, parseInt(year));
+    } else {
+      return this.assetService.findAllChanges(asset);
     }
   }
 
