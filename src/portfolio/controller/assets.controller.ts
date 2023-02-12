@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpException,
   HttpStatus,
   NotFoundException,
@@ -55,6 +56,26 @@ export class AssetsController {
     );
     try {
       return this.assetService.update(asset, updateAssetDto);
+    } catch (error) {
+      this.reThrowException(error);
+    }
+  }
+
+  @Delete('assets/:assetId')
+  async remove(
+    @Request() req: ExpressRequest,
+    @Param('assetId') assetId: string,
+  ) {
+    const asset = await this.assetService.findById(assetId);
+    if (asset == null || asset.portfolioId == null) {
+      throw new NotFoundException();
+    }
+    await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      asset.portfolioId,
+    );
+    try {
+      await this.assetService.remove(asset);
     } catch (error) {
       this.reThrowException(error);
     }

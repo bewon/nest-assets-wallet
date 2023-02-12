@@ -105,6 +105,10 @@ export class AssetService {
     return this.assetRepository.save(asset);
   }
 
+  async remove(asset: AssetEntity) {
+    return this.assetRepository.remove(asset);
+  }
+
   private findLastChangeForAsset(
     asset: AssetEntity,
   ): Promise<AssetBalanceChangeEntity | null> {

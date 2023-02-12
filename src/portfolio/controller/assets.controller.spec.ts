@@ -13,7 +13,7 @@ import { UpdateAssetDto } from '../dto/update-asset.dto';
 const moduleMocker = new ModuleMocker(global);
 describe('AssetsController', () => {
   let controller: AssetsController;
-  let asset: AssetEntity;
+  let asset: AssetEntity | undefined;
   let portfolio: PortfolioEntity;
   let request: ExpressRequest;
 
@@ -42,7 +42,12 @@ describe('AssetsController', () => {
               asset.group = updateAssetDto.group;
               return Promise.resolve(asset);
             },
-            findById: (id) => Promise.resolve(asset.id === id ? asset : null),
+            findById: (id) => Promise.resolve(asset?.id === id ? asset : null),
+            remove: (_asset) => {
+              if (_asset.id === asset?.id) {
+                asset = undefined;
+              }
+            },
           },
         },
         {
@@ -90,7 +95,7 @@ describe('AssetsController', () => {
       createAssetDto,
     );
     expect(result).toEqual(asset);
-    expect(asset.name).toEqual(createAssetDto.name);
+    expect(asset?.name).toEqual(createAssetDto.name);
   });
 
   it('should update an asset', async () => {
@@ -108,5 +113,14 @@ describe('AssetsController', () => {
     expect(result).toEqual(asset);
     expect(asset.name).toEqual(updateAssetDto.name);
     expect(asset.group).toEqual(updateAssetDto.group);
+  });
+
+  it('should remove an asset', async () => {
+    asset = new AssetEntity();
+    asset.id = 'asset-id';
+    asset.portfolio = portfolio;
+    asset.portfolioId = portfolio.id;
+    await controller.remove(request, asset.id);
+    expect(asset).toBeUndefined();
   });
 });
