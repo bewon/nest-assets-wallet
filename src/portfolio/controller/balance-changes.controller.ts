@@ -7,10 +7,14 @@ import {
   Param,
   UnprocessableEntityException,
   Request,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { AssetService } from '../service/asset.service';
 import { PortfolioService } from '../service/portfolio.service';
 import { Request as ExpressRequest } from 'express';
+import { CreateBalanceChangeDto } from '../dto/create-balance-change.dto';
+import { UpdateBalanceChangeDto } from '../dto/update-balance-change.dto';
 
 @Controller('assets/:assetId/balance-changes')
 export class BalanceChangesController {
@@ -33,6 +37,35 @@ export class BalanceChangesController {
     }
   }
 
+  @Post()
+  async create(
+    @Request() req: ExpressRequest,
+    @Param('assetId') assetId: string,
+    @Body() createBalanceChangeDto: CreateBalanceChangeDto,
+  ) {
+    const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
+    try {
+      return this.assetService.createChange(asset, createBalanceChangeDto);
+    } catch (error) {
+      throw this.updateError(error);
+    }
+  }
+
+  @Post(':id')
+  async update(
+    @Request() req: ExpressRequest,
+    @Param('assetId') assetId: string,
+    @Param('id') id: string,
+    @Body() updateBalanceChangeDto: UpdateBalanceChangeDto,
+  ) {
+    const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
+    try {
+      return this.assetService.updateChange(asset, id, updateBalanceChangeDto);
+    } catch (error) {
+      throw this.updateError(error);
+    }
+  }
+
   private async getAndCheckAssetForUser(
     userId: string | undefined,
     assetId: string,
@@ -48,11 +81,11 @@ export class BalanceChangesController {
     return asset;
   }
 
-  private reThrowException(error: Error) {
+  private updateError(error: Error) {
     if (error instanceof UnprocessableEntityException) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
-      throw error;
+      return error;
     }
   }
 }

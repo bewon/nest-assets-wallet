@@ -9,12 +9,15 @@ import { Request as ExpressRequest } from 'express';
 import { AssetService } from '../service/asset.service';
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { NotFoundException } from '@nestjs/common';
+import { CreateBalanceChangeDto } from '../dto/create-balance-change.dto';
+import { UpdateBalanceChangeDto } from '../dto/update-balance-change.dto';
 
 const moduleMocker = new ModuleMocker(global);
 describe('BalanceChangesController', () => {
   let controller: BalanceChangesController;
   let asset: AssetEntity;
   let request: ExpressRequest;
+  let balanceChange: AssetBalanceChangeEntity;
 
   beforeEach(async () => {
     const portfolio = new PortfolioEntity();
@@ -27,7 +30,9 @@ describe('BalanceChangesController', () => {
     asset.portfolioId = portfolio.id;
     asset.balanceChanges = [];
     for (const date of ['2019-01-01', '2020-02-01', '2020-03-01']) {
-      asset.balanceChanges.push(new AssetBalanceChangeEntity(100, 90, date));
+      const change = new AssetBalanceChangeEntity(100, 90, date);
+      change.id = 'id-' + date;
+      asset.balanceChanges.push(change);
     }
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BalanceChangesController],
@@ -64,6 +69,39 @@ describe('BalanceChangesController', () => {
               }
               throw new NotFoundException();
             },
+            createChange: (
+              _asset: AssetEntity,
+              createBalanceChangeDto: CreateBalanceChangeDto,
+            ) => {
+              if (_asset.id === asset.id) {
+                balanceChange = new AssetBalanceChangeEntity(
+                  createBalanceChangeDto.capital,
+                  createBalanceChangeDto.value,
+                  createBalanceChangeDto.date,
+                );
+                balanceChange.asset = asset;
+                return Promise.resolve(balanceChange);
+              }
+              throw new NotFoundException();
+            },
+            updateChange: (
+              _asset: AssetEntity,
+              id: string,
+              updateBalanceChangeDto: UpdateBalanceChangeDto,
+            ) => {
+              if (_asset.id === asset.id) {
+                const change = asset.balanceChanges.find(
+                  (change) => change.id === id,
+                );
+                if (change) {
+                  change.capital = updateBalanceChangeDto.capital;
+                  change.value = updateBalanceChangeDto.value;
+                  change.date = updateBalanceChangeDto.date;
+                  return Promise.resolve(change);
+                }
+              }
+              throw new NotFoundException();
+            },
           },
         },
       ],
@@ -95,5 +133,27 @@ describe('BalanceChangesController', () => {
   it('should return balance changes for given year', async () => {
     const result = await controller.findAll(request, asset.id, '2020');
     expect(result).toEqual(asset.balanceChanges.slice(1));
+  });
+
+  it('should create a new balance change', async () => {
+    const result = await controller.create(request, asset.id, {
+      date: '2020-04-01',
+      value: 100,
+      capital: 90,
+    });
+    expect(result).toEqual(balanceChange);
+    expect(balanceChange.asset).toEqual(asset);
+  });
+
+  it('should update a balance change', async () => {
+    const result = await controller.update(request, asset.id, 'id-2020-02-01', {
+      date: '2018-04-01',
+      value: 50.5,
+      capital: 60.5,
+    });
+    expect(result).toEqual(asset.balanceChanges[1]);
+    expect(result.date).toEqual('2018-04-01');
+    expect(result.value).toEqual(50.5);
+    expect(result.capital).toEqual(60.5);
   });
 });

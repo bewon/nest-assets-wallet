@@ -36,7 +36,7 @@ export class AssetsController {
     try {
       return this.assetService.create(portfolioId, createAssetDto);
     } catch (error) {
-      this.reThrowException(error);
+      throw this.updateError(error);
     }
   }
 
@@ -50,7 +50,7 @@ export class AssetsController {
     try {
       return this.assetService.update(asset, updateAssetDto);
     } catch (error) {
-      this.reThrowException(error);
+      throw this.updateError(error);
     }
   }
 
@@ -63,7 +63,7 @@ export class AssetsController {
     try {
       await this.assetService.remove(asset);
     } catch (error) {
-      this.reThrowException(error);
+      throw this.updateError(error);
     }
   }
 
@@ -82,11 +82,11 @@ export class AssetsController {
     return asset;
   }
 
-  private reThrowException(error: Error) {
+  private updateError(error: Error) {
     if (error instanceof UnprocessableEntityException) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
-      throw error;
+      return error;
     }
   }
 }

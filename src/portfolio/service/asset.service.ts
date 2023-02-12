@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AssetEntity } from '../model/asset.entity';
 import { Between, LessThanOrEqual, Repository } from 'typeorm';
@@ -7,6 +7,8 @@ import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { PortfolioEntity } from '../model/portfolio.entity';
 import { CreateAssetDto } from '../dto/create-asset.dto';
 import { UpdateAssetDto } from '../dto/update-asset.dto';
+import { CreateBalanceChangeDto } from '../dto/create-balance-change.dto';
+import { UpdateBalanceChangeDto } from '../dto/update-balance-change.dto';
 
 @Injectable()
 export class AssetService {
@@ -106,10 +108,41 @@ export class AssetService {
     return this.assetRepository.save(asset);
   }
 
+  async createChange(
+    asset: AssetEntity,
+    createBalanceChangeDto: CreateBalanceChangeDto,
+  ) {
+    const change = new AssetBalanceChangeEntity(
+      createBalanceChangeDto.capital,
+      createBalanceChangeDto.value,
+      createBalanceChangeDto.date,
+    );
+    change.asset = asset;
+    return this.assetBalanceChangeRepository.save(change);
+  }
+
   async update(asset: AssetEntity, updateAssetDto: UpdateAssetDto) {
     asset.name = updateAssetDto.name;
     asset.group = updateAssetDto.group;
     return this.assetRepository.save(asset);
+  }
+
+  async updateChange(
+    asset: AssetEntity,
+    id: string,
+    updateBalanceChangeDto: UpdateBalanceChangeDto,
+  ) {
+    const change = await this.assetBalanceChangeRepository.findOneBy({
+      id,
+      assetId: asset.id,
+    });
+    if (change == null) {
+      throw new NotFoundException();
+    }
+    change.capital = updateBalanceChangeDto.capital;
+    change.value = updateBalanceChangeDto.value;
+    change.date = updateBalanceChangeDto.date;
+    return this.assetBalanceChangeRepository.save(change);
   }
 
   async remove(asset: AssetEntity) {
