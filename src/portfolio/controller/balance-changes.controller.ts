@@ -9,6 +9,7 @@ import {
   Request,
   Post,
   Body,
+  Delete,
 } from '@nestjs/common';
 import { AssetService } from '../service/asset.service';
 import { PortfolioService } from '../service/portfolio.service';
@@ -61,6 +62,20 @@ export class BalanceChangesController {
     const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
     try {
       return this.assetService.updateChange(asset, id, updateBalanceChangeDto);
+    } catch (error) {
+      throw this.updateError(error);
+    }
+  }
+
+  @Delete(':id')
+  async remove(
+    @Request() req: ExpressRequest,
+    @Param('assetId') assetId: string,
+    @Param('id') id: string,
+  ) {
+    const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
+    try {
+      await this.assetService.removeChange(asset, id);
     } catch (error) {
       throw this.updateError(error);
     }

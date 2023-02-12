@@ -102,6 +102,20 @@ describe('BalanceChangesController', () => {
               }
               throw new NotFoundException();
             },
+            removeChange: (_asset: AssetEntity, id: string) => {
+              if (_asset.id === asset.id) {
+                const change = asset.balanceChanges.find(
+                  (change) => change.id === id,
+                );
+                if (change) {
+                  asset.balanceChanges = asset.balanceChanges.filter(
+                    (change) => change.id !== id,
+                  );
+                  return Promise.resolve(change);
+                }
+              }
+              throw new NotFoundException();
+            },
           },
         },
       ],
@@ -145,6 +159,16 @@ describe('BalanceChangesController', () => {
     expect(balanceChange.asset).toEqual(asset);
   });
 
+  it('should throw an error during crate a balance change if asset does not exist', async () => {
+    await expect(
+      controller.create(request, 'non-existing-id', {
+        date: '2020-04-01',
+        value: 100,
+        capital: 90,
+      }),
+    ).rejects.toThrowError(NotFoundException);
+  });
+
   it('should update a balance change', async () => {
     const result = await controller.update(request, asset.id, 'id-2020-02-01', {
       date: '2018-04-01',
@@ -155,5 +179,26 @@ describe('BalanceChangesController', () => {
     expect(result.date).toEqual('2018-04-01');
     expect(result.value).toEqual(50.5);
     expect(result.capital).toEqual(60.5);
+  });
+
+  it('should throw an error during update a balance change if asset does not exist', async () => {
+    await expect(
+      controller.update(request, 'non-existing-id', 'id-2020-02-01', {
+        date: '2018-04-01',
+        value: 50.5,
+        capital: 60.5,
+      }),
+    ).rejects.toThrowError(NotFoundException);
+  });
+
+  it('should remove a balance change', async () => {
+    await controller.remove(request, asset.id, 'id-2020-02-01');
+    expect(asset.balanceChanges).toHaveLength(2);
+  });
+
+  it('should throw an error during removing a balance change if asset does not exist', async () => {
+    await expect(
+      controller.remove(request, 'non-existing-id', 'id-2020-02-01'),
+    ).rejects.toThrowError(NotFoundException);
   });
 });

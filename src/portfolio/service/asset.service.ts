@@ -149,6 +149,17 @@ export class AssetService {
     return this.assetRepository.remove(asset);
   }
 
+  async removeChange(asset: AssetEntity, id: string) {
+    const change = await this.assetBalanceChangeRepository.findOneBy({
+      id,
+      assetId: asset.id,
+    });
+    if (change == null) {
+      throw new NotFoundException();
+    }
+    return this.assetBalanceChangeRepository.remove(change);
+  }
+
   private findLastChangeForAsset(
     asset: AssetEntity,
   ): Promise<AssetBalanceChangeEntity | null> {
