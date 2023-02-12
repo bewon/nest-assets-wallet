@@ -3,6 +3,7 @@ import {
   Controller,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Request,
@@ -12,6 +13,7 @@ import { AssetService } from '../service/asset.service';
 import { CreateAssetDto } from '../dto/create-asset.dto';
 import { PortfolioService } from '../service/portfolio.service';
 import { Request as ExpressRequest } from 'express';
+import { UpdateAssetDto } from '../dto/update-asset.dto';
 
 @Controller('assets')
 export class AssetsController {
@@ -32,6 +34,27 @@ export class AssetsController {
     );
     try {
       return this.assetService.create(portfolioId, createAssetDto);
+    } catch (error) {
+      this.reThrowException(error);
+    }
+  }
+
+  @Post('assets/:assetId')
+  async update(
+    @Request() req: ExpressRequest,
+    @Param('assetId') assetId: string,
+    @Body() updateAssetDto: UpdateAssetDto,
+  ) {
+    const asset = await this.assetService.findById(assetId);
+    if (asset == null || asset.portfolioId == null) {
+      throw new NotFoundException();
+    }
+    await this.portfolioService.getAndCheckPortfolioForUser(
+      req.user?.id,
+      asset.portfolioId,
+    );
+    try {
+      return this.assetService.update(asset, updateAssetDto);
     } catch (error) {
       this.reThrowException(error);
     }

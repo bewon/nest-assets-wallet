@@ -6,6 +6,7 @@ import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { PortfolioEntity } from '../model/portfolio.entity';
 import { CreateAssetDto } from '../dto/create-asset.dto';
+import { UpdateAssetDto } from '../dto/update-asset.dto';
 
 @Injectable()
 export class AssetService {
@@ -95,8 +96,13 @@ export class AssetService {
       createAssetDto.date,
     );
     asset.balanceChanges = [change];
-    await this.assetRepository.save(asset);
-    return asset;
+    return this.assetRepository.save(asset);
+  }
+
+  async update(asset: AssetEntity, updateAssetDto: UpdateAssetDto) {
+    asset.name = updateAssetDto.name;
+    asset.group = updateAssetDto.group;
+    return this.assetRepository.save(asset);
   }
 
   private findLastChangeForAsset(

@@ -8,6 +8,7 @@ import { PortfolioEntity } from '../model/portfolio.entity';
 import { Request as ExpressRequest } from 'express';
 import { createMock } from '@golevelup/ts-jest';
 import { CreateAssetDto } from '../dto/create-asset.dto';
+import { UpdateAssetDto } from '../dto/update-asset.dto';
 
 const moduleMocker = new ModuleMocker(global);
 describe('AssetsController', () => {
@@ -18,6 +19,7 @@ describe('AssetsController', () => {
 
   beforeEach(async () => {
     portfolio = new PortfolioEntity();
+    portfolio.id = 'portfolio-id';
     portfolio.userId = 'user-id';
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AssetsController],
@@ -25,12 +27,22 @@ describe('AssetsController', () => {
         {
           provide: AssetService,
           useValue: {
-            create: (portfolioId, createAssetDto) => {
+            create: (portfolioId: string, createAssetDto: CreateAssetDto) => {
+              if (portfolioId !== portfolio.id) {
+                return Promise.resolve(null);
+              }
               asset = new AssetEntity();
               asset.name = createAssetDto.name;
               asset.portfolio = portfolio;
+              asset.portfolioId = portfolio.id;
               return Promise.resolve(asset);
             },
+            update: (asset: AssetEntity, updateAssetDto: UpdateAssetDto) => {
+              asset.name = updateAssetDto.name;
+              asset.group = updateAssetDto.group;
+              return Promise.resolve(asset);
+            },
+            findById: (id) => Promise.resolve(asset.id === id ? asset : null),
           },
         },
         {
@@ -79,5 +91,22 @@ describe('AssetsController', () => {
     );
     expect(result).toEqual(asset);
     expect(asset.name).toEqual(createAssetDto.name);
+  });
+
+  it('should update an asset', async () => {
+    asset = new AssetEntity();
+    asset.id = 'asset-id';
+    asset.name = 'Name1';
+    asset.group = 'Group1';
+    asset.portfolio = portfolio;
+    asset.portfolioId = portfolio.id;
+    const updateAssetDto: UpdateAssetDto = {
+      name: 'Name2',
+      group: 'Group2',
+    };
+    const result = await controller.update(request, asset.id, updateAssetDto);
+    expect(result).toEqual(asset);
+    expect(asset.name).toEqual(updateAssetDto.name);
+    expect(asset.group).toEqual(updateAssetDto.group);
   });
 });
