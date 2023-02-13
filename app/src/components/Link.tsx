@@ -77,11 +77,11 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     noLinkStyle,
     prefetch,
     replace,
-    role, // Link don't have roles.
     scroll,
     shallow,
     ...other
   } = props;
+  delete other.role;
 
   const router = useRouter();
   const pathname = typeof href === "string" ? href : href.pathname;
@@ -102,7 +102,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   }
 
   const linkAs = linkAsProp || as;
-  const nextjsProps = {
+  const nextProps = {
     to: href,
     linkAs,
     replace,
@@ -118,7 +118,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       <NextLinkComposed
         className={className}
         ref={ref}
-        {...nextjsProps}
+        {...nextProps}
         {...other}
       />
     );
@@ -129,7 +129,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       component={NextLinkComposed}
       className={className}
       ref={ref}
-      {...nextjsProps}
+      {...nextProps}
       {...other}
     />
   );
