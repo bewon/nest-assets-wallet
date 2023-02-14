@@ -12,17 +12,13 @@ export const roboto = Roboto({
 // Create a theme instance.
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#556cd6",
-    },
-    secondary: {
-      main: "#19857b",
-    },
+    primary: { main: "#1976d2" },
+    secondary: { main: "#f46a40", contrastText: "#fff" },
     error: {
       main: red.A400,
     },
     background: {
-      default: "#ededed",
+      default: "#eee",
       paper: "#fff",
     },
   },
@@ -30,5 +26,32 @@ const theme = createTheme({
     fontFamily: roboto.style.fontFamily,
   },
 });
+
+export const assetsPalette = [
+  "#c149e9",
+  "#e9c149",
+  "#49e971",
+  "#49e9e9",
+  "#4971e9",
+  "#9949e9",
+  "#e949c1",
+  "#e97149",
+  "#e9e949",
+  "#49e999",
+  "#49c1e9",
+  "#4949e9",
+  "#e94949",
+  "#49e949",
+  "#e99949",
+  "#c1e949",
+  "#e94999",
+  "#49e9c1",
+  "#4999e9",
+  "#7149e9",
+  "#e949e9",
+  "#71e949",
+  "#e94971",
+  "#99e949",
+];
 
 export default theme;
