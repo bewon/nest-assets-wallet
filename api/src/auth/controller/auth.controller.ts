@@ -14,9 +14,4 @@ export class AuthController {
   async login(@Request() req: ExpressRequest) {
     return this.authService.login(req.user);
   }
-
-  // @Get('test')
-  // async test(@Request() req: ExpressRequest) {
-  //   return req.user;
-  // }
 }
