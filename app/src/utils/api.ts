@@ -1,19 +1,13 @@
-import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSessionData, logoutUser } from "@src/utils/session";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import type { SessionData } from "@assets-wallet/api/src/auth/types";
+import { useRouter } from "next/router";
 
 type EndpointFunction<T> = (data?: object) => Promise<AxiosResponse<T>>;
 
 const useApi = () => {
-  const [token, setToken] = useState<string | undefined>();
-
-  useEffect(() => {
-    const session = getSessionData();
-    setToken(session?.accessToken);
-  }, []);
-
+  const router = useRouter();
   const createEndpointFunction = <T>(
     url: string,
     method: AxiosRequestConfig["method"]
@@ -21,12 +15,13 @@ const useApi = () => {
     const headers: AxiosRequestConfig["headers"] = {
       "Content-Type": "application/json",
     };
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
     return async (data?: object) => {
+      const session = getSessionData();
+      if (session != null && session.accessToken) {
+        headers["Authorization"] = `Bearer ${session.accessToken}`;
+      }
       try {
-        return axios<T>({
+        return await axios<T>({
           method,
           url,
           headers,
@@ -35,6 +30,7 @@ const useApi = () => {
       } catch (error: any) {
         if (error.response?.status === 401) {
           logoutUser();
+          await router.push("/auth/login");
         }
         throw error;
       }
@@ -44,7 +40,7 @@ const useApi = () => {
   return {
     login: createEndpointFunction<SessionData>("/api/auth/login", "POST"),
     assetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
-      "/api/portfolio/default/assets-snapshot",
+      "/api/portfolios/default/assets-snapshot",
       "GET"
     ),
   };
