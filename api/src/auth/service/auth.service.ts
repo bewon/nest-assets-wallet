@@ -22,10 +22,12 @@ export class AuthService {
   }
 
   async login(user?: Express.User) {
-    const payload = { email: user?.email, sub: user?.id };
+    if (user == null) {
+      return null;
+    }
+    const payload = { email: user.email, sub: user.id };
     return {
-      // user: await this.prepareUserAccount(user.id),
-      user: payload,
+      userEmail: user.email,
       accessToken: this.jwtService.sign(payload),
     };
   }

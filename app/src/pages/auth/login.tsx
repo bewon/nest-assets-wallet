@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { Box, Card, CardContent } from "@mui/material";
@@ -7,10 +7,7 @@ import Container from "@mui/material/Container";
 import LoginForm from "@src/components/LoginForm";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { CardLogo } from "@src/components/CardLogo";
-
-interface LoginResponse {
-  token: string;
-}
+import { loginUser, logoutUser, SessionData } from "@src/helpers/session";
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -19,15 +16,18 @@ export default function Login() {
   };
   const router = useRouter();
 
-  const handleLogin = async (username: string, password: string) => {
+  useEffect(() => {
+    logoutUser();
+  }, []);
+
+  const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await axios.post<LoginResponse>("/api/auth/login", {
-        username,
+      const response = await axios.post<SessionData>("/api/auth/login", {
+        email,
         password,
       });
-      if (response.data.token) {
-        // Store the JWT token in the browser's session storage
-        sessionStorage.setItem("token", response.data.token);
+      if (response.data) {
+        loginUser(response.data);
         await router.push("/");
       }
     } catch (err: any) {
