@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { logoutUser } from "@src/helpers/session";
+import { logoutUser } from "@src/utils/session";
 import { useRouter } from "next/router";
 
 export default function Logout() {

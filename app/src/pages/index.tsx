@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "@src/components/Link";
 import { useEffect, useState } from "react";
-import { getSessionData } from "@src/helpers/session";
+import { getSessionData } from "@src/utils/session";
 
 export default function Home() {
   const [userEmail, setUserEmail] = useState("");

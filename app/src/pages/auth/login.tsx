@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { Box, Card, CardContent } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -7,7 +6,8 @@ import Container from "@mui/material/Container";
 import LoginForm from "@src/components/LoginForm";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { CardLogo } from "@src/components/CardLogo";
-import { loginUser, logoutUser, SessionData } from "@src/helpers/session";
+import { loginUser, logoutUser } from "@src/utils/session";
+import useApi from "@src/utils/api";
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -15,6 +15,7 @@ export default function Login() {
     setSnackbarState({ ...snackbarState, open: false });
   };
   const router = useRouter();
+  const api = useApi();
 
   useEffect(() => {
     logoutUser();
@@ -22,10 +23,7 @@ export default function Login() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await axios.post<SessionData>("/api/auth/login", {
-        email,
-        password,
-      });
+      const response = await api.login({ email, password });
       if (response.data) {
         loginUser(response.data);
         await router.push("/");
