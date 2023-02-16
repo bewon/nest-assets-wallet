@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { getSessionData } from "@src/utils/session";
 
 export default function Home() {
-  const [userEmail, setUserEmail] = useState("");
+  const [userEmail, setUserEmail] = useState<string | undefined>();
   useEffect(() => {
     const session = getSessionData();
     if (session) {

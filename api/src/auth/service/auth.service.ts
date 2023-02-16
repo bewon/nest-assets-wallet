@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { SessionData } from '../types';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user?: Express.User) {
+  async login(user?: Express.User): Promise<SessionData> {
     if (user == null) {
       return null;
     }

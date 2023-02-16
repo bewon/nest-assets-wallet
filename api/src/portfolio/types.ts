@@ -1,6 +1,4 @@
-import { AssetSnapshot } from '../types';
-
-export class AssetSnapshotDto implements AssetSnapshot {
+export interface AssetSnapshot {
   id?: string;
   name?: string;
   group?: string;

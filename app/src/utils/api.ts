@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { getSessionData } from "@src/utils/session";
+import { getSessionData, logoutUser } from "@src/utils/session";
+import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { SessionData } from "@assets-wallet/api/src/auth/types";
 
-type EndpointFunction = (data?: object) => Promise<AxiosResponse>;
+type EndpointFunction<T> = (data?: object) => Promise<AxiosResponse<T>>;
 
 const useApi = () => {
   const [token, setToken] = useState<string | undefined>();
@@ -12,10 +14,10 @@ const useApi = () => {
     setToken(session?.accessToken);
   }, []);
 
-  const createEndpointFunction = (
+  const createEndpointFunction = <T>(
     url: string,
     method: AxiosRequestConfig["method"]
-  ): EndpointFunction => {
+  ): EndpointFunction<T> => {
     const headers: AxiosRequestConfig["headers"] = {
       "Content-Type": "application/json",
     };
@@ -23,17 +25,28 @@ const useApi = () => {
       headers["Authorization"] = `Bearer ${token}`;
     }
     return async (data?: object) => {
-      return axios({
-        method,
-        url,
-        headers,
-        data,
-      });
+      try {
+        return axios<T>({
+          method,
+          url,
+          headers,
+          data,
+        });
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          logoutUser();
+        }
+        throw error;
+      }
     };
   };
 
   return {
-    login: createEndpointFunction("/api/auth/login", "POST"),
+    login: createEndpointFunction<SessionData>("/api/auth/login", "POST"),
+    assetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
+      "/api/portfolio/default/assets-snapshot",
+      "GET"
+    ),
   };
 };
 

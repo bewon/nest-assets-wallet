@@ -44,7 +44,7 @@ describe('AuthService', () => {
     const result = await service.login(user);
     expect(result).toEqual({
       accessToken: expect.stringMatching(/.{10,}/),
-      user: { email: user.email, sub: user.id },
+      userEmail: user.email,
     });
     expect(jwtService.sign).toBeCalledWith({ email: user.email, sub: user.id });
   });

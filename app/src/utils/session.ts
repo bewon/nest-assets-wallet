@@ -1,22 +1,20 @@
-export type SessionData = {
-  accessToken: string;
-  userEmail: string;
-};
+import type { SessionData } from "@assets-wallet/api/src/auth/types";
+
+const sessionDataKey = "session-data";
 
 export function loginUser(data: SessionData) {
-  // make sure that data has the correct type
-  if (!data.accessToken || !data.userEmail) {
+  if (data == null || !data.accessToken || !data.userEmail) {
     throw new Error("Invalid session data");
   }
-  sessionStorage.setItem("session-data", JSON.stringify(data));
+  sessionStorage.setItem(sessionDataKey, JSON.stringify(data));
 }
 
 export function logoutUser() {
-  sessionStorage.removeItem("session-data");
+  sessionStorage.removeItem(sessionDataKey);
 }
 
 export function getSessionData(): SessionData | null {
-  const rawSessionData = sessionStorage.getItem("session-data");
+  const rawSessionData = sessionStorage.getItem(sessionDataKey);
   if (!rawSessionData) {
     return null;
   }
