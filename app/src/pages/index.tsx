@@ -5,9 +5,12 @@ import Box from "@mui/material/Box";
 import Link from "@src/components/Link";
 import { useEffect, useState } from "react";
 import { getSessionData } from "@src/utils/session";
+import { useTranslation } from "next-i18next";
 
 export default function Home() {
   const [userEmail, setUserEmail] = useState<string | undefined>();
+  const { t } = useTranslation("common");
+
   useEffect(() => {
     const session = getSessionData();
     if (session) {
@@ -35,7 +38,7 @@ export default function Home() {
               Welcome {userEmail}
             </Typography>
             <Link href="/auth/logout" color="secondary">
-              Logout
+              {t("logout")}
             </Link>
           </>
         ) : (
