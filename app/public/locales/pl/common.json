@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "log-in": "Zaloguj",
+    "log-out": "Wyloguj",
+    "messages": {
+      "login-success": "Zalogowano pomyślnie",
+      "login-failure": "Niepoprawny email lub hasło",
+      "logout-success": "Wylogowano pomyślnie",
+      "unauthenticated": "Aby kontynuować musisz się zalogować"
+    },
+    "user": {
+      "email": "Email",
+      "password": "Hasło"
+    }
+  }
+}

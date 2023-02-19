@@ -5,9 +5,15 @@ import Box from "@mui/material/Box";
 import Link from "@src/components/Link";
 import { useEffect, useState } from "react";
 import { getSessionData } from "@src/utils/session";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { GetStaticProps } from "next";
+import { i18n } from "next-i18next.config";
 
 export default function Home() {
   const [userEmail, setUserEmail] = useState<string | undefined>();
+  const { t } = useTranslation();
+
   useEffect(() => {
     const session = getSessionData();
     if (session) {
@@ -35,7 +41,7 @@ export default function Home() {
               Welcome {userEmail}
             </Typography>
             <Link href="/auth/logout" color="secondary">
-              Logout
+              {t("auth.log-out")}
             </Link>
           </>
         ) : (
@@ -47,3 +53,9 @@ export default function Home() {
     </Container>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? i18n.defaultLocale)),
+  },
+});
