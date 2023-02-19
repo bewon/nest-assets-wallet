@@ -6,6 +6,9 @@ import Link from "@src/components/Link";
 import { useEffect, useState } from "react";
 import { getSessionData } from "@src/utils/session";
 import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { GetStaticProps } from "next";
+import { i18n } from "next-i18next.config";
 
 export default function Home() {
   const [userEmail, setUserEmail] = useState<string | undefined>();
@@ -50,3 +53,9 @@ export default function Home() {
     </Container>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? i18n.defaultLocale)),
+  },
+});
