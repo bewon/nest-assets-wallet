@@ -8,6 +8,10 @@ import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { CardLogo } from "@src/components/CardLogo";
 import { loginUser, logoutUser } from "@src/utils/session";
 import useApi from "@src/utils/api";
+import { useTranslation } from "next-i18next";
+import { GetStaticProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { i18n } from "../../../next-i18next.config";
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -16,6 +20,7 @@ export default function Login() {
   };
   const router = useRouter();
   const api = useApi();
+  const { t } = useTranslation();
 
   useEffect(() => {
     logoutUser();
@@ -44,10 +49,10 @@ export default function Login() {
           <CardLogo />
           <Box sx={{ px: [0, 8], pt: 4, pb: [0, 7] }}>
             <Typography variant="h2" sx={{ textAlign: "center", mb: 4 }}>
-              Log in
+              {t("auth.log-in")}
             </Typography>
             <Typography variant={"body1"} sx={{ mb: 4 }}>
-              You need to sign in or sign up before continuing.
+              {t("auth.messages.unauthenticated")}
             </Typography>
             <LoginForm onLogin={handleLogin} />
           </Box>
@@ -56,3 +61,9 @@ export default function Login() {
     </Container>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? i18n.defaultLocale)),
+  },
+});

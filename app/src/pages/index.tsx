@@ -12,7 +12,7 @@ import { i18n } from "next-i18next.config";
 
 export default function Home() {
   const [userEmail, setUserEmail] = useState<string | undefined>();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const session = getSessionData();
@@ -41,7 +41,7 @@ export default function Home() {
               Welcome {userEmail}
             </Typography>
             <Link href="/auth/logout" color="secondary">
-              {t("logout")}
+              {t("auth.log-out")}
             </Link>
           </>
         ) : (
