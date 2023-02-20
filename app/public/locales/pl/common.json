@@ -23,5 +23,12 @@
       "error": "Wystąpił błąd"
     },
     "save": "Zapisz"
+  },
+  "header": {
+    "menu": {
+      "today": "Dzisiaj",
+      "history": "History"
+    },
+    "settings": "Ustawienia"
   }
 }

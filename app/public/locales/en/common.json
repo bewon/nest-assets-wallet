@@ -23,5 +23,12 @@
       "error": "An error occurred."
     },
     "save": "Save"
+  },
+  "header": {
+    "menu": {
+      "today": "Today",
+      "history": "History"
+    },
+    "settings": "Settings"
   }
 }

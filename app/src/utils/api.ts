@@ -39,7 +39,7 @@ const useApi = () => {
 
   return {
     login: createEndpointFunction<SessionData>("/api/auth/login", "POST"),
-    assetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
+    getAssetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
       "/api/portfolios/default/assets-snapshot",
       "GET"
     ),

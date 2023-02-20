@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import useApi from "@src/utils/api";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
 import { useTranslation } from "next-i18next";
+import { GetStaticProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { i18n } from "../../next-i18next.config";
+import Header from "@src/components/Header";
 
 export default function Snapshot() {
   // const [assets, setAssets] = useState<AssetSnapshot[]>([]);
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
-  const { assetsSnapshot } = useApi();
+  const { getAssetsSnapshot } = useApi();
   const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchAssets() {
       try {
-        const response = await assetsSnapshot();
+        const response = await getAssetsSnapshot();
         console.log(response.data);
       } catch (err: any) {
         setSnackbarState({
@@ -26,16 +28,19 @@ export default function Snapshot() {
     }
     fetchAssets().catch((err) => console.error(err));
   }, []);
-
   return (
-    <Container maxWidth="sm" sx={{ pt: [9, 11], pb: 2 }}>
+    <>
+      <Header />
       <AppSnackbar
         state={snackbarState}
         onClose={() => setSnackbarState({ ...snackbarState, open: false })}
       />
-      <Typography variant="h2" sx={{ mb: 4 }}>
-        Assets Snapshot
-      </Typography>
-    </Container>
+    </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? i18n.defaultLocale)),
+  },
+});
