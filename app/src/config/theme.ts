@@ -25,6 +25,18 @@ const theme = createTheme({
   typography: {
     fontFamily: roboto.style.fontFamily,
   },
+  components: {
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          color: "rgba(255, 255, 255, 0.6)",
+          "&.Mui-selected": {
+            color: "#fff",
+          },
+        },
+      },
+    },
+  },
 });
 
 export const assetsPalette = [

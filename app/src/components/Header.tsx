@@ -1,17 +1,21 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar } from "@mui/material";
-import Container from "@mui/material/Container";
-import AdbIcon from "@mui/icons-material/Adb";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
+import Container from "@mui/material/Container";
+import HistoryIcon from "@mui/icons-material/History";
 import IconButton from "@mui/material/IconButton";
+import Image from "next/image";
+import Link from "@src/components/Link";
 import Menu from "@mui/material/Menu";
+import React, { useState } from "react";
+import SettingsIcon from "@mui/icons-material/Settings";
+import TodayIcon from "@mui/icons-material/Today";
+import Tooltip from "@mui/material/Tooltip";
+import { AppBar, Tab, Tabs, Toolbar } from "@mui/material";
+import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 
 export default function Header() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [anchorSettings, setAnchorSettings] = useState<null | HTMLElement>(
     null
   );
@@ -26,60 +30,54 @@ export default function Header() {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
+      <Toolbar disableGutters>
+        <Link href="/" sx={{ ml: 2 }}>
+          <Image
+            src={"/images/assets-wallet-icon--46.png"}
+            alt="logo"
+            width={46}
+            height={37}
+          />
+        </Link>
+        <Container
+          maxWidth="lg"
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Tabs
+            value={router.pathname}
+            indicatorColor="secondary"
+            aria-label="main navigation"
             sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              "& .MuiTab-root": {
+                fontSize: [0, "0.875rem"],
+                "& .MuiTab-iconWrapper": {
+                  mr: [0, 1],
+                },
+              },
             }}
           >
-            LOGO
-          </Typography>
-
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: "flex" }}>
-            <Button sx={{ my: 2, color: "white", display: "block" }}>
-              {t("header.menu.today")}
-            </Button>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: "flex" }}>
-            <Button sx={{ my: 2, color: "white", display: "block" }}>
-              {t("header.menu.history")}
-            </Button>
-          </Box>
+            <Tab
+              label={t("header.menu.today")}
+              icon={<TodayIcon />}
+              iconPosition="start"
+              value="/snapshot"
+            />
+            <Tab
+              label={t("header.menu.history")}
+              icon={<HistoryIcon />}
+              iconPosition="start"
+              value="/history"
+            />
+          </Tabs>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title={t("header.settings")}>
-              <IconButton onClick={handleOpenSettings} sx={{ p: 0 }}>
-                {"..."}
+              <IconButton
+                onClick={handleOpenSettings}
+                color="inherit"
+                sx={{ p: 3 }}
+              >
+                <SettingsIcon />
               </IconButton>
             </Tooltip>
             <Menu
@@ -99,8 +97,9 @@ export default function Header() {
               onClose={handleCloseSettings}
             ></Menu>
           </Box>
-        </Toolbar>
-      </Container>
+        </Container>
+        <Box sx={{ minWidth: 46, mr: 2 }} />
+      </Toolbar>
     </AppBar>
   );
 }
