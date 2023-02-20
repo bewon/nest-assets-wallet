@@ -3,8 +3,8 @@
     "log-in": "Zaloguj",
     "log-out": "Wyloguj",
     "messages": {
-      "login-success": "Zalogowano pomyślnie",
       "login-failure": "Niepoprawny email lub hasło",
+      "login-success": "Zalogowano pomyślnie",
       "logout-success": "Wylogowano pomyślnie",
       "unauthenticated": "Aby kontynuować musisz się zalogować"
     },
@@ -12,5 +12,16 @@
       "email": "Email",
       "password": "Hasło"
     }
+  },
+  "general": {
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "language": "Język",
+    "messages": {
+      "error": "Wystąpił błąd"
+    },
+    "save": "Zapisz"
   }
 }

@@ -12,6 +12,20 @@ import { useTranslation } from "next-i18next";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n } from "../../../next-i18next.config";
+import Link from "@src/components/Link";
+
+function LangSelect({ code, label }: { code: string; label: string }) {
+  const { i18n } = useTranslation();
+  if (code === i18n.language) {
+    return <>{label}</>;
+  } else {
+    return (
+      <Link href="/auth/login" locale={code}>
+        {label}
+      </Link>
+    );
+  }
+}
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -36,7 +50,7 @@ export default function Login() {
     } catch (err: any) {
       setSnackbarState({
         open: true,
-        message: err.response?.data?.message ?? "An error occurred",
+        message: err.response?.data?.message ?? t("general.messages.error"),
         severity: "error",
       });
     }
@@ -55,6 +69,13 @@ export default function Login() {
               {t("auth.messages.unauthenticated")}
             </Typography>
             <LoginForm onLogin={handleLogin} />
+            <Typography variant={"body1"} sx={{ mt: 4 }}>
+              {t("general.language")}
+              {": "}
+              <LangSelect code="pl" label="polski" />
+              {" | "}
+              <LangSelect code="en" label="english" />
+            </Typography>
           </Box>
         </CardContent>
       </Card>

@@ -3,8 +3,8 @@
     "log-in": "Log in",
     "log-out": "Log out",
     "messages": {
-      "login-success": "You have successfully logged in.",
       "login-failure": "Invalid email or password.",
+      "login-success": "You have successfully logged in.",
       "logout-success": "You have successfully logged out.",
       "unauthenticated": "You must be logged in to continue."
     },
@@ -12,5 +12,16 @@
       "email": "Email",
       "password": "Password"
     }
+  },
+  "general": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "language": "Language",
+    "messages": {
+      "error": "An error occurred."
+    },
+    "save": "Save"
   }
 }

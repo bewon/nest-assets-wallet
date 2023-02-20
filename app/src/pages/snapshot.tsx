@@ -3,11 +3,13 @@ import useApi from "@src/utils/api";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "next-i18next";
 
 export default function Snapshot() {
   // const [assets, setAssets] = useState<AssetSnapshot[]>([]);
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const { assetsSnapshot } = useApi();
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchAssets() {
@@ -17,7 +19,7 @@ export default function Snapshot() {
       } catch (err: any) {
         setSnackbarState({
           open: true,
-          message: err.response?.data?.message ?? "An error occurred",
+          message: err.response?.data?.message ?? t("general.messages.error"),
           severity: "error",
         });
       }
