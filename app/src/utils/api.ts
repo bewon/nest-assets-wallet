@@ -4,7 +4,10 @@ import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
 
-type EndpointFunction<T> = (data?: object) => Promise<AxiosResponse<T>>;
+type EndpointFunction<T> = (data?: object) => {
+  makeRequest: () => Promise<AxiosResponse<T> | null>;
+  abortRequest: () => void;
+};
 
 const useApi = () => {
   const router = useRouter();
@@ -15,25 +18,37 @@ const useApi = () => {
     const headers: AxiosRequestConfig["headers"] = {
       "Content-Type": "application/json",
     };
-    return async (data?: object) => {
+    return (data?: object) => {
       const session = getSessionData();
       if (session != null && session.accessToken) {
         headers["Authorization"] = `Bearer ${session.accessToken}`;
       }
-      try {
-        return await axios<T>({
-          method,
-          url,
-          headers,
-          data,
-        });
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          logoutUser();
-          await router.push("/auth/login");
-        }
-        throw error;
-      }
+      const abortController = new AbortController();
+
+      const abortRequest = () => {
+        abortController.abort();
+      };
+
+      const makeRequest = () =>
+        axios
+          .request<T>({
+            method,
+            url,
+            headers,
+            data,
+            signal: abortController.signal,
+          })
+          .catch((error) => {
+            if (error.response?.status === 401) {
+              console.log("Unauthorized, logging out");
+              logoutUser();
+              router.push("/auth/login");
+            } else if (!axios.isCancel(error)) {
+              throw error;
+            }
+            return null;
+          });
+      return { makeRequest, abortRequest };
     };
   };
 
