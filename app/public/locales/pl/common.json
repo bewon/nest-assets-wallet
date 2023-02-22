@@ -29,6 +29,15 @@
       "today": "Dzisiaj",
       "history": "History"
     },
-    "settings": "Ustawienia"
+    "settings": {
+      "settings": "Ustawienia",
+      "language": "Język",
+      "theme": "Motyw",
+      "zero-assets": "Ukryj akywa bez wartości"
+    },
+    "theme": {
+      "light": "Jasny",
+      "dark": "Ciemny"
+    }
   }
 }

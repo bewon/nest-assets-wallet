@@ -29,6 +29,15 @@
       "today": "Today",
       "history": "History"
     },
-    "settings": "Settings"
+    "settings": {
+      "settings": "Settings",
+      "language": "Language",
+      "theme": "Theme",
+      "zero-assets": "Hide assets with zero value"
+    },
+    "theme": {
+      "light": "Light",
+      "dark": "Dark"
+    }
   }
 }
