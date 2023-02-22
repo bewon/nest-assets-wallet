@@ -26,7 +26,7 @@ export default function Header() {
           <NavTabs />
           <Settings />
         </Container>
-        <Box sx={{ minWidth: 46, mr: 2 }} />
+        <Box sx={{ maxWidth: 62, width: "calc((100% - 1200px)/2)" }} />
       </Toolbar>
     </AppBar>
   );
