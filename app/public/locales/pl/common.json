@@ -1,11 +1,26 @@
 {
+  "assetsList": {
+    "columns": {
+      "name": "Nazwa",
+      "capital": "Kapitał",
+      "value": "Wartość",
+      "profit": "Całkowity zysk / strata",
+      "date": "Ostatnia aktualizacja"
+    },
+    "menu": {
+      "balanceUpdate": "Aktualizuj saldo",
+      "edit": "Edytuj aktywo",
+      "changesList": "Lista aktualizacji salda"
+    },
+    "title": "Aktywa"
+  },
   "auth": {
-    "log-in": "Zaloguj",
-    "log-out": "Wyloguj",
+    "logIn": "Zaloguj",
+    "logOut": "Wyloguj",
     "messages": {
-      "login-failure": "Niepoprawny email lub hasło",
-      "login-success": "Zalogowano pomyślnie",
-      "logout-success": "Wylogowano pomyślnie",
+      "loginFailure": "Niepoprawny email lub hasło",
+      "loginSuccess": "Zalogowano pomyślnie",
+      "logoutSuccess": "Wylogowano pomyślnie",
       "unauthenticated": "Aby kontynuować musisz się zalogować"
     },
     "user": {
@@ -33,7 +48,7 @@
       "settings": "Ustawienia",
       "language": "Język",
       "theme": "Motyw",
-      "zero-assets": "Ukryj akywa bez wartości"
+      "zeroAssets": "Ukryj akywa bez wartości"
     },
     "theme": {
       "light": "Jasny",

@@ -64,7 +64,7 @@ export default function Login() {
           <CardLogo />
           <Box sx={{ px: [0, 8], pt: 4, pb: [0, 7] }}>
             <Typography variant="h2" sx={{ textAlign: "center", mb: 4 }}>
-              {t("auth.log-in")}
+              {t("auth.logIn")}
             </Typography>
             <Typography variant={"body1"} sx={{ mb: 4 }}>
               {t("auth.messages.unauthenticated")}

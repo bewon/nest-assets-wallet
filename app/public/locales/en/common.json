@@ -1,11 +1,26 @@
 {
+  "assetsList": {
+    "columns": {
+      "name": "Name",
+      "capital": "Capital",
+      "value": "Value",
+      "profit": "Total Gain / Loss",
+      "date": "Last update"
+    },
+    "menu": {
+      "balanceUpdate": "Update asset balance",
+      "edit": "Edit asset",
+      "changesList": "Asset balance changes list"
+    },
+    "title": "Assets"
+  },
   "auth": {
-    "log-in": "Log in",
-    "log-out": "Log out",
+    "logIn": "Log in",
+    "logOut": "Log out",
     "messages": {
-      "login-failure": "Invalid email or password.",
-      "login-success": "You have successfully logged in.",
-      "logout-success": "You have successfully logged out.",
+      "loginFailure": "Invalid email or password.",
+      "loginSuccess": "You have successfully logged in.",
+      "logoutSuccess": "You have successfully logged out.",
       "unauthenticated": "You must be logged in to continue."
     },
     "user": {
@@ -33,7 +48,7 @@
       "settings": "Settings",
       "language": "Language",
       "theme": "Theme",
-      "zero-assets": "Hide assets with zero value"
+      "zeroAssets": "Hide assets with zero value"
     },
     "theme": {
       "light": "Light",

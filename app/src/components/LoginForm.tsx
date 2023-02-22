@@ -36,7 +36,7 @@ export default function LoginForm({ onLogin: handleLogin }: LoginFormProps) {
         sx={{ mb: 3 }}
       />
       <Button type="submit" variant="contained" color="secondary" fullWidth>
-        {t("auth.log-in")}
+        {t("auth.logIn")}
       </Button>
     </form>
   );

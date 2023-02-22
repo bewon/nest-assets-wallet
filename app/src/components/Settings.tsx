@@ -98,7 +98,7 @@ export default function Settings() {
         <ListItem>
           <FormControlLabel
             control={<Switch checked={false} sx={{ ml: 1 }} />}
-            label={t("header.settings.zero-assets")}
+            label={t("header.settings.zeroAssets")}
             labelPlacement="start"
             sx={{ ml: 0 }}
           />
@@ -106,7 +106,7 @@ export default function Settings() {
         <Divider />
         <ListItem>
           <Button variant="contained" color="primary" onClick={handleLogout}>
-            {t("auth.log-out")}
+            {t("auth.logOut")}
           </Button>
         </ListItem>
       </Menu>

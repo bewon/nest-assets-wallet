@@ -41,7 +41,7 @@ export default function Home() {
               Welcome {userEmail}
             </Typography>
             <Link href="/auth/logout" color="secondary">
-              {t("auth.log-out")}
+              {t("auth.logOut")}
             </Link>
           </>
         ) : (

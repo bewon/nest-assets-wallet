@@ -8,8 +8,11 @@ import { i18n } from "../../next-i18next.config";
 import Header from "@src/components/Header";
 import { Grid, Paper } from "@mui/material";
 import Container from "@mui/material/Container";
+import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import { AssetsList } from "@src/components/AssetsList";
+
 export default function Snapshot() {
-  // const [assets, setAssets] = useState<AssetSnapshot[]>([]);
+  const [assets, setAssets] = useState<AssetSnapshot[]>();
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const api = useApi();
   const { t } = useTranslation();
@@ -19,7 +22,9 @@ export default function Snapshot() {
     (async () => {
       try {
         const response = await makeRequest();
-        console.log(response?.data);
+        if (response?.data) {
+          setAssets(response.data);
+        }
       } catch (error: any) {
         setSnackbarState({
           open: true,
@@ -48,7 +53,7 @@ export default function Snapshot() {
               <Paper sx={{ p: 2 }}>PortfolioPerformance</Paper>
             </Grid>
             <Grid item xs>
-              <Paper sx={{ p: 2 }}>AssetsList</Paper>
+              <AssetsList assets={assets} />
             </Grid>
           </Grid>
           <Grid item container xs={12} md spacing={2}>
