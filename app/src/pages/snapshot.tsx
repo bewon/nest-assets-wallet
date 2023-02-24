@@ -46,19 +46,27 @@ export default function Snapshot() {
       <Container maxWidth="lg" sx={{ pt: 2 }}>
         <Grid container spacing={2}>
           <Grid item container xs={12} md={8} spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Paper sx={{ p: 2 }}>CompositionChart</Paper>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Paper sx={{ p: 2 }}>PortfolioPerformance</Paper>
-            </Grid>
-            <Grid item xs>
+            <Grid item xs={12}>
               <AssetsList assets={assets} />
             </Grid>
+            <Grid item xs={12}>
+              <Paper sx={{ p: 2 }}>Portfolio Performance</Paper>
+            </Grid>
           </Grid>
-          <Grid item container xs={12} md spacing={2}>
-            <Grid item xs>
-              <Paper sx={{ p: 2 }}>AssetsPerformance</Paper>
+          <Grid
+            item
+            container
+            xs={12}
+            md
+            spacing={2}
+            alignItems="flex-start"
+            alignContent="flex-start"
+          >
+            <Grid item xs={12} sm={6} md={12}>
+              <Paper sx={{ p: 2 }}>Portfolio Status</Paper>
+            </Grid>
+            <Grid item xs={12} sm={6} md={12}>
+              <Paper sx={{ p: 2 }}>Assets Performance</Paper>
             </Grid>
           </Grid>
         </Grid>
