@@ -12,25 +12,13 @@ import { useTranslation } from "next-i18next";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
+import useFormat from "@src/utils/useFormat";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
-const currency = "PLN";
-const amountFormat = (
-  number: number,
-  locale: string,
-  maximumFractionDigits?: number
-) => {
-  const options: Intl.NumberFormatOptions = { style: "currency", currency };
-  if (maximumFractionDigits !== undefined) {
-    options.maximumFractionDigits = maximumFractionDigits;
-    options.minimumFractionDigits = maximumFractionDigits; // min can't be grater than max
-  }
-  return new Intl.NumberFormat(locale, options).format(number);
-};
-
 export function AssetsList(props: { assets?: AssetSnapshot[] }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { amountFormat } = useFormat();
 
   const columns = React.useMemo<GridColumns<AssetSnapshot>>(() => {
     const handleDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
@@ -52,24 +40,21 @@ export function AssetsList(props: { assets?: AssetSnapshot[] }) {
         headerName: t("assetsList.columns.capital"),
         type: "number",
         flex: 2,
-        valueFormatter: ({ value }) =>
-          value != null ? amountFormat(value, i18n.language) : "-",
+        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
       },
       {
         field: "value",
         headerName: t("assetsList.columns.value"),
         type: "number",
         flex: 2,
-        valueFormatter: ({ value }) =>
-          value != null ? amountFormat(value, i18n.language) : "-",
+        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
       },
       {
         field: "profit",
         headerName: t("assetsList.columns.profit"),
         type: "number",
         flex: 2,
-        valueFormatter: ({ value }) =>
-          value != null ? amountFormat(value, i18n.language) : "-",
+        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
       },
       {
         field: "date",
@@ -104,7 +89,7 @@ export function AssetsList(props: { assets?: AssetSnapshot[] }) {
         ],
       },
     ];
-  }, [t, i18n]);
+  }, [t, amountFormat]);
   return (
     <Paper>
       <Typography variant="h6" sx={{ p: 2 }}>

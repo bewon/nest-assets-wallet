@@ -42,7 +42,7 @@
   "header": {
     "menu": {
       "today": "Dzisiaj",
-      "history": "History"
+      "history": "Historia"
     },
     "settings": {
       "settings": "Ustawienia",
@@ -54,5 +54,9 @@
       "light": "Jasny",
       "dark": "Ciemny"
     }
+  },
+  "portfolioStatus": {
+    "totalValue": "Całkowita wartość portfela",
+    "details": "Szczegóły"
   }
 }

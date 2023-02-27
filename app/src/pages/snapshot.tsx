@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useApi from "@src/utils/api";
+import useApi from "@src/utils/useApi";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { useTranslation } from "next-i18next";
 import { GetStaticProps } from "next";
@@ -10,6 +10,7 @@ import { Grid, Paper } from "@mui/material";
 import Container from "@mui/material/Container";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import { AssetsList } from "@src/components/AssetsList";
+import PortfolioStatus from "@src/components/PortfolioStatus";
 
 export default function Snapshot() {
   const [assets, setAssets] = useState<AssetSnapshot[]>();
@@ -63,7 +64,7 @@ export default function Snapshot() {
             alignContent="flex-start"
           >
             <Grid item xs={12} sm={6} md={12}>
-              <Paper sx={{ p: 2 }}>Portfolio Status</Paper>
+              <PortfolioStatus assets={assets} />
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <Paper sx={{ p: 2 }}>Assets Performance</Paper>

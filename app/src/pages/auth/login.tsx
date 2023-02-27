@@ -7,7 +7,7 @@ import LoginForm from "@src/components/LoginForm";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { CardLogo } from "@src/components/CardLogo";
 import { loginUser, logoutUser } from "@src/utils/session";
-import useApi from "@src/utils/api";
+import useApi from "@src/utils/useApi";
 import { useTranslation } from "next-i18next";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
