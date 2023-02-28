@@ -57,6 +57,7 @@
   },
   "portfolioStatus": {
     "totalValue": "Całkowita wartość portfela",
-    "details": "Szczegóły"
+    "details": "Szczegóły",
+    "otherGroup": "Pozostałe"
   }
 }
