@@ -21,7 +21,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import { useTranslation } from "next-i18next";
 import useFormat from "@src/utils/useFormat";
-import { assetsPalette } from "@src/config/theme";
+import { assetsPalette, roboto } from "@src/config/theme";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -61,19 +61,59 @@ export default function AssetsStatusDialog(props: {
     };
   }, [props.assets, groupsData]);
 
-  const options: ChartOptions<"bar"> = useMemo(() => {
+  const options = useMemo(() => {
     return {
       indexAxis: "y",
       responsive: true,
       plugins: {
-        legend: { position: "bottom" },
+        legend: {
+          position: "bottom",
+          labels: {
+            font: {
+              // family: roboto.style.fontFamily,
+              // size: 14,
+            },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const value = amountFormat(context.raw as number);
+              return `${context.dataset?.label}: ${value}`;
+            },
+            title: function (context) {
+              const group = context[0].label;
+              const sum = groupsData[group].reduce(
+                (sum, asset) => sum + (asset.value ?? 0),
+                0
+              );
+              return `${group}: ${amountFormat(sum)}`;
+            },
+          },
+        },
       },
       scales: {
-        x: { stacked: true },
-        y: { stacked: true },
+        x: {
+          stacked: true,
+          ticks: {
+            font: {
+              // family: roboto.style.fontFamily,
+              // size: 14,
+            },
+          },
+        },
+        y: {
+          stacked: true,
+          ticks: {
+            font: {
+              // family: roboto.style.fontFamily,
+              // size: 14,
+            },
+          },
+        },
       },
-    };
-  }, []);
+    } as ChartOptions<"bar">;
+  }, [amountFormat, groupsData]);
 
   const handleClose = props.onClose;
   return (
