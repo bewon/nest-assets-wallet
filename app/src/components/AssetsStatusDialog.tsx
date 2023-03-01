@@ -65,13 +65,14 @@ export default function AssetsStatusDialog(props: {
     return {
       indexAxis: "y",
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: "bottom",
           labels: {
             font: {
-              // family: roboto.style.fontFamily,
-              // size: 14,
+              family: roboto.style.fontFamily,
+              size: 14,
             },
           },
         },
@@ -97,8 +98,8 @@ export default function AssetsStatusDialog(props: {
           stacked: true,
           ticks: {
             font: {
-              // family: roboto.style.fontFamily,
-              // size: 14,
+              family: roboto.style.fontFamily,
+              size: 14,
             },
           },
         },
@@ -106,8 +107,8 @@ export default function AssetsStatusDialog(props: {
           stacked: true,
           ticks: {
             font: {
-              // family: roboto.style.fontFamily,
-              // size: 14,
+              family: roboto.style.fontFamily,
+              size: 14,
             },
           },
         },
@@ -117,11 +118,15 @@ export default function AssetsStatusDialog(props: {
 
   const handleClose = props.onClose;
   return (
-    <Dialog open={props.open} onClose={handleClose}>
+    <Dialog open={props.open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Assets Status</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          <Bar data={data} options={options} />
+          <Bar
+            data={data}
+            options={options}
+            height={(Object.keys(groupsData).length + 1) * 60}
+          />
         </DialogContentText>
       </DialogContent>
       <DialogActions>
