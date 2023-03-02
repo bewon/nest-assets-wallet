@@ -165,6 +165,8 @@ describe('PortfolioService', () => {
       const portfolio: PortfolioEntity = new PortfolioEntity();
       const asset = new AssetEntity();
       const change = new AssetBalanceChangeEntity(1.0, 1.0, '2015-01-01');
+      asset.name = 'Test';
+      asset.group = 'group';
       asset.balanceChanges = [change];
       portfolio.assets = [asset];
       await portfolioRepository.save(portfolio);
@@ -237,6 +239,8 @@ describe('PortfolioService', () => {
       const portfolio: PortfolioEntity = new PortfolioEntity();
       const asset = new AssetEntity();
       const change = new AssetBalanceChangeEntity(110.0, 90.5, '2015-01-01');
+      asset.name = 'Test';
+      asset.group = 'group';
       asset.balanceChanges = [change];
       portfolio.assets = [asset];
       await portfolioRepository.save(portfolio);

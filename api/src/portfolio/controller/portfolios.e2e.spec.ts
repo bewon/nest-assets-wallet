@@ -184,11 +184,11 @@ describe('Portfolios', () => {
   });
 
   describe('/GET /portfolios/:id/groups', () => {
-    it('return proper groups for portfolio (without null values)', async () => {
+    it('return proper groups for portfolio', async () => {
       const response = await request(app.getHttpServer())
         .get('/portfolios/default/groups')
         .expect(200);
-      expect(response.body).toEqual(['Safe', 'Risky']);
+      expect(response.body).toEqual(['Safe', 'Risky', 'Other']);
     });
   });
 });

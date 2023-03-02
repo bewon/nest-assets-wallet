@@ -13,7 +13,8 @@ const useApi = () => {
   const router = useRouter();
   const createEndpointFunction = <T>(
     url: string,
-    method: AxiosRequestConfig["method"]
+    method: AxiosRequestConfig["method"],
+    redirectOnUnauthorized = true
   ): EndpointFunction<T> => {
     const headers: AxiosRequestConfig["headers"] = {
       "Content-Type": "application/json",
@@ -39,7 +40,7 @@ const useApi = () => {
             signal: abortController.signal,
           })
           .catch((error) => {
-            if (error.response?.status === 401) {
+            if (error.response?.status === 401 && redirectOnUnauthorized) {
               console.log("Unauthorized, logging out");
               logoutUser();
               router.push("/auth/login");
@@ -53,7 +54,11 @@ const useApi = () => {
   };
 
   return {
-    login: createEndpointFunction<SessionData>("/api/auth/login", "POST"),
+    login: createEndpointFunction<SessionData>(
+      "/api/auth/login",
+      "POST",
+      false
+    ),
     getAssetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
       "/api/portfolios/default/assets-snapshot",
       "GET"

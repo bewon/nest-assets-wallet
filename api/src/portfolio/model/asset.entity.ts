@@ -16,11 +16,11 @@ export class AssetEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
-  name?: string;
+  @Column({ nullable: false })
+  name: string;
 
-  @Column({ nullable: true })
-  group?: string;
+  @Column({ nullable: false })
+  group: string;
 
   @ManyToOne(() => PortfolioEntity)
   portfolio: PortfolioEntity;

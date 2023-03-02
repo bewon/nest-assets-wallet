@@ -97,6 +97,7 @@ describe('AssetService', () => {
       const emptyAsset = new AssetEntity();
       emptyAsset.portfolio = await fixturesService.getPortfolio();
       emptyAsset.name = 'empty';
+      emptyAsset.group = 'group';
       await assetRepository.save(emptyAsset);
       const assetSnapshot = {
         id: emptyAsset.id,

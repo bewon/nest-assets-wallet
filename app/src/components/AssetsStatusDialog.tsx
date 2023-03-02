@@ -19,7 +19,6 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { useTranslation } from "next-i18next";
 import useFormat from "@src/utils/useFormat";
 import { assetsPalette, roboto } from "@src/config/theme";
 
@@ -30,21 +29,21 @@ export default function AssetsStatusDialog(props: {
   onClose: () => void;
   assets?: AssetSnapshot[];
 }) {
-  const { t } = useTranslation();
   const { amountFormat } = useFormat();
-  const otherGroupLabel = t("portfolioStatus.otherGroup");
 
   const groupsData = useMemo(() => {
     const data: Record<string, AssetSnapshot[]> = {};
     props.assets?.forEach((asset) => {
-      const group = asset.group ?? otherGroupLabel;
-      if (!data[group]) {
-        data[group] = [];
+      if (asset.group == null) {
+        return;
       }
-      data[group].push(asset);
+      if (!data[asset.group]) {
+        data[asset.group] = [];
+      }
+      data[asset.group].push(asset);
     });
     return data;
-  }, [props.assets, t]);
+  }, [props.assets]);
 
   const data: ChartData<"bar"> = useMemo(() => {
     const labels = Object.keys(groupsData);
@@ -53,9 +52,7 @@ export default function AssetsStatusDialog(props: {
       datasets:
         props.assets?.map(({ group, value, name }, index) => ({
           label: name,
-          data: labels.map((label) =>
-            label === (group ?? otherGroupLabel) ? value ?? null : null
-          ),
+          data: labels.map((label) => (label === group ? value ?? null : null)),
           backgroundColor: assetsPalette[index],
         })) ?? [],
     };

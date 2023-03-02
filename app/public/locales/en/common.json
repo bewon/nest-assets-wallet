@@ -57,7 +57,6 @@
   },
   "portfolioStatus": {
     "totalValue": "Total portfolio value",
-    "details": "Details",
-    "otherGroup": "Other"
+    "details": "Details"
   }
 }
