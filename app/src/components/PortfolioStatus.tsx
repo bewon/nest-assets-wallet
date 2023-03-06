@@ -10,22 +10,20 @@ export default function PortfolioStatus(props: { assets?: AssetSnapshot[] }) {
   const [open, setOpen] = useState(false);
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
-  const totalValue =
-    props.assets != null
-      ? props.assets.reduce((acc, asset) => acc + (asset.value ?? 0), 0)
-      : null;
+  const calculateTotalValue = (assets: AssetSnapshot[]) =>
+    assets.reduce((acc, asset) => acc + (asset.value ?? 0), 0);
 
   return (
     <Paper sx={{ px: 2, py: 3, textAlign: "center" }}>
       <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
         {t("portfolioStatus.totalValue")}
       </Typography>
-      {totalValue == null ? (
+      {props.assets == null ? (
         <CircularProgress sx={{ mt: 3, mb: 1 }} />
       ) : (
         <>
           <Typography variant="h4" sx={{ overflowWrap: "anywhere" }}>
-            {amountFormat(totalValue, 0)}
+            {amountFormat(calculateTotalValue(props.assets), 0)}
           </Typography>
           <Button
             onClick={() => setOpen(true)}

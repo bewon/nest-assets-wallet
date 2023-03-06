@@ -28,14 +28,14 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 export default function PortfolioStatusDialog(props: {
   open: boolean;
   onClose: () => void;
-  assets?: AssetSnapshot[];
+  assets: AssetSnapshot[];
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
 
   const groupsData = useMemo(() => {
     const data: Record<string, AssetSnapshot[]> = {};
-    props.assets?.forEach((asset) => {
+    props.assets.forEach((asset) => {
       if (asset.group == null) {
         return;
       }
@@ -52,7 +52,7 @@ export default function PortfolioStatusDialog(props: {
     return {
       labels,
       datasets:
-        props.assets?.map(({ group, value, name }, index) => ({
+        props.assets.map(({ group, value, name }, index) => ({
           label: name,
           data: labels.map((label) => (label === group ? value ?? null : null)),
           backgroundColor: assetsPalette[index],
@@ -92,19 +92,32 @@ export default function PortfolioStatusDialog(props: {
       scales: {
         x: {
           stacked: true,
+          title: {
+            display: true,
+            text: t("portfolioStatus.valueLabel"),
+            font: defaultChartFont,
+          },
           ticks: {
             font: defaultChartFont,
           },
         },
         y: {
           stacked: true,
+          title: {
+            display: true,
+            text: t("portfolioStatus.groupLabel"),
+            font: defaultChartFont,
+          },
           ticks: {
             font: defaultChartFont,
           },
         },
       },
     } as ChartOptions<"bar">;
-  }, [amountFormat, groupsData]);
+  }, [amountFormat, groupsData, t]);
+
+  const chartHeight =
+    (Object.keys(groupsData).length + 1) * 50 + (props.assets.length + 1) * 20;
 
   const handleClose = props.onClose;
   return (
@@ -112,11 +125,7 @@ export default function PortfolioStatusDialog(props: {
       <DialogTitle>{t("portfolioStatus.dialogTitle")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          <Bar
-            data={data}
-            options={options}
-            height={(Object.keys(groupsData).length + 1) * 60}
-          />
+          <Bar data={data} options={options} height={chartHeight} />
         </DialogContentText>
       </DialogContent>
       <DialogActions>

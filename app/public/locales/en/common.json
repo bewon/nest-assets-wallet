@@ -59,6 +59,8 @@
   "portfolioStatus": {
     "totalValue": "Total portfolio value",
     "details": "Details",
-    "dialogTitle": "Portfolio details"
+    "dialogTitle": "Portfolio details",
+    "groupLabel": "Group",
+    "valueLabel": "Value"
   }
 }

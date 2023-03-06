@@ -17,6 +17,7 @@ export default function Snapshot() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const api = useApi();
   const { t } = useTranslation();
+  const generalErrorMessage = t("general.messages.error");
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getAssetsSnapshot();
@@ -29,13 +30,13 @@ export default function Snapshot() {
       } catch (error: any) {
         setSnackbarState({
           open: true,
-          message: error.response?.data?.message ?? t("general.messages.error"),
+          message: error.response?.data?.message ?? generalErrorMessage,
           severity: "error",
         });
       }
     })();
     return () => abortRequest();
-  }, [api, t]);
+  }, [generalErrorMessage, api]);
 
   return (
     <>

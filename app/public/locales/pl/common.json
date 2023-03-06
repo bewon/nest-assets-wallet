@@ -59,6 +59,8 @@
   "portfolioStatus": {
     "totalValue": "Całkowita wartość portfela",
     "details": "Szczegóły",
-    "dialogTitle": "Szczegóły portfela"
+    "dialogTitle": "Szczegóły portfela",
+    "groupLabel": "Grupa",
+    "valueLabel": "Wartość"
   }
 }
