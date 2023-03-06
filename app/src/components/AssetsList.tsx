@@ -93,7 +93,7 @@ export function AssetsList(props: { assets?: AssetSnapshot[] }) {
   return (
     <Paper>
       <Typography variant="h6" sx={{ p: 2 }}>
-        Assets
+        {t("assetsList.title")}
       </Typography>
       <DataGrid
         sx={{
@@ -115,6 +115,7 @@ export function AssetsList(props: { assets?: AssetSnapshot[] }) {
         disableSelectionOnClick
         disableColumnMenu
         hideFooter
+        loading={props.assets == null}
       />
     </Paper>
   );

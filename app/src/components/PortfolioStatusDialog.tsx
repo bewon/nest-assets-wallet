@@ -20,16 +20,18 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import useFormat from "@src/utils/useFormat";
-import { assetsPalette, roboto } from "@src/config/theme";
+import { assetsPalette, defaultChartFont } from "@src/config/theme";
+import { useTranslation } from "next-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-export default function AssetsStatusDialog(props: {
+export default function PortfolioStatusDialog(props: {
   open: boolean;
   onClose: () => void;
   assets?: AssetSnapshot[];
 }) {
   const { amountFormat } = useFormat();
+  const { t } = useTranslation();
 
   const groupsData = useMemo(() => {
     const data: Record<string, AssetSnapshot[]> = {};
@@ -67,10 +69,7 @@ export default function AssetsStatusDialog(props: {
         legend: {
           position: "bottom",
           labels: {
-            font: {
-              family: roboto.style.fontFamily,
-              size: 14,
-            },
+            font: defaultChartFont,
           },
         },
         tooltip: {
@@ -94,19 +93,13 @@ export default function AssetsStatusDialog(props: {
         x: {
           stacked: true,
           ticks: {
-            font: {
-              family: roboto.style.fontFamily,
-              size: 14,
-            },
+            font: defaultChartFont,
           },
         },
         y: {
           stacked: true,
           ticks: {
-            font: {
-              family: roboto.style.fontFamily,
-              size: 14,
-            },
+            font: defaultChartFont,
           },
         },
       },
@@ -116,7 +109,7 @@ export default function AssetsStatusDialog(props: {
   const handleClose = props.onClose;
   return (
     <Dialog open={props.open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Assets Status</DialogTitle>
+      <DialogTitle>{t("portfolioStatus.dialogTitle")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           <Bar
@@ -127,7 +120,7 @@ export default function AssetsStatusDialog(props: {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose}>{t("general.close")}</Button>
       </DialogActions>
     </Dialog>
   );

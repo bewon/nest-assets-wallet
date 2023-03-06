@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button, Paper } from "@mui/material";
+import { Button, CircularProgress, Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import useFormat from "@src/utils/useFormat";
 import { useTranslation } from "next-i18next";
-import AssetsStatusDialog from "@src/components/AssetsStatusDialog";
+import PortfolioStatusDialog from "@src/components/PortfolioStatusDialog";
 
 export default function PortfolioStatus(props: { assets?: AssetSnapshot[] }) {
   const [open, setOpen] = useState(false);
@@ -13,29 +13,35 @@ export default function PortfolioStatus(props: { assets?: AssetSnapshot[] }) {
   const totalValue =
     props.assets != null
       ? props.assets.reduce((acc, asset) => acc + (asset.value ?? 0), 0)
-      : 0;
+      : null;
 
   return (
     <Paper sx={{ px: 2, py: 3, textAlign: "center" }}>
       <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
         {t("portfolioStatus.totalValue")}
       </Typography>
-      <Typography variant="h4" sx={{ overflowWrap: "anywhere" }}>
-        {amountFormat(totalValue, 0)}
-      </Typography>
-      <Button
-        onClick={() => setOpen(true)}
-        variant="outlined"
-        color={"secondary"}
-        sx={{ mt: 2 }}
-      >
-        {t("portfolioStatus.details")}
-      </Button>
-      <AssetsStatusDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        assets={props.assets}
-      />
+      {totalValue == null ? (
+        <CircularProgress sx={{ mt: 3, mb: 1 }} />
+      ) : (
+        <>
+          <Typography variant="h4" sx={{ overflowWrap: "anywhere" }}>
+            {amountFormat(totalValue, 0)}
+          </Typography>
+          <Button
+            onClick={() => setOpen(true)}
+            variant="outlined"
+            color={"secondary"}
+            sx={{ mt: 2 }}
+          >
+            {t("portfolioStatus.details")}
+          </Button>
+          <PortfolioStatusDialog
+            open={open}
+            onClose={() => setOpen(false)}
+            assets={props.assets}
+          />
+        </>
+      )}
     </Paper>
   );
 }

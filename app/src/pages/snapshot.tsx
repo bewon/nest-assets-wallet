@@ -35,7 +35,7 @@ export default function Snapshot() {
       }
     })();
     return () => abortRequest();
-  }, []);
+  }, [api, t]);
 
   return (
     <>

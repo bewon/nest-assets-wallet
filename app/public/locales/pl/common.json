@@ -31,6 +31,7 @@
   "general": {
     "cancel": "Anuluj",
     "confirm": "Potwierdź",
+    "close": "Zamknij",
     "delete": "Usuń",
     "edit": "Edytuj",
     "language": "Język",
@@ -57,6 +58,7 @@
   },
   "portfolioStatus": {
     "totalValue": "Całkowita wartość portfela",
-    "details": "Szczegóły"
+    "details": "Szczegóły",
+    "dialogTitle": "Szczegóły portfela"
   }
 }

@@ -66,4 +66,9 @@ export const assetsPalette = [
   "#99e949",
 ];
 
+export const defaultChartFont = {
+  family: roboto.style.fontFamily,
+  size: 14,
+};
+
 export default theme;
