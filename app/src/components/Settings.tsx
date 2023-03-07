@@ -1,5 +1,5 @@
 import { useTranslation } from "next-i18next";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Button,
@@ -16,6 +16,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Menu from "@mui/material/Menu";
 import LanguageIcon from "@mui/icons-material/Language";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
+import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 function LanguageButton(props: { lang: string }) {
   const router = useRouter();
@@ -39,6 +40,7 @@ function LanguageButton(props: { lang: string }) {
 export default function Settings() {
   const { t } = useTranslation();
   const router = useRouter();
+  const userSettings = useContext(UserSettingsContext);
   const [anchorSettings, setAnchorSettings] = useState<null | HTMLElement>(
     null
   );
@@ -97,7 +99,15 @@ export default function Settings() {
         <Divider />
         <ListItem>
           <FormControlLabel
-            control={<Switch checked={false} sx={{ ml: 1 }} />}
+            control={
+              <Switch
+                checked={userSettings.hideZeroAssets}
+                sx={{ ml: 1 }}
+                onChange={(e) =>
+                  userSettings?.setHideZeroAssets(e.target.checked)
+                }
+              />
+            }
             label={t("header.settings.zeroAssets")}
             labelPlacement="start"
             sx={{ ml: 0 }}

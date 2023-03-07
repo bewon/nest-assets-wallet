@@ -3,7 +3,7 @@ import { createTheme } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import { enUS, plPL } from "@mui/material/locale";
 import { enUS as enUSDataGrid, plPL as plPLDataGrid } from "@mui/x-data-grid";
-import { UserSettings } from "@src/pages/_app";
+import { UserSettings } from "@src/components/UserSettingsProvider";
 
 export const roboto = Roboto({
   weight: ["300", "400", "500", "700"],

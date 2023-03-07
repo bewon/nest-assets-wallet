@@ -4,7 +4,7 @@ import { prepareTheme } from "@src/utils/theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
 import { useContext } from "react";
-import { UserSettingsContext } from "@src/pages/_app";
+import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 export default function AppThemeProvider(props: { children: React.ReactNode }) {
   const { i18n } = useTranslation();
