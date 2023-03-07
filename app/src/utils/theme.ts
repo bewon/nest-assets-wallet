@@ -3,6 +3,7 @@ import { createTheme } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import { enUS, plPL } from "@mui/material/locale";
 import { enUS as enUSDataGrid, plPL as plPLDataGrid } from "@mui/x-data-grid";
+import { UserSettings } from "@src/pages/_app";
 
 export const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -14,19 +15,22 @@ export const roboto = Roboto({
 export const primaryColor = "#1976d2";
 export const secondaryColor = "#f46a40";
 
-export const prepareTheme = (language: string, darkMode: boolean) =>
+export const prepareTheme = (
+  language: string,
+  themeMode: UserSettings["themeMode"]
+) =>
   createTheme(
     {
       palette: {
-        mode: darkMode ? "dark" : "light",
+        mode: themeMode,
         primary: { main: primaryColor },
         secondary: { main: secondaryColor, contrastText: "#fff" },
         error: {
           main: red.A400,
         },
         background: {
-          default: darkMode ? "#121212" : "#eee",
-          paper: darkMode ? "#1c1c1c" : "#fff",
+          default: themeMode === "dark" ? "#121212" : "#eee",
+          paper: themeMode === "dark" ? "#1c1c1c" : "#fff",
         },
       },
       typography: {
