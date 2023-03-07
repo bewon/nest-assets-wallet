@@ -36,7 +36,8 @@
     "edit": "Edytuj",
     "language": "Język",
     "messages": {
-      "error": "Wystąpił błąd"
+      "error": "Wystąpił błąd",
+      "noData": "Brak danych"
     },
     "save": "Zapisz"
   },

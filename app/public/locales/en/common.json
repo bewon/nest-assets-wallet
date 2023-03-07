@@ -36,7 +36,8 @@
     "edit": "Edit",
     "language": "Language",
     "messages": {
-      "error": "An error occurred."
+      "error": "An error occurred",
+      "noData": "No data available"
     },
     "save": "Save"
   },

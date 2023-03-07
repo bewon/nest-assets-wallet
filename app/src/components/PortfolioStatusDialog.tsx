@@ -20,7 +20,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import useFormat from "@src/utils/useFormat";
-import { assetsPalette, defaultChartFont } from "@src/config/theme";
+import { assetsPalette, defaultChartFont } from "@src/utils/theme";
 import { useTranslation } from "next-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -125,7 +125,11 @@ export default function PortfolioStatusDialog(props: {
       <DialogTitle>{t("portfolioStatus.dialogTitle")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          <Bar data={data} options={options} height={chartHeight} />
+          {Object.keys(groupsData).length === 0 ? (
+            <p>{t("general.messages.noData")}</p>
+          ) : (
+            <Bar data={data} options={options} height={chartHeight} />
+          )}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
