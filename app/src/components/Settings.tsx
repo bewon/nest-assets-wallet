@@ -16,7 +16,11 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Menu from "@mui/material/Menu";
 import LanguageIcon from "@mui/icons-material/Language";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
-import { UserSettingsContext } from "@src/components/UserSettingsProvider";
+import {
+  UserSettings,
+  UserSettingsContext,
+} from "@src/components/UserSettingsProvider";
+import { ButtonProps } from "@mui/material/Button/Button";
 
 function LanguageButton(props: { lang: string }) {
   const router = useRouter();
@@ -37,10 +41,33 @@ function LanguageButton(props: { lang: string }) {
   );
 }
 
+function ThemeModeButton(props: {
+  themeMode: UserSettings["themeMode"];
+  currentThemeMode: UserSettings["themeMode"];
+  onClick: () => void;
+}) {
+  const { t } = useTranslation();
+  let buttonProps: ButtonProps = {};
+  if (props.themeMode === props.currentThemeMode) {
+    buttonProps = { variant: "outlined", color: "secondary" };
+  }
+  return (
+    <Button onClick={props.onClick} {...buttonProps}>
+      {t(`header.theme.${props.themeMode}`)}
+    </Button>
+  );
+}
+
 export default function Settings() {
   const { t } = useTranslation();
   const router = useRouter();
   const userSettings = useContext(UserSettingsContext);
+  const handleHideZeroAssetsChange = (checked: boolean) => {
+    userSettings.setHideZeroAssets && userSettings.setHideZeroAssets(checked);
+  };
+  const handleThemeModeChange = (themeMode: UserSettings["themeMode"]) => {
+    userSettings.setThemeMode && userSettings.setThemeMode(themeMode);
+  };
   const [anchorSettings, setAnchorSettings] = useState<null | HTMLElement>(
     null
   );
@@ -90,10 +117,16 @@ export default function Settings() {
             </ListItemIcon>
           </Tooltip>
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Button variant="outlined" color="secondary">
-              {t("header.theme.light")}
-            </Button>
-            <Button>{t("header.theme.dark")}</Button>
+            <ThemeModeButton
+              themeMode="light"
+              currentThemeMode={userSettings.themeMode}
+              onClick={() => handleThemeModeChange("light")}
+            />
+            <ThemeModeButton
+              themeMode="dark"
+              currentThemeMode={userSettings.themeMode}
+              onClick={() => handleThemeModeChange("dark")}
+            />
           </Box>
         </ListItem>
         <Divider />
@@ -103,9 +136,7 @@ export default function Settings() {
               <Switch
                 checked={userSettings.hideZeroAssets}
                 sx={{ ml: 1 }}
-                onChange={(e) =>
-                  userSettings?.setHideZeroAssets(e.target.checked)
-                }
+                onChange={(e) => handleHideZeroAssetsChange(e.target.checked)}
               />
             }
             label={t("header.settings.zeroAssets")}

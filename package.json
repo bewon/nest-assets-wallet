@@ -6,5 +6,8 @@
   "author": "Marcin <strong.neon@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
-  "workspaces": ["api", "app"]
+  "workspaces": [
+    "api",
+    "app"
+  ]
 }
