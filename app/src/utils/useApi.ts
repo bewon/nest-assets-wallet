@@ -8,7 +8,7 @@ import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-type EndpointFunction<T> = (data?: object) => {
+type EndpointFunction<T> = (config: { data?: object; params?: object }) => {
   makeRequest: () => Promise<AxiosResponse<T> | null>;
   abortRequest: () => void;
 };
@@ -21,7 +21,7 @@ const createEndpointFunction = <T>(
   const headers: AxiosRequestConfig["headers"] = {
     "Content-Type": "application/json",
   };
-  return (data?: object) => {
+  return ({ data, params }) => {
     const session = getSessionData();
     if (session != null && session.accessToken) {
       headers["Authorization"] = `Bearer ${session.accessToken}`;
@@ -33,7 +33,7 @@ const createEndpointFunction = <T>(
     };
     const makeRequest = () =>
       axios
-        .request<T>({ method, url, headers, data, signal })
+        .request<T>({ method, url, headers, data, signal, params })
         .catch((error) => handleError(error));
     return { makeRequest, abortRequest };
   };
@@ -69,6 +69,12 @@ const useApi = () => {
       getPerformanceStatistics:
         createEndpointFunction<PortfolioPerformanceStatistics>(
           "/api/portfolios/default/performance-statistics",
+          "GET",
+          prepareErrorHandler(true)
+        ),
+      getGroupPerformanceStatistics:
+        createEndpointFunction<PortfolioPerformanceStatistics>(
+          "/api/portfolios/default/group-performance",
           "GET",
           prepareErrorHandler(true)
         ),

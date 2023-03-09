@@ -21,6 +21,14 @@ import { useTranslation } from "next-i18next";
 import { groupAssets } from "@src/components/PortfolioStatusDialog";
 import { TbPigMoney, TbReportMoney, TbTrendingUp } from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
+import useApi from "@src/utils/useApi";
+
+type GroupData = {
+  assetsList: string;
+  capitalChange?: number;
+  valueChange?: number;
+  annualizedTwr?: number;
+};
 
 export default function PortfolioPerformance(props: {
   assets?: AssetSnapshot[];
@@ -29,32 +37,63 @@ export default function PortfolioPerformance(props: {
   const { t } = useTranslation();
   const { amountFormat, percentFormat } = useFormat();
   const [period, setPeriod] = useState<string>();
+  const [groupsPerformanceStatistics, setGroupsPerformanceStatistics] =
+    useState<Record<string, PortfolioPerformanceStatistics>>({});
+  const api = useApi();
+
   useEffect(() => {
-    if (props.performanceStatistics) {
+    if (props.performanceStatistics != null) {
       setPeriod(Object.keys(props.performanceStatistics)[0]);
     }
   }, [props.performanceStatistics]);
 
-  const groupsData: Record<string, object> = useMemo(() => {
-    const groupedAssets = groupAssets(props.assets ?? []);
+  const groupedAssets = useMemo(() => {
+    if (props.assets == null) return [];
+    return groupAssets(props.assets ?? []);
+  }, [props.assets]);
+
+  const groupsData: Record<string, GroupData> = useMemo(() => {
+    if (period == null) return {};
     return Object.fromEntries(
       Object.entries(groupedAssets).map(([group, assets]) => [
         group,
         {
           assetsList: assets.map((asset) => asset.name).join(", "),
           capitalChange:
-            period && props.performanceStatistics != null
-              ? props.performanceStatistics[period]?.capitalChange
-              : 0,
-          valueChange: 100,
+            groupsPerformanceStatistics[group]?.portfolio[period]
+              ?.capitalChange,
           annualizedTwr:
-            period && props.performanceStatistics != null
-              ? props.performanceStatistics[period]?.annualizedTwr
-              : 0,
+            groupsPerformanceStatistics[group]?.portfolio[period]
+              ?.annualizedTwr,
+          valueChange: 0,
         },
       ])
     );
-  }, [props.assets, props.performanceStatistics, period]);
+  }, [groupedAssets, groupsPerformanceStatistics, period]);
+
+  useEffect(() => {
+    const abortRequests: (() => void)[] = [];
+    for (const group of Object.keys(groupedAssets)) {
+      const { makeRequest, abortRequest } = api.getGroupPerformanceStatistics({
+        params: { group },
+      });
+      abortRequests.push(abortRequest);
+      (async () => {
+        try {
+          const response = await makeRequest();
+          if (response?.data) {
+            setGroupsPerformanceStatistics((prev) => ({
+              ...prev,
+              [group]: response.data,
+            }));
+          }
+        } catch (error: any) {
+          console.error(error);
+        }
+      })();
+    }
+    return () => abortRequests.forEach((abortRequest) => abortRequest());
+  }, [api, groupedAssets]);
 
   return (
     <Paper sx={{ p: 2 }}>
@@ -116,7 +155,10 @@ export default function PortfolioPerformance(props: {
                 </Box>
                 <Chip
                   icon={<TbTrendingUp />}
-                  label={percentFormat(groupsData[group]?.annualizedTwr, 2)}
+                  label={percentFormat(
+                    groupsData[group]?.annualizedTwr ?? 0,
+                    2
+                  )}
                   variant="outlined"
                   sx={{ mb: 1 }}
                 />

@@ -42,7 +42,7 @@ export default function Login() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const { makeRequest } = api.login({ email, password });
+      const { makeRequest } = api.login({ data: { email, password } });
       const response = await makeRequest();
       if (response?.data) {
         loginUser(response.data);

@@ -47,13 +47,13 @@ export default function Snapshot() {
   const generalErrorMessage = t("general.messages.error");
 
   useEffect(() => {
-    const { makeRequest, abortRequest } = api.getAssetsSnapshot();
+    const { makeRequest, abortRequest } = api.getAssetsSnapshot({});
     callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
     return () => abortRequest();
   }, [generalErrorMessage, api]);
 
   useEffect(() => {
-    const { makeRequest, abortRequest } = api.getPerformanceStatistics();
+    const { makeRequest, abortRequest } = api.getPerformanceStatistics({});
     callApi(
       makeRequest,
       setPerformanceStatistics,
