@@ -8,13 +8,39 @@ import { i18n } from "../../next-i18next.config";
 import Header from "@src/components/Header";
 import { Grid, Paper } from "@mui/material";
 import Container from "@mui/material/Container";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type {
+  AssetSnapshot,
+  PortfolioPerformanceStatistics,
+} from "@assets-wallet/api/src/portfolio/types";
 import { AssetsList } from "@src/components/AssetsList";
 import PortfolioStatus from "@src/components/PortfolioStatus";
 import PortfolioPerformance from "@src/components/PortfolioPerformance";
+import { AxiosResponse } from "axios";
+
+async function callApi<T>(
+  makeRequest: () => Promise<AxiosResponse<T> | null>,
+  setData: (data: T) => void,
+  generalErrorMessage: string,
+  setSnackbarState: (state: AppSnackbarState) => void
+) {
+  try {
+    const response = await makeRequest();
+    if (response?.data) {
+      setData(response.data);
+    }
+  } catch (error: any) {
+    setSnackbarState({
+      open: true,
+      message: error.response?.data?.message ?? generalErrorMessage,
+      severity: "error",
+    });
+  }
+}
 
 export default function Snapshot() {
   const [assets, setAssets] = useState<AssetSnapshot[]>();
+  const [performanceStatistics, setPerformanceStatistics] =
+    useState<PortfolioPerformanceStatistics>();
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const api = useApi();
   const { t } = useTranslation();
@@ -22,20 +48,18 @@ export default function Snapshot() {
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getAssetsSnapshot();
-    (async () => {
-      try {
-        const response = await makeRequest();
-        if (response?.data) {
-          setAssets(response.data);
-        }
-      } catch (error: any) {
-        setSnackbarState({
-          open: true,
-          message: error.response?.data?.message ?? generalErrorMessage,
-          severity: "error",
-        });
-      }
-    })();
+    callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
+    return () => abortRequest();
+  }, [generalErrorMessage, api]);
+
+  useEffect(() => {
+    const { makeRequest, abortRequest } = api.getPerformanceStatistics();
+    callApi(
+      makeRequest,
+      setPerformanceStatistics,
+      generalErrorMessage,
+      setSnackbarState
+    );
     return () => abortRequest();
   }, [generalErrorMessage, api]);
 
@@ -53,7 +77,10 @@ export default function Snapshot() {
               <AssetsList assets={assets} />
             </Grid>
             <Grid item xs={12}>
-              <PortfolioPerformance assets={assets} />
+              <PortfolioPerformance
+                assets={assets}
+                performanceStatistics={performanceStatistics?.portfolio}
+              />
             </Grid>
           </Grid>
           <Grid

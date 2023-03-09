@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSessionData, logoutUser } from "@src/utils/session";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type {
+  AssetSnapshot,
+  PortfolioPerformanceStatistics,
+} from "@assets-wallet/api/src/portfolio/types";
 import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -63,6 +66,12 @@ const useApi = () => {
         "GET",
         prepareErrorHandler(true)
       ),
+      getPerformanceStatistics:
+        createEndpointFunction<PortfolioPerformanceStatistics>(
+          "/api/portfolios/default/performance-statistics",
+          "GET",
+          prepareErrorHandler(true)
+        ),
     };
   }, [router]);
 };

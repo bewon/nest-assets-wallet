@@ -1,4 +1,7 @@
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type {
+  AssetSnapshot,
+  PortfolioPerformanceStatistics,
+} from "@assets-wallet/api/src/portfolio/types";
 import {
   Box,
   Chip,
@@ -7,8 +10,12 @@ import {
   ListItem,
   Paper,
   Tooltip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "next-i18next";
 import { groupAssets } from "@src/components/PortfolioStatusDialog";
@@ -17,19 +24,59 @@ import useFormat from "@src/utils/useFormat";
 
 export default function PortfolioPerformance(props: {
   assets?: AssetSnapshot[];
+  performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
 }) {
   const { t } = useTranslation();
-  const { amountFormat } = useFormat();
-  const groupsData: Record<string, AssetSnapshot[]> = useMemo(
-    () => groupAssets(props.assets ?? []),
-    [props.assets]
-  );
-  const getAssetsList = (group: string) =>
-    groupsData[group].map((asset) => asset.name).join(", ");
+  const { amountFormat, percentFormat } = useFormat();
+  const [period, setPeriod] = useState<string>();
+  useEffect(() => {
+    if (props.performanceStatistics) {
+      setPeriod(Object.keys(props.performanceStatistics)[0]);
+    }
+  }, [props.performanceStatistics]);
+
+  const groupsData: Record<string, object> = useMemo(() => {
+    const groupedAssets = groupAssets(props.assets ?? []);
+    return Object.fromEntries(
+      Object.entries(groupedAssets).map(([group, assets]) => [
+        group,
+        {
+          assetsList: assets.map((asset) => asset.name).join(", "),
+          capitalChange:
+            period && props.performanceStatistics != null
+              ? props.performanceStatistics[period]?.capitalChange
+              : 0,
+          valueChange: 100,
+          annualizedTwr:
+            period && props.performanceStatistics != null
+              ? props.performanceStatistics[period]?.annualizedTwr
+              : 0,
+        },
+      ])
+    );
+  }, [props.assets, props.performanceStatistics, period]);
 
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
+        <FormControl sx={{ width: 120 }} variant="standard">
+          <InputLabel id="demo-simple-select-label">
+            {t("portfolioPerformance.period")}
+          </InputLabel>
+          <Select
+            value={period ?? ""}
+            label={t("portfolioPerformance.period")}
+            onChange={(e) => setPeriod(e.target.value)}
+          >
+            {Object.keys(props.performanceStatistics ?? {}).map((period) => (
+              <MenuItem key={period} value={period}>
+                {period}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       {props.assets == null ? (
         <CircularProgress sx={{ mt: 3, mb: 1 }} />
       ) : (
@@ -43,7 +90,7 @@ export default function PortfolioPerformance(props: {
                 pt: 1,
               }}
             >
-              <Tooltip title={getAssetsList(group)}>
+              <Tooltip title={groupsData[group]?.assetsList}>
                 <Typography
                   variant="subtitle2"
                   sx={{ py: 1, width: "25%", minWidth: 120 }}
@@ -55,31 +102,21 @@ export default function PortfolioPerformance(props: {
                 <Box sx={{ minWidth: [0, 150], mb: 1 }}>
                   <Chip
                     icon={<TbPigMoney />}
-                    label={amountFormat(
-                      groupsData[group].reduce(
-                        (acc, asset) => acc + (asset.capital ?? 0),
-                        0
-                      )
-                    )}
+                    label={amountFormat(groupsData[group]?.capitalChange)}
                     variant="outlined"
                   />
                 </Box>
                 <Box sx={{ minWidth: [0, 150], mb: 1 }}>
                   <Chip
                     icon={<TbReportMoney />}
-                    label={amountFormat(
-                      groupsData[group].reduce(
-                        (acc, asset) => acc + (asset.value ?? 0),
-                        0
-                      )
-                    )}
+                    label={amountFormat(groupsData[group]?.valueChange)}
                     variant="outlined"
                     color="primary"
                   />
                 </Box>
                 <Chip
                   icon={<TbTrendingUp />}
-                  label="- 12.6%"
+                  label={percentFormat(groupsData[group]?.annualizedTwr, 2)}
                   variant="outlined"
                   sx={{ mb: 1 }}
                 />

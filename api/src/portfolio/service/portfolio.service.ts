@@ -9,13 +9,16 @@ import { Repository } from 'typeorm';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { AssetService } from './asset.service';
 import {
-  AnnualizedCalculation,
   PeriodHistory,
   periods,
   PortfolioBalanceChangeSetService,
 } from './portfolio-balance-change-set.service';
 import { defaultDateFormat } from '../../app.module';
 import * as dayjs from 'dayjs';
+import {
+  AnnualizedCalculation,
+  PortfolioPerformanceStatistics,
+} from '../types';
 
 const round = (
   value: number | undefined,
@@ -66,13 +69,7 @@ export class PortfolioService {
     date?: string,
     group?: string,
     withAssets = true,
-  ): Promise<{
-    portfolio: Record<string, AnnualizedCalculation | undefined>;
-    assets?: {
-      id: string;
-      annualizedTwr: Record<string, number | undefined>;
-    }[];
-  }> {
+  ): Promise<PortfolioPerformanceStatistics> {
     const changes = await this.assetService.findPortfolioChanges(
       portfolio,
       group,

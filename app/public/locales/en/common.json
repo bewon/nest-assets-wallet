@@ -65,6 +65,7 @@
     "valueLabel": "Value"
   },
   "portfolioPerformance": {
-    "title": "Portfolio performance"
+    "title": "Portfolio performance",
+    "period": "Period"
   }
 }

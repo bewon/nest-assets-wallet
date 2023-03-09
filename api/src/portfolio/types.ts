@@ -7,3 +7,17 @@ export interface AssetSnapshot {
   profit?: number;
   date?: string;
 }
+
+export type AnnualizedCalculation = {
+  annualizedTwr?: number;
+  capitalChange?: number;
+  profitChange?: number;
+};
+
+export type PortfolioPerformanceStatistics = {
+  portfolio: Record<string, AnnualizedCalculation | undefined>;
+  assets?: {
+    id: string;
+    annualizedTwr: Record<string, number | undefined>;
+  }[];
+};

@@ -2,12 +2,7 @@ import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { BalanceChangeModel } from '../model/balance-change.model';
 import * as dayjs from 'dayjs';
 import { defaultDateFormat } from '../../app.module';
-
-export type AnnualizedCalculation = {
-  annualizedTwr?: number;
-  capitalChange?: number;
-  profitChange?: number;
-};
+import { AnnualizedCalculation } from '../types';
 
 export const periods = {
   '1M': 1,

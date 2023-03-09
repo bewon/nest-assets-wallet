@@ -65,6 +65,7 @@
     "valueLabel": "Wartość"
   },
   "portfolioPerformance": {
-    "title": "Wyniki portfela"
+    "title": "Wyniki portfela",
+    "period": "Okres"
   }
 }
