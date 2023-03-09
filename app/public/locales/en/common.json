@@ -63,5 +63,8 @@
     "dialogTitle": "Portfolio details",
     "groupLabel": "Group",
     "valueLabel": "Value"
+  },
+  "portfolioPerformance": {
+    "title": "Portfolio performance"
   }
 }

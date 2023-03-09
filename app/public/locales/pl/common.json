@@ -63,5 +63,8 @@
     "dialogTitle": "Szczegóły portfela",
     "groupLabel": "Grupa",
     "valueLabel": "Wartość"
+  },
+  "portfolioPerformance": {
+    "title": "Wyniki portfela"
   }
 }

@@ -11,6 +11,7 @@ import Container from "@mui/material/Container";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import { AssetsList } from "@src/components/AssetsList";
 import PortfolioStatus from "@src/components/PortfolioStatus";
+import PortfolioPerformance from "@src/components/PortfolioPerformance";
 
 export default function Snapshot() {
   const [assets, setAssets] = useState<AssetSnapshot[]>();
@@ -52,7 +53,7 @@ export default function Snapshot() {
               <AssetsList assets={assets} />
             </Grid>
             <Grid item xs={12}>
-              <Paper sx={{ p: 2 }}>Portfolio Performance</Paper>
+              <PortfolioPerformance assets={assets} />
             </Grid>
           </Grid>
           <Grid

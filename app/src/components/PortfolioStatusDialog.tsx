@@ -10,15 +10,15 @@ import {
 } from "@mui/material";
 import React, { useMemo } from "react";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
-  Tooltip,
-  Legend,
+  CategoryScale,
+  Chart as ChartJS,
   ChartData,
   ChartOptions,
   defaults,
+  Legend,
+  LinearScale,
+  Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import useFormat from "@src/utils/useFormat";
@@ -26,6 +26,20 @@ import { assetsPalette, setChartDefaults } from "@src/utils/theme";
 import { useTranslation } from "next-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+
+export const groupAssets = (assets: AssetSnapshot[]) => {
+  const data: Record<string, AssetSnapshot[]> = {};
+  assets.forEach((asset) => {
+    if (asset.group == null) {
+      return;
+    }
+    if (!data[asset.group]) {
+      data[asset.group] = [];
+    }
+    data[asset.group].push(asset);
+  });
+  return data;
+};
 
 export default function PortfolioStatusDialog(props: {
   open: boolean;
@@ -36,19 +50,7 @@ export default function PortfolioStatusDialog(props: {
   const { t } = useTranslation();
   setChartDefaults(defaults, useTheme());
 
-  const groupsData = useMemo(() => {
-    const data: Record<string, AssetSnapshot[]> = {};
-    props.assets.forEach((asset) => {
-      if (asset.group == null) {
-        return;
-      }
-      if (!data[asset.group]) {
-        data[asset.group] = [];
-      }
-      data[asset.group].push(asset);
-    });
-    return data;
-  }, [props.assets]);
+  const groupsData = useMemo(() => groupAssets(props.assets), [props.assets]);
 
   const data = useMemo<ChartData<"bar">>(() => {
     const labels = Object.keys(groupsData);
