@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  useTheme,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import {
@@ -17,10 +18,11 @@ import {
   Legend,
   ChartData,
   ChartOptions,
+  defaults,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import useFormat from "@src/utils/useFormat";
-import { assetsPalette, defaultChartFont } from "@src/utils/theme";
+import { assetsPalette, setChartDefaults } from "@src/utils/theme";
 import { useTranslation } from "next-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -32,6 +34,7 @@ export default function PortfolioStatusDialog(props: {
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
+  setChartDefaults(defaults, useTheme());
 
   const groupsData = useMemo(() => {
     const data: Record<string, AssetSnapshot[]> = {};
@@ -47,7 +50,7 @@ export default function PortfolioStatusDialog(props: {
     return data;
   }, [props.assets]);
 
-  const data: ChartData<"bar"> = useMemo(() => {
+  const data = useMemo<ChartData<"bar">>(() => {
     const labels = Object.keys(groupsData);
     return {
       labels,
@@ -60,17 +63,14 @@ export default function PortfolioStatusDialog(props: {
     };
   }, [props.assets, groupsData]);
 
-  const options = useMemo(() => {
-    return {
+  const options = useMemo<ChartOptions<"bar">>(
+    () => ({
       indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
           position: "bottom",
-          labels: {
-            font: defaultChartFont,
-          },
         },
         tooltip: {
           callbacks: {
@@ -95,10 +95,6 @@ export default function PortfolioStatusDialog(props: {
           title: {
             display: true,
             text: t("portfolioStatus.valueLabel"),
-            font: defaultChartFont,
-          },
-          ticks: {
-            font: defaultChartFont,
           },
         },
         y: {
@@ -106,15 +102,12 @@ export default function PortfolioStatusDialog(props: {
           title: {
             display: true,
             text: t("portfolioStatus.groupLabel"),
-            font: defaultChartFont,
-          },
-          ticks: {
-            font: defaultChartFont,
           },
         },
       },
-    } as ChartOptions<"bar">;
-  }, [amountFormat, groupsData, t]);
+    }),
+    [amountFormat, groupsData, t]
+  );
 
   const chartHeight =
     (Object.keys(groupsData).length + 1) * 50 + (props.assets.length + 1) * 20;

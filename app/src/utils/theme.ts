@@ -1,9 +1,10 @@
 import { Roboto } from "@next/font/google";
-import { createTheme } from "@mui/material/styles";
+import { createTheme, Theme } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import { enUS, plPL } from "@mui/material/locale";
 import { enUS as enUSDataGrid, plPL as plPLDataGrid } from "@mui/x-data-grid";
 import { UserSettings } from "@src/components/UserSettingsProvider";
+import { Defaults } from "chart.js";
 
 export const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -84,4 +85,10 @@ export const assetsPalette = [
 export const defaultChartFont = {
   family: roboto.style.fontFamily,
   size: 14,
+};
+
+export const setChartDefaults = (defaults: Defaults, theme: Theme) => {
+  defaults.font.family = roboto.style.fontFamily;
+  defaults.font.size = 14;
+  defaults.color = theme.palette.text.primary;
 };
