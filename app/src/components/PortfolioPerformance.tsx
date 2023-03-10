@@ -14,6 +14,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Divider,
 } from "@mui/material";
 import React, {
   Dispatch,
@@ -30,7 +31,7 @@ import useFormat from "@src/utils/useFormat";
 import useApi from "@src/utils/useApi";
 import { AxiosResponse } from "axios";
 
-type GroupData = {
+type PerformanceData = {
   assetsList: string;
   capitalChange?: number;
   valueChange?: number;
@@ -39,13 +40,13 @@ type GroupData = {
 
 const preparePerformanceValues = (
   assets: AssetSnapshot[],
-  statistics: PortfolioPerformanceStatistics,
-  period: string
-): GroupData => {
+  period: string,
+  statistics?: PortfolioPerformanceStatistics["portfolio"]
+): PerformanceData => {
   return {
     assetsList: assets.map((asset) => asset.name).join(", "),
-    capitalChange: statistics?.portfolio[period]?.capitalChange,
-    annualizedTwr: statistics?.portfolio[period]?.annualizedTwr,
+    capitalChange: statistics?.[period]?.capitalChange,
+    annualizedTwr: statistics?.[period]?.annualizedTwr,
     valueChange: 0,
   };
 };
@@ -89,15 +90,20 @@ export default function PortfolioPerformance(props: {
     return groupAssets(props.assets ?? []);
   }, [props.assets]);
 
-  const groupsData: Record<string, GroupData> = useMemo(() => {
+  const groupsData = useMemo<Record<string, PerformanceData>>(() => {
     if (period == null) return {};
     return Object.fromEntries(
       Object.entries(groupedAssets).map(([group, assets]) => {
-        const statistics = groupsPerformanceStatistics[group];
-        return [group, preparePerformanceValues(assets, statistics, period)];
+        const statistics = groupsPerformanceStatistics[group]?.portfolio;
+        return [group, preparePerformanceValues(assets, period, statistics)];
       })
     );
   }, [groupedAssets, groupsPerformanceStatistics, period]);
+
+  const portfolioData = useMemo<PerformanceData | undefined>(() => {
+    if (period == null || props.performanceStatistics == null) return;
+    return preparePerformanceValues([], period, props.performanceStatistics);
+  }, [props.performanceStatistics, period]);
 
   useEffect(() => {
     const abortRequests: (() => void)[] = [];
@@ -118,7 +124,7 @@ export default function PortfolioPerformance(props: {
         <PeriodSelector
           period={period}
           setPeriod={setPeriod}
-          performanceStatistics={props.performanceStatistics}
+          allPeriods={Object.keys(props.performanceStatistics ?? {})}
         />
       </Box>
       {props.assets == null ? (
@@ -129,10 +135,7 @@ export default function PortfolioPerformance(props: {
             <ListItem
               key={group}
               disablePadding
-              sx={{
-                display: "flex",
-                pt: 1,
-              }}
+              sx={{ display: "flex", pt: 1 }}
             >
               <Tooltip title={groupsData[group]?.assetsList}>
                 <Typography
@@ -142,13 +145,14 @@ export default function PortfolioPerformance(props: {
                   {group}
                 </Typography>
               </Tooltip>
-              <PerformanceValues
-                capitalChange={groupsData[group]?.capitalChange}
-                valueChange={groupsData[group]?.valueChange}
-                annualizedTwr={groupsData[group]?.annualizedTwr}
-              />
+              <PerformanceValues performanceData={groupsData[group]} />
             </ListItem>
           ))}
+          <Divider sx={{ my: 1 }} />
+          <ListItem disablePadding sx={{ display: "flex" }}>
+            <Box sx={{ py: 1, width: "25%", minWidth: 120 }} />
+            <PerformanceValues summary performanceData={portfolioData} />
+          </ListItem>
         </List>
       )}
     </Paper>
@@ -158,11 +162,11 @@ export default function PortfolioPerformance(props: {
 const PeriodSelector = ({
   period,
   setPeriod,
-  performanceStatistics,
+  allPeriods,
 }: {
   period?: string;
   setPeriod: (period: string) => void;
-  performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
+  allPeriods: string[];
 }) => {
   const { t } = useTranslation();
   return (
@@ -176,7 +180,7 @@ const PeriodSelector = ({
         label={t("portfolioPerformance.period")}
         onChange={(e) => setPeriod(e.target.value)}
       >
-        {Object.keys(performanceStatistics ?? {}).map((period) => (
+        {allPeriods.map((period) => (
           <MenuItem key={period} value={period}>
             {period}
           </MenuItem>
@@ -186,37 +190,42 @@ const PeriodSelector = ({
   );
 };
 
-const PerformanceValues = ({
-  capitalChange,
-  valueChange,
-  annualizedTwr,
-}: {
-  capitalChange?: number;
-  valueChange?: number;
-  annualizedTwr?: number;
+const PerformanceValues = (props: {
+  performanceData?: PerformanceData;
+  summary?: boolean;
 }) => {
   const { amountFormat, percentFormat } = useFormat();
+  const variant = props.summary ? "filled" : "outlined";
+  const annualizedTwr = props.performanceData?.annualizedTwr;
+
   return (
     <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
       <Box sx={{ minWidth: [0, 150], mb: 1 }}>
         <Chip
           icon={<TbPigMoney />}
-          label={amountFormat(capitalChange)}
-          variant="outlined"
+          label={amountFormat(props.performanceData?.capitalChange)}
+          variant={variant}
         />
       </Box>
       <Box sx={{ minWidth: [0, 150], mb: 1 }}>
         <Chip
           icon={<TbReportMoney />}
-          label={amountFormat(valueChange)}
-          variant="outlined"
+          label={amountFormat(props.performanceData?.valueChange)}
+          variant={variant}
           color="primary"
         />
       </Box>
       <Chip
         icon={<TbTrendingUp />}
         label={percentFormat(annualizedTwr ?? 0, 2)}
-        variant="outlined"
+        variant={variant}
+        color={
+          annualizedTwr == null || annualizedTwr === 0
+            ? "default"
+            : annualizedTwr > 0
+            ? "success"
+            : "error"
+        }
         sx={{ mb: 1 }}
       />
     </Box>
