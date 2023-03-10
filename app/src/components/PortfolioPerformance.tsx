@@ -35,6 +35,7 @@ type PerformanceData = {
   assetsList: string;
   capitalChange?: number;
   valueChange?: number;
+  profitChange?: number;
   annualizedTwr?: number;
 };
 
@@ -46,8 +47,9 @@ const preparePerformanceValues = (
   return {
     assetsList: assets.map((asset) => asset.name).join(", "),
     capitalChange: statistics?.[period]?.capitalChange,
+    valueChange: statistics?.[period]?.valueChange,
+    profitChange: statistics?.[period]?.profitChange,
     annualizedTwr: statistics?.[period]?.annualizedTwr,
-    valueChange: 0,
   };
 };
 
@@ -215,19 +217,21 @@ const PerformanceValues = (props: {
           color="primary"
         />
       </Box>
-      <Chip
-        icon={<TbTrendingUp />}
-        label={percentFormat(annualizedTwr ?? 0, 2)}
-        variant={variant}
-        color={
-          annualizedTwr == null || annualizedTwr === 0
-            ? "default"
-            : annualizedTwr > 0
-            ? "success"
-            : "error"
-        }
-        sx={{ mb: 1 }}
-      />
+      <Tooltip title={amountFormat(props.performanceData?.profitChange)}>
+        <Chip
+          icon={<TbTrendingUp />}
+          label={percentFormat(annualizedTwr ?? 0, 2)}
+          variant={variant}
+          color={
+            annualizedTwr == null || annualizedTwr === 0
+              ? "default"
+              : annualizedTwr > 0
+              ? "success"
+              : "error"
+          }
+          sx={{ mb: 1 }}
+        />
+      </Tooltip>
     </Box>
   );
 };

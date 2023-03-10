@@ -167,6 +167,7 @@ export class PortfolioService {
         result[period] = {
           annualizedTwr: round(calculation.annualizedTwr, 4),
           capitalChange: calculation.capitalChange,
+          valueChange: calculation.valueChange,
           profitChange: calculation.profitChange,
         };
       }

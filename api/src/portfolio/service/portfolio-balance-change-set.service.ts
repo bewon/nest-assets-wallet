@@ -55,17 +55,17 @@ export class PortfolioBalanceChangeSetService {
 
   // prepare calculations (e.g. TWR, capital change, profit change) for whole Portfolio
   prepareCalculationsForPortfolio(
-    withCapitalAndProfit = true,
+    withAbsoluteValues = true,
   ): PeriodCalculation {
     return this.prepareCalculationForPeriods(
       this.portfolioChanges,
-      withCapitalAndProfit,
+      withAbsoluteValues,
     );
   }
 
   // prepare calculations (e.g. TWR, capital change, profit change) for all Portfolio Assets
   prepareCalculationsForAssets(
-    withCapitalAndProfit = true,
+    withAbsoluteValues = true,
   ): Record<string, PeriodCalculation> {
     const calculations: Record<string, PeriodCalculation> = {};
     Object.entries(this.groupedAssetChanges)
@@ -73,7 +73,7 @@ export class PortfolioBalanceChangeSetService {
       .forEach(([assetId, changes]) => {
         calculations[assetId] = this.prepareCalculationForPeriods(
           changes,
-          withCapitalAndProfit,
+          withAbsoluteValues,
         );
       });
     return calculations;
@@ -121,10 +121,10 @@ export class PortfolioBalanceChangeSetService {
   // make calculations (TWR, capital change, profit change) for all given changes and sub-periods of changes
   private prepareCalculationForPeriods(
     changes: BalanceChangeModel[],
-    withCapitalAndProfit = true,
+    withAbsoluteValues = true,
   ): PeriodCalculation {
     const calculation: PeriodCalculation = {
-      total: this.prepareCalculationForChanges(changes, withCapitalAndProfit),
+      total: this.prepareCalculationForChanges(changes, withAbsoluteValues),
     };
     Object.entries(periods).forEach(([period, months]) => {
       const minDate = subtractMonths(this.endDate, months);
@@ -136,7 +136,7 @@ export class PortfolioBalanceChangeSetService {
         periodChanges.length < changes.length
           ? this.prepareCalculationForChanges(
               periodChanges,
-              withCapitalAndProfit,
+              withAbsoluteValues,
               months,
             )
           : calculation.total;
@@ -155,7 +155,7 @@ export class PortfolioBalanceChangeSetService {
   // make calculations (TWR, capital change, profit change) for given changes in period
   private prepareCalculationForChanges(
     changes: BalanceChangeModel[],
-    withCapitalAndProfit = true,
+    withAbsoluteValues = true,
     monthsInPeriod?: number,
   ): AnnualizedCalculation | null {
     if (
@@ -167,10 +167,11 @@ export class PortfolioBalanceChangeSetService {
     const calculation: AnnualizedCalculation = {
       annualizedTwr: this.calculateAnnualizedTwr(changes, monthsInPeriod),
     };
-    if (withCapitalAndProfit) {
+    if (withAbsoluteValues) {
       const oldestChange = changes[0].previousChange || changes[0];
       const lastChange = changes[changes.length - 1];
       calculation.capitalChange = lastChange.capital - oldestChange.capital;
+      calculation.valueChange = lastChange.value - oldestChange.value;
       calculation.profitChange =
         lastChange.getProfit() - oldestChange.getProfit();
     }

@@ -11,6 +11,7 @@ export interface AssetSnapshot {
 export type AnnualizedCalculation = {
   annualizedTwr?: number;
   capitalChange?: number;
+  valueChange?: number;
   profitChange?: number;
 };
 
