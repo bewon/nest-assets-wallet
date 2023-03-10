@@ -15,13 +15,20 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "next-i18next";
 import { groupAssets } from "@src/components/PortfolioStatusDialog";
 import { TbPigMoney, TbReportMoney, TbTrendingUp } from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
 import useApi from "@src/utils/useApi";
+import { AxiosResponse } from "axios";
 
 type GroupData = {
   assetsList: string;
@@ -30,12 +37,42 @@ type GroupData = {
   annualizedTwr?: number;
 };
 
+const preparePerformanceValues = (
+  assets: AssetSnapshot[],
+  statistics: PortfolioPerformanceStatistics,
+  period: string
+): GroupData => {
+  return {
+    assetsList: assets.map((asset) => asset.name).join(", "),
+    capitalChange: statistics?.portfolio[period]?.capitalChange,
+    annualizedTwr: statistics?.portfolio[period]?.annualizedTwr,
+    valueChange: 0,
+  };
+};
+
+async function callApiForGroup<T>(
+  makeRequest: () => Promise<AxiosResponse<T> | null>,
+  group: string,
+  setData: Dispatch<SetStateAction<Record<string, T>>>
+) {
+  try {
+    const response = await makeRequest();
+    if (response?.data) {
+      setData((prev) => ({
+        ...prev,
+        [group]: response.data,
+      }));
+    }
+  } catch (error: any) {
+    console.error(error);
+  }
+}
+
 export default function PortfolioPerformance(props: {
   assets?: AssetSnapshot[];
   performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
 }) {
   const { t } = useTranslation();
-  const { amountFormat, percentFormat } = useFormat();
   const [period, setPeriod] = useState<string>();
   const [groupsPerformanceStatistics, setGroupsPerformanceStatistics] =
     useState<Record<string, PortfolioPerformanceStatistics>>({});
@@ -55,19 +92,10 @@ export default function PortfolioPerformance(props: {
   const groupsData: Record<string, GroupData> = useMemo(() => {
     if (period == null) return {};
     return Object.fromEntries(
-      Object.entries(groupedAssets).map(([group, assets]) => [
-        group,
-        {
-          assetsList: assets.map((asset) => asset.name).join(", "),
-          capitalChange:
-            groupsPerformanceStatistics[group]?.portfolio[period]
-              ?.capitalChange,
-          annualizedTwr:
-            groupsPerformanceStatistics[group]?.portfolio[period]
-              ?.annualizedTwr,
-          valueChange: 0,
-        },
-      ])
+      Object.entries(groupedAssets).map(([group, assets]) => {
+        const statistics = groupsPerformanceStatistics[group];
+        return [group, preparePerformanceValues(assets, statistics, period)];
+      })
     );
   }, [groupedAssets, groupsPerformanceStatistics, period]);
 
@@ -78,19 +106,7 @@ export default function PortfolioPerformance(props: {
         params: { group },
       });
       abortRequests.push(abortRequest);
-      (async () => {
-        try {
-          const response = await makeRequest();
-          if (response?.data) {
-            setGroupsPerformanceStatistics((prev) => ({
-              ...prev,
-              [group]: response.data,
-            }));
-          }
-        } catch (error: any) {
-          console.error(error);
-        }
-      })();
+      callApiForGroup(makeRequest, group, setGroupsPerformanceStatistics);
     }
     return () => abortRequests.forEach((abortRequest) => abortRequest());
   }, [api, groupedAssets]);
@@ -99,22 +115,11 @@ export default function PortfolioPerformance(props: {
     <Paper sx={{ p: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
-        <FormControl sx={{ width: 120 }} variant="standard">
-          <InputLabel id="demo-simple-select-label">
-            {t("portfolioPerformance.period")}
-          </InputLabel>
-          <Select
-            value={period ?? ""}
-            label={t("portfolioPerformance.period")}
-            onChange={(e) => setPeriod(e.target.value)}
-          >
-            {Object.keys(props.performanceStatistics ?? {}).map((period) => (
-              <MenuItem key={period} value={period}>
-                {period}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <PeriodSelector
+          period={period}
+          setPeriod={setPeriod}
+          performanceStatistics={props.performanceStatistics}
+        />
       </Box>
       {props.assets == null ? (
         <CircularProgress sx={{ mt: 3, mb: 1 }} />
@@ -137,32 +142,11 @@ export default function PortfolioPerformance(props: {
                   {group}
                 </Typography>
               </Tooltip>
-              <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
-                <Box sx={{ minWidth: [0, 150], mb: 1 }}>
-                  <Chip
-                    icon={<TbPigMoney />}
-                    label={amountFormat(groupsData[group]?.capitalChange)}
-                    variant="outlined"
-                  />
-                </Box>
-                <Box sx={{ minWidth: [0, 150], mb: 1 }}>
-                  <Chip
-                    icon={<TbReportMoney />}
-                    label={amountFormat(groupsData[group]?.valueChange)}
-                    variant="outlined"
-                    color="primary"
-                  />
-                </Box>
-                <Chip
-                  icon={<TbTrendingUp />}
-                  label={percentFormat(
-                    groupsData[group]?.annualizedTwr ?? 0,
-                    2
-                  )}
-                  variant="outlined"
-                  sx={{ mb: 1 }}
-                />
-              </Box>
+              <PerformanceValues
+                capitalChange={groupsData[group]?.capitalChange}
+                valueChange={groupsData[group]?.valueChange}
+                annualizedTwr={groupsData[group]?.annualizedTwr}
+              />
             </ListItem>
           ))}
         </List>
@@ -170,3 +154,71 @@ export default function PortfolioPerformance(props: {
     </Paper>
   );
 }
+
+const PeriodSelector = ({
+  period,
+  setPeriod,
+  performanceStatistics,
+}: {
+  period?: string;
+  setPeriod: (period: string) => void;
+  performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
+}) => {
+  const { t } = useTranslation();
+  return (
+    <FormControl sx={{ width: 120 }} variant="standard">
+      <InputLabel id="portfolio-performance-period-label">
+        {t("portfolioPerformance.period")}
+      </InputLabel>
+      <Select
+        labelId="portfolio-performance-period-label"
+        value={period ?? ""}
+        label={t("portfolioPerformance.period")}
+        onChange={(e) => setPeriod(e.target.value)}
+      >
+        {Object.keys(performanceStatistics ?? {}).map((period) => (
+          <MenuItem key={period} value={period}>
+            {period}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
+
+const PerformanceValues = ({
+  capitalChange,
+  valueChange,
+  annualizedTwr,
+}: {
+  capitalChange?: number;
+  valueChange?: number;
+  annualizedTwr?: number;
+}) => {
+  const { amountFormat, percentFormat } = useFormat();
+  return (
+    <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
+      <Box sx={{ minWidth: [0, 150], mb: 1 }}>
+        <Chip
+          icon={<TbPigMoney />}
+          label={amountFormat(capitalChange)}
+          variant="outlined"
+        />
+      </Box>
+      <Box sx={{ minWidth: [0, 150], mb: 1 }}>
+        <Chip
+          icon={<TbReportMoney />}
+          label={amountFormat(valueChange)}
+          variant="outlined"
+          color="primary"
+        />
+      </Box>
+      <Chip
+        icon={<TbTrendingUp />}
+        label={percentFormat(annualizedTwr ?? 0, 2)}
+        variant="outlined"
+        sx={{ mb: 1 }}
+      />
+    </Box>
+  );
+};

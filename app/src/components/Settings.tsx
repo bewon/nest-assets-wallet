@@ -22,42 +22,6 @@ import {
 } from "@src/components/UserSettingsProvider";
 import { ButtonProps } from "@mui/material/Button/Button";
 
-function LanguageButton(props: { lang: string }) {
-  const router = useRouter();
-  const { i18n } = useTranslation();
-  const buttonProps:
-    | { variant: "outlined"; color: "secondary" }
-    | Record<string, never> =
-    i18n.language === props.lang
-      ? { variant: "outlined", color: "secondary" }
-      : {};
-  const handleLanguageChange = () => {
-    router.push(router.pathname, undefined, { locale: props.lang });
-  };
-  return (
-    <Button onClick={handleLanguageChange} {...buttonProps}>
-      {props.lang.toUpperCase()}
-    </Button>
-  );
-}
-
-function ThemeModeButton(props: {
-  themeMode: UserSettings["themeMode"];
-  currentThemeMode: UserSettings["themeMode"];
-  onClick: () => void;
-}) {
-  const { t } = useTranslation();
-  let buttonProps: ButtonProps = {};
-  if (props.themeMode === props.currentThemeMode) {
-    buttonProps = { variant: "outlined", color: "secondary" };
-  }
-  return (
-    <Button onClick={props.onClick} {...buttonProps}>
-      {t(`header.theme.${props.themeMode}`)}
-    </Button>
-  );
-}
-
 export default function Settings() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -152,5 +116,41 @@ export default function Settings() {
         </ListItem>
       </Menu>
     </Box>
+  );
+}
+
+function LanguageButton(props: { lang: string }) {
+  const router = useRouter();
+  const { i18n } = useTranslation();
+  const buttonProps:
+    | { variant: "outlined"; color: "secondary" }
+    | Record<string, never> =
+    i18n.language === props.lang
+      ? { variant: "outlined", color: "secondary" }
+      : {};
+  const handleLanguageChange = () => {
+    router.push(router.pathname, undefined, { locale: props.lang });
+  };
+  return (
+    <Button onClick={handleLanguageChange} {...buttonProps}>
+      {props.lang.toUpperCase()}
+    </Button>
+  );
+}
+
+function ThemeModeButton(props: {
+  themeMode: UserSettings["themeMode"];
+  currentThemeMode: UserSettings["themeMode"];
+  onClick: () => void;
+}) {
+  const { t } = useTranslation();
+  let buttonProps: ButtonProps = {};
+  if (props.themeMode === props.currentThemeMode) {
+    buttonProps = { variant: "outlined", color: "secondary" };
+  }
+  return (
+    <Button onClick={props.onClick} {...buttonProps}>
+      {t(`header.theme.${props.themeMode}`)}
+    </Button>
   );
 }

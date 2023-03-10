@@ -2,7 +2,7 @@ import { Card, CardContent } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 
-export function CardLogo() {
+export default function CardLogo() {
   return (
     <Card
       sx={{

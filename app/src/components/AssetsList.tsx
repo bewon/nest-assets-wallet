@@ -16,7 +16,7 @@ import useFormat from "@src/utils/useFormat";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
-export function AssetsList(props: { assets?: AssetSnapshot[] }) {
+export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
   const { t } = useTranslation();
   const { amountFormat } = useFormat();
 

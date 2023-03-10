@@ -1,16 +1,16 @@
 {
   "assetsList": {
     "columns": {
-      "name": "Nazwa",
       "capital": "Kapitał",
-      "value": "Wartość",
+      "date": "Ostatnia aktualizacja",
+      "name": "Nazwa",
       "profit": "Całkowity zysk / strata",
-      "date": "Ostatnia aktualizacja"
+      "value": "Wartość"
     },
     "menu": {
       "balanceUpdate": "Aktualizuj saldo",
-      "edit": "Edytuj aktywo",
-      "changesList": "Lista aktualizacji salda"
+      "changesList": "Lista aktualizacji salda",
+      "edit": "Edytuj aktywo"
     },
     "title": "Aktywa"
   },
@@ -30,8 +30,8 @@
   },
   "general": {
     "cancel": "Anuluj",
-    "confirm": "Potwierdź",
     "close": "Zamknij",
+    "confirm": "Potwierdź",
     "delete": "Usuń",
     "edit": "Edytuj",
     "language": "Język",
@@ -43,29 +43,29 @@
   },
   "header": {
     "menu": {
-      "today": "Dzisiaj",
-      "history": "Historia"
+      "history": "Historia",
+      "today": "Dzisiaj"
     },
     "settings": {
-      "settings": "Ustawienia",
       "language": "Język",
+      "settings": "Ustawienia",
       "theme": "Motyw",
       "zeroAssets": "Ukryj akywa bez wartości"
     },
     "theme": {
-      "light": "Jasny",
-      "dark": "Ciemny"
+      "dark": "Ciemny",
+      "light": "Jasny"
     }
   },
+  "portfolioPerformance": {
+    "period": "Okres",
+    "title": "Wyniki portfela"
+  },
   "portfolioStatus": {
-    "totalValue": "Całkowita wartość portfela",
     "details": "Szczegóły",
     "dialogTitle": "Szczegóły portfela",
     "groupLabel": "Grupa",
+    "totalValue": "Całkowita wartość portfela",
     "valueLabel": "Wartość"
-  },
-  "portfolioPerformance": {
-    "title": "Wyniki portfela",
-    "period": "Okres"
   }
 }

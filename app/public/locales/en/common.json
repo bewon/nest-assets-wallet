@@ -1,16 +1,16 @@
 {
   "assetsList": {
     "columns": {
-      "name": "Name",
       "capital": "Capital",
-      "value": "Value",
+      "date": "Last update",
+      "name": "Name",
       "profit": "Total Gain / Loss",
-      "date": "Last update"
+      "value": "Value"
     },
     "menu": {
       "balanceUpdate": "Update asset balance",
-      "edit": "Edit asset",
-      "changesList": "Asset balance changes list"
+      "changesList": "Asset balance changes list",
+      "edit": "Edit asset"
     },
     "title": "Assets"
   },
@@ -30,8 +30,8 @@
   },
   "general": {
     "cancel": "Cancel",
-    "confirm": "Confirm",
     "close": "Close",
+    "confirm": "Confirm",
     "delete": "Delete",
     "edit": "Edit",
     "language": "Language",
@@ -43,29 +43,29 @@
   },
   "header": {
     "menu": {
-      "today": "Today",
-      "history": "History"
+      "history": "History",
+      "today": "Today"
     },
     "settings": {
-      "settings": "Settings",
       "language": "Language",
+      "settings": "Settings",
       "theme": "Theme",
       "zeroAssets": "Hide assets with zero value"
     },
     "theme": {
-      "light": "Light",
-      "dark": "Dark"
+      "dark": "Dark",
+      "light": "Light"
     }
   },
+  "portfolioPerformance": {
+    "period": "Period",
+    "title": "Portfolio performance"
+  },
   "portfolioStatus": {
-    "totalValue": "Total portfolio value",
     "details": "Details",
     "dialogTitle": "Portfolio details",
     "groupLabel": "Group",
+    "totalValue": "Total portfolio value",
     "valueLabel": "Value"
-  },
-  "portfolioPerformance": {
-    "title": "Portfolio performance",
-    "period": "Period"
   }
 }

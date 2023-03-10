@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import LoginForm from "@src/components/LoginForm";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
-import { CardLogo } from "@src/components/CardLogo";
+import CardLogo from "@src/components/CardLogo";
 import { loginUser, logoutUser } from "@src/utils/session";
 import useApi from "@src/utils/useApi";
 import { useTranslation } from "next-i18next";
@@ -13,19 +13,6 @@ import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n } from "../../../next-i18next.config";
 import Link from "@src/components/Link";
-
-function LangSelect({ code, label }: { code: string; label: string }) {
-  const { i18n } = useTranslation();
-  if (code === i18n.language) {
-    return <>{label}</>;
-  } else {
-    return (
-      <Link href="/auth/login" locale={code}>
-        {label}
-      </Link>
-    );
-  }
-}
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -82,6 +69,19 @@ export default function Login() {
       </Card>
     </Container>
   );
+}
+
+function LangSelect({ code, label }: { code: string; label: string }) {
+  const { i18n } = useTranslation();
+  if (code === i18n.language) {
+    return <>{label}</>;
+  } else {
+    return (
+      <Link href="/auth/login" locale={code}>
+        {label}
+      </Link>
+    );
+  }
 }
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({

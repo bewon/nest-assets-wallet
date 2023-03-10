@@ -12,7 +12,7 @@ import type {
   AssetSnapshot,
   PortfolioPerformanceStatistics,
 } from "@assets-wallet/api/src/portfolio/types";
-import { AssetsList } from "@src/components/AssetsList";
+import AssetsList from "@src/components/AssetsList";
 import PortfolioStatus from "@src/components/PortfolioStatus";
 import PortfolioPerformance from "@src/components/PortfolioPerformance";
 import { AxiosResponse } from "axios";
