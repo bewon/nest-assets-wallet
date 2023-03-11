@@ -6,7 +6,7 @@ import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n } from "../../next-i18next.config";
 import Header from "@src/components/Header";
-import { Grid, Paper } from "@mui/material";
+import { Grid } from "@mui/material";
 import Container from "@mui/material/Container";
 import type {
   AssetSnapshot,
@@ -16,6 +16,7 @@ import AssetsList from "@src/components/AssetsList";
 import PortfolioStatus from "@src/components/PortfolioStatus";
 import PortfolioPerformance from "@src/components/PortfolioPerformance";
 import { AxiosResponse } from "axios";
+import AssetsPerformance from "@src/components/AssetsPerformance";
 
 async function callApi<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
@@ -96,7 +97,10 @@ export default function Snapshot() {
               <PortfolioStatus assets={assets} />
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
-              <Paper sx={{ p: 2 }}>Assets Performance</Paper>
+              <AssetsPerformance
+                assets={assets}
+                performanceStatistics={performanceStatistics?.assets}
+              />
             </Grid>
           </Grid>
         </Grid>

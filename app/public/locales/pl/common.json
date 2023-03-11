@@ -14,6 +14,9 @@
     },
     "title": "Aktywa"
   },
+  "assetsPerformance": {
+    "title": "Wyniki aktywów"
+  },
   "auth": {
     "logIn": "Zaloguj",
     "logOut": "Wyloguj",
@@ -39,6 +42,7 @@
       "error": "Wystąpił błąd",
       "noData": "Brak danych"
     },
+    "period": "Okres",
     "save": "Zapisz"
   },
   "header": {
@@ -60,7 +64,6 @@
   "portfolioPerformance": {
     "annuallyPhraseDescription": "TWR per annum (rocznie)",
     "capitalChange": "Zmiana kapitału",
-    "period": "Okres",
     "profitChange": "Zmiana zysku",
     "title": "Wyniki portfela",
     "valueChange": "Zmiana wartości"

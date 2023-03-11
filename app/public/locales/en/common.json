@@ -14,6 +14,9 @@
     },
     "title": "Assets"
   },
+  "assetsPerformance": {
+    "title": "Assets performance"
+  },
   "auth": {
     "logIn": "Log in",
     "logOut": "Log out",
@@ -39,6 +42,7 @@
       "error": "An error occurred",
       "noData": "No data available"
     },
+    "period": "Period",
     "save": "Save"
   },
   "header": {
@@ -60,7 +64,6 @@
   "portfolioPerformance": {
     "annuallyPhraseDescription": "TWR per annum (per year)",
     "capitalChange": "Capital change",
-    "period": "Period",
     "profitChange": "Profit change",
     "title": "Portfolio performance",
     "valueChange": "Value change"

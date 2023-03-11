@@ -6,15 +6,11 @@ import {
   Box,
   Chip,
   CircularProgress,
+  Divider,
   List,
   ListItem,
   Paper,
   Tooltip,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Divider,
 } from "@mui/material";
 import React, {
   Dispatch,
@@ -29,12 +25,13 @@ import { groupAssets } from "@src/components/PortfolioStatusDialog";
 import {
   TbPigMoney,
   TbReportMoney,
-  TbTrendingUp,
   TbTrendingDown,
+  TbTrendingUp,
 } from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
 import useApi from "@src/utils/useApi";
 import { AxiosResponse } from "axios";
+import PeriodSelector from "@src/components/PeriodSelector";
 
 type PerformanceData = {
   assetsList: string;
@@ -130,7 +127,7 @@ export default function PortfolioPerformance(props: {
         <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
         <PeriodSelector
           period={period}
-          setPeriod={setPeriod}
+          onPeriodChange={setPeriod}
           allPeriods={Object.keys(props.performanceStatistics ?? {})}
         />
       </Box>
@@ -165,37 +162,6 @@ export default function PortfolioPerformance(props: {
     </Paper>
   );
 }
-
-const PeriodSelector = ({
-  period,
-  setPeriod,
-  allPeriods,
-}: {
-  period?: string;
-  setPeriod: (period: string) => void;
-  allPeriods: string[];
-}) => {
-  const { t } = useTranslation();
-  return (
-    <FormControl sx={{ width: 120 }} variant="standard">
-      <InputLabel id="portfolio-performance-period-label">
-        {t("portfolioPerformance.period")}
-      </InputLabel>
-      <Select
-        labelId="portfolio-performance-period-label"
-        value={period ?? ""}
-        label={t("portfolioPerformance.period")}
-        onChange={(e) => setPeriod(e.target.value)}
-      >
-        {allPeriods.map((period) => (
-          <MenuItem key={period} value={period}>
-            {period}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
-};
 
 const PerformanceValues = (props: {
   performanceData?: PerformanceData;
