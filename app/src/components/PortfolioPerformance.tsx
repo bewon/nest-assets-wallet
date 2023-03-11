@@ -26,7 +26,12 @@ import React, {
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "next-i18next";
 import { groupAssets } from "@src/components/PortfolioStatusDialog";
-import { TbPigMoney, TbReportMoney, TbTrendingUp } from "react-icons/tb";
+import {
+  TbPigMoney,
+  TbReportMoney,
+  TbTrendingUp,
+  TbTrendingDown,
+} from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
 import useApi from "@src/utils/useApi";
 import { AxiosResponse } from "axios";
@@ -230,7 +235,9 @@ const PerformanceValues = (props: {
       </Box>
       <Tooltip title={profitChangeTooltip} arrow>
         <Chip
-          icon={<TbTrendingUp />}
+          icon={
+            (annualizedTwr ?? 0) < 0 ? <TbTrendingDown /> : <TbTrendingUp />
+          }
           label={percentFormat(annualizedTwr ?? 0, 2)}
           variant={variant}
           color={
