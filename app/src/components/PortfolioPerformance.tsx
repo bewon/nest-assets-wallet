@@ -199,25 +199,36 @@ const PerformanceValues = (props: {
   const { amountFormat, percentFormat } = useFormat();
   const variant = props.summary ? "filled" : "outlined";
   const annualizedTwr = props.performanceData?.annualizedTwr;
+  const { t } = useTranslation();
+  const profitChangeTooltip =
+    t("portfolioPerformance.annuallyPhraseDescription") +
+    ", " +
+    t("portfolioPerformance.profitChange") +
+    ": " +
+    amountFormat(props.performanceData?.profitChange);
 
   return (
     <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
       <Box sx={{ minWidth: [0, 150], mb: 1 }}>
-        <Chip
-          icon={<TbPigMoney />}
-          label={amountFormat(props.performanceData?.capitalChange)}
-          variant={variant}
-        />
+        <Tooltip title={t("portfolioPerformance.capitalChange")} arrow>
+          <Chip
+            icon={<TbPigMoney />}
+            label={amountFormat(props.performanceData?.capitalChange)}
+            variant={variant}
+          />
+        </Tooltip>
       </Box>
       <Box sx={{ minWidth: [0, 150], mb: 1 }}>
-        <Chip
-          icon={<TbReportMoney />}
-          label={amountFormat(props.performanceData?.valueChange)}
-          variant={variant}
-          color="primary"
-        />
+        <Tooltip title={t("portfolioPerformance.valueChange")} arrow>
+          <Chip
+            icon={<TbReportMoney />}
+            label={amountFormat(props.performanceData?.valueChange)}
+            variant={variant}
+            color="primary"
+          />
+        </Tooltip>
       </Box>
-      <Tooltip title={amountFormat(props.performanceData?.profitChange)}>
+      <Tooltip title={profitChangeTooltip} arrow>
         <Chip
           icon={<TbTrendingUp />}
           label={percentFormat(annualizedTwr ?? 0, 2)}

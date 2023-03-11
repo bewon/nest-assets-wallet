@@ -58,8 +58,12 @@
     }
   },
   "portfolioPerformance": {
+    "annuallyPhraseDescription": "TWR per annum (per year)",
+    "capitalChange": "Capital change",
     "period": "Period",
-    "title": "Portfolio performance"
+    "profitChange": "Profit change",
+    "title": "Portfolio performance",
+    "valueChange": "Value change"
   },
   "portfolioStatus": {
     "details": "Details",
