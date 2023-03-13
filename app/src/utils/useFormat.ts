@@ -14,18 +14,23 @@ const useFormat = () => {
 
   const percentFormat = (
     number: number,
-    maximumFractionDigits: number
+    maximumFractionDigits: number,
+    showPlusSign?: boolean
   ): string => {
     const options: Intl.NumberFormatOptions = {
       style: "percent",
       maximumFractionDigits,
     };
-    return new Intl.NumberFormat(i18n.language, options).format(number);
+    const formatted = new Intl.NumberFormat(i18n.language, options).format(
+      number
+    );
+    return showPlusSign && number > 0 ? `+${formatted}` : formatted;
   };
 
   const amountFormat = (
     number?: number,
-    maximumFractionDigits?: number
+    maximumFractionDigits?: number,
+    showPlusSign?: boolean
   ): string | null => {
     if (number === undefined) {
       return null;
@@ -38,7 +43,10 @@ const useFormat = () => {
       options.maximumFractionDigits = maximumFractionDigits;
       options.minimumFractionDigits = maximumFractionDigits;
     }
-    return new Intl.NumberFormat(i18n.language, options).format(number);
+    const formatted = new Intl.NumberFormat(i18n.language, options).format(
+      number
+    );
+    return showPlusSign && number > 0 ? `+${formatted}` : formatted;
   };
 
   return {

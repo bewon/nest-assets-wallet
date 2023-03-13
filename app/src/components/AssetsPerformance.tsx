@@ -28,32 +28,49 @@ export default function AssetsPerformance(props: {
   const { amountFormat, percentFormat } = useFormat();
   const [period, setPeriod] = useState<string>();
   const periods = useMemo(
-    () => Object.keys(props.performanceStatistics?.[0]?.annualizedTwr ?? {}),
+    () => Object.keys(props.performanceStatistics?.[0]?.performance ?? {}),
     [props.performanceStatistics]
   );
+
+  const assetsData = useMemo(
+    () =>
+      props.assets?.map((asset) => ({
+        ...asset,
+        performance:
+          period != null
+            ? props.performanceStatistics?.find(
+                (assetPerformance) => assetPerformance.id === asset.id
+              )?.performance?.[period]
+            : undefined,
+      })),
+    [props.assets, props.performanceStatistics, period]
+  );
+
   useEffect(() => {
     if (periods.length > 0) {
       setPeriod(periods[0]);
     }
   }, [periods]);
+
   return (
-    <Paper sx={{ p: 2 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h6">{t("assetsPerformance.title")}</Typography>
+    <Paper>
+      <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+        <Typography variant="h6" sx={{ mr: 1 }}>
+          {t("assetsPerformance.title")}
+        </Typography>
         <PeriodSelector
           period={period}
           onPeriodChange={setPeriod}
           allPeriods={periods}
         />
       </Box>
-      {props.assets == null ? (
+      {assetsData == null ? (
         <CircularProgress sx={{ mt: 3, mb: 1 }} />
       ) : (
-        <List>
-          {props.assets.map((asset, index) => (
+        <List sx={{ pb: 2 }}>
+          {assetsData.map((asset, index) => (
             <ListItem
               key={asset.id}
-              disablePadding
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -87,8 +104,15 @@ export default function AssetsPerformance(props: {
                     >
                       <Chip
                         icon={<TbPigMoney />}
-                        label={amountFormat(200)}
+                        label={
+                          amountFormat(
+                            asset.performance?.capitalChange,
+                            0,
+                            true
+                          ) ?? "-"
+                        }
                         size={"small"}
+                        variant="outlined"
                         sx={{ mr: 1 }}
                       />
                     </Tooltip>
@@ -98,14 +122,23 @@ export default function AssetsPerformance(props: {
                     >
                       <Chip
                         icon={<TbReportMoney />}
-                        label={amountFormat(100)}
+                        label={
+                          amountFormat(
+                            asset.performance?.valueChange,
+                            0,
+                            true
+                          ) ?? "-"
+                        }
                         size={"small"}
+                        variant="outlined"
                       />
                     </Tooltip>
                   </Box>
                 </Box>
               </Box>
-              <Typography variant="h6">{percentFormat(0.1357, 1)}</Typography>
+              <Typography variant="h6">
+                {percentFormat(asset.performance?.annualizedTwr ?? 0, 1)}
+              </Typography>
             </ListItem>
           ))}
         </List>

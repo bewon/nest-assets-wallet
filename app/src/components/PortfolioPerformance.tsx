@@ -171,12 +171,28 @@ const PerformanceValues = (props: {
   const variant = props.summary ? "filled" : "outlined";
   const annualizedTwr = props.performanceData?.annualizedTwr;
   const { t } = useTranslation();
-  const profitChangeTooltip =
-    t("portfolioPerformance.annuallyPhraseDescription") +
-    ", " +
-    t("portfolioPerformance.profitChange") +
-    ": " +
-    amountFormat(props.performanceData?.profitChange);
+
+  const profitTooltip = (
+    <>
+      {t("portfolioPerformance.annuallyPhraseDescription")}
+      <Box component="span" sx={{ display: { xs: "inline", lg: "none" } }}>
+        {", " + t("portfolioPerformance.profitChange") + ": "}
+        {amountFormat(props.performanceData?.profitChange, 0, true)}
+      </Box>
+      <Box component="span" sx={{ display: { xs: "none", lg: "inline" } }}>
+        {" / " + t("portfolioPerformance.profitChange")}
+      </Box>
+    </>
+  );
+
+  const profitLabel = (
+    <>
+      {percentFormat(annualizedTwr ?? 0, 1, true)}
+      <Box component="span" sx={{ display: { xs: "none", lg: "inline" } }}>
+        {" / " + amountFormat(props.performanceData?.profitChange, 0, true)}
+      </Box>
+    </>
+  );
 
   return (
     <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
@@ -184,7 +200,7 @@ const PerformanceValues = (props: {
         <Tooltip title={t("portfolioPerformance.capitalChange")} arrow>
           <Chip
             icon={<TbPigMoney />}
-            label={amountFormat(props.performanceData?.capitalChange)}
+            label={amountFormat(props.performanceData?.capitalChange, 0, true)}
             variant={variant}
           />
         </Tooltip>
@@ -193,18 +209,18 @@ const PerformanceValues = (props: {
         <Tooltip title={t("portfolioPerformance.valueChange")} arrow>
           <Chip
             icon={<TbReportMoney />}
-            label={amountFormat(props.performanceData?.valueChange)}
+            label={amountFormat(props.performanceData?.valueChange, 0, true)}
             variant={variant}
             color="primary"
           />
         </Tooltip>
       </Box>
-      <Tooltip title={profitChangeTooltip} arrow>
+      <Tooltip title={profitTooltip} arrow>
         <Chip
           icon={
             (annualizedTwr ?? 0) < 0 ? <TbTrendingDown /> : <TbTrendingUp />
           }
-          label={percentFormat(annualizedTwr ?? 0, 2)}
+          label={profitLabel}
           variant={variant}
           color={
             annualizedTwr == null || annualizedTwr === 0

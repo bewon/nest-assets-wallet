@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { AssetService } from './asset.service';
 import {
+  PeriodCalculation,
   PeriodHistory,
   periods,
   PortfolioBalanceChangeSetService,
@@ -136,30 +137,23 @@ export class PortfolioService {
   // prepare assets changes summary from changes Set
   private prepareAssetsPerformance() {
     const calculations =
-      this.portfolioBalanceChangeSetService.prepareCalculationsForAssets(false);
+      this.portfolioBalanceChangeSetService.prepareCalculationsForAssets(true);
     return Object.entries(calculations).map(([assetId, calculation]) => {
-      const result: {
-        id: string;
-        annualizedTwr: Record<string, number | undefined>;
-      } = { id: assetId, annualizedTwr: {} };
-      Object.entries(calculation).forEach(([period, periodCalculation]) => {
-        result.annualizedTwr[period] =
-          round(periodCalculation?.annualizedTwr, 4) ?? undefined;
-      });
-      return result;
+      return { id: assetId, performance: this.preparePerformance(calculation) };
     });
   }
 
   // prepare portfolio changes summary from changes Set
-  private preparePortfolioPerformance(): Record<
-    string,
-    AnnualizedCalculation | undefined
-  > {
+  private preparePortfolioPerformance() {
     const calculations =
       this.portfolioBalanceChangeSetService.prepareCalculationsForPortfolio(
         true,
       );
-    const result: ReturnType<typeof this.preparePortfolioPerformance> = {};
+    return this.preparePerformance(calculations);
+  }
+
+  private preparePerformance(calculations: PeriodCalculation) {
+    const result: Record<string, AnnualizedCalculation | undefined> = {};
     Object.entries(calculations).forEach(([period, calculation]) => {
       if (calculation == null) {
         result[period] = undefined;

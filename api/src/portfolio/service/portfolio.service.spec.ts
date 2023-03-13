@@ -171,7 +171,7 @@ describe('PortfolioService', () => {
       portfolio.assets = [asset];
       await portfolioRepository.save(portfolio);
       const performanceStatistics = {
-        assets: [{ annualizedTwr: {}, id: asset.id }],
+        assets: [{ id: asset.id, performance: {} }],
         portfolio: {},
       };
       const result = await service.preparePerformanceStatistics(portfolio);

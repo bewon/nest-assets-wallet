@@ -19,6 +19,6 @@ export type PortfolioPerformanceStatistics = {
   portfolio: Record<string, AnnualizedCalculation | undefined>;
   assets?: {
     id: string;
-    annualizedTwr: Record<string, number | undefined>;
+    performance: Record<string, AnnualizedCalculation | undefined>;
   }[];
 };

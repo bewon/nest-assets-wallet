@@ -2,43 +2,123 @@
   "assets": [
     {
       "id": "47158934-82df-43ac-8a24-000000000001",
-      "annualizedTwr": {
-        "total": -0.0187,
-        "1M": -0.0614,
-        "1Y": -0.1191,
-        "3Y": -0.0271
+      "performance": {
+        "total": {
+          "annualizedTwr": -0.0187,
+          "capitalChange": 7,
+          "profitChange": -5,
+          "valueChange": 2
+        },
+        "1M": {
+          "annualizedTwr": -0.0614,
+          "capitalChange": 0.0,
+          "profitChange": -0.5,
+          "valueChange": -0.5
+        },
+        "1Y": {
+          "annualizedTwr": -0.1191,
+          "capitalChange": 6,
+          "profitChange": -12,
+          "valueChange": -6
+        },
+        "3Y": {
+          "annualizedTwr": -0.0271,
+          "capitalChange": 7,
+          "profitChange": -7,
+          "valueChange": 0
+        }
       }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000002",
-      "annualizedTwr": {
-        "total": 0.0669,
-        "3Y": 0.0669
+      "performance": {
+        "total": {
+          "annualizedTwr": 0.0669,
+          "capitalChange": -5,
+          "profitChange": 19,
+          "valueChange": 14
+        },
+        "3Y": {
+          "annualizedTwr": 0.0669,
+          "capitalChange": -5,
+          "profitChange": 19,
+          "valueChange": 14
+        }
       }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000003",
-      "annualizedTwr": {
-        "total": 0.0327,
-        "1Y": -0.022,
-        "3Y": 0.0327
+      "performance": {
+        "total": {
+          "annualizedTwr": 0.0327,
+          "capitalChange": 5,
+          "profitChange": 9,
+          "valueChange": 14
+        },
+        "1Y": {
+          "annualizedTwr": -0.022,
+          "capitalChange": 5,
+          "profitChange": -3,
+          "valueChange": 2
+        },
+        "3Y": {
+          "annualizedTwr": 0.0327,
+          "capitalChange": 5,
+          "profitChange": 9,
+          "valueChange": 14
+        }
       }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000004",
-      "annualizedTwr": {
-        "total": 0.0797,
-        "1Y": 0.0452,
-        "3Y": 0.0797
+      "performance": {
+        "total": {
+          "annualizedTwr": 0.0797,
+          "capitalChange": -5,
+          "profitChange": 19,
+          "valueChange": 14
+        },
+        "1Y": {
+          "annualizedTwr": 0.0452,
+          "capitalChange": 0,
+          "profitChange": 7,
+          "valueChange": 7
+        },
+        "3Y": {
+          "annualizedTwr": 0.0797,
+          "capitalChange": -5,
+          "profitChange": 19,
+          "valueChange": 14
+        }
       }
     },
     {
       "id": "47158934-82df-43ac-8a24-000000000005",
-      "annualizedTwr": {
-        "total": 0.3849,
-        "1M": -0.2492,
-        "1Y": 0.2653,
-        "3Y": 0.3849
+      "performance": {
+        "total": {
+          "annualizedTwr": 0.3849,
+          "capitalChange": 5,
+          "profitChange": 55.5,
+          "valueChange": 60.5
+        },
+        "1M": {
+          "annualizedTwr": -0.2492,
+          "capitalChange": 5,
+          "profitChange": -4,
+          "valueChange": 1
+        },
+        "1Y": {
+          "annualizedTwr": 0.2653,
+          "capitalChange": 5,
+          "profitChange": 35.5,
+          "valueChange": 40.5
+        },
+        "3Y": {
+          "annualizedTwr": 0.3849,
+          "capitalChange": 5,
+          "profitChange": 55.5,
+          "valueChange": 60.5
+        }
       }
     }
   ],
