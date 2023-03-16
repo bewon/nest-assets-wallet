@@ -4,7 +4,7 @@ import type {
   AnnualizedCalculation,
 } from "@assets-wallet/api/src/portfolio/types";
 import { useTranslation } from "next-i18next";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -21,6 +21,7 @@ import { TbPigMoney, TbReportMoney } from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
 import { assetsPalette } from "@src/utils/theme";
 import type { Theme } from "@mui/material/styles";
+import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 function findPerformance(
   performanceStatistics?: PortfolioPerformanceStatistics["assets"],
@@ -41,23 +42,28 @@ export default function AssetsPerformance(props: {
 }) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>();
+  const userSettings = useContext(UserSettingsContext);
   const periods = useMemo(
     () => Object.keys(props.performanceStatistics?.[0]?.performance ?? {}),
     [props.performanceStatistics]
   );
 
-  const assetsData = useMemo(
-    () =>
-      props.assets?.map((asset) => ({
+  const assetsData = useMemo(() => {
+    const data: Array<AssetSnapshot & { performance?: AnnualizedCalculation }> =
+      [];
+    props.assets?.forEach((asset) => {
+      if (userSettings?.hideZeroAssets && (asset.value ?? 0) === 0) return;
+      data.push({
         ...asset,
         performance: findPerformance(
           props.performanceStatistics,
           asset.id,
           period
         ),
-      })),
-    [props.assets, props.performanceStatistics, period]
-  );
+      });
+    });
+    return data;
+  }, [props.assets, props.performanceStatistics, period, userSettings]);
 
   useEffect(() => {
     if (periods.length > 0) {

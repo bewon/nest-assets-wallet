@@ -6,19 +6,26 @@ import {
   GridColumns,
   GridRowParams,
 } from "@mui/x-data-grid";
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import { useTranslation } from "next-i18next";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
 import useFormat from "@src/utils/useFormat";
+import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
 export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
   const { t } = useTranslation();
   const { amountFormat } = useFormat();
+  const userSettings = useContext(UserSettingsContext);
+  const assets = useMemo(() => {
+    if (!userSettings?.hideZeroAssets || props.assets == null)
+      return props.assets;
+    return props.assets.filter((asset) => (asset.value ?? 0) !== 0) ?? [];
+  }, [props.assets, userSettings?.hideZeroAssets]);
 
   const columns = React.useMemo<GridColumns<AssetSnapshot>>(() => {
     const handleDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
@@ -109,13 +116,13 @@ export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
             fontWeight: "bold",
           },
         }}
-        rows={props.assets ?? []}
+        rows={assets ?? []}
         columns={columns}
         autoHeight
         disableSelectionOnClick
         disableColumnMenu
         hideFooter
-        loading={props.assets == null}
+        loading={assets == null}
       />
     </Paper>
   );

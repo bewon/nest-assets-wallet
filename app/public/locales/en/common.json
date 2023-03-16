@@ -44,7 +44,8 @@
       "noData": "No data available"
     },
     "period": "Period",
-    "save": "Save"
+    "save": "Save",
+    "totalPeriod": "Total"
   },
   "header": {
     "menu": {

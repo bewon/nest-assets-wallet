@@ -19,7 +19,7 @@ export default function PeriodSelector(props: {
       >
         {props.allPeriods.map((period) => (
           <MenuItem key={period} value={period}>
-            {period}
+            {period === "total" ? t("general.totalPeriod") : period}
           </MenuItem>
         ))}
       </Select>
