@@ -1,6 +1,7 @@
 import type {
   AssetSnapshot,
   PortfolioPerformanceStatistics,
+  AnnualizedCalculation,
 } from "@assets-wallet/api/src/portfolio/types";
 import { useTranslation } from "next-i18next";
 import React, { useEffect, useMemo, useState } from "react";
@@ -19,13 +20,26 @@ import PeriodSelector from "@src/components/PeriodSelector";
 import { TbPigMoney, TbReportMoney } from "react-icons/tb";
 import useFormat from "@src/utils/useFormat";
 import { assetsPalette } from "@src/utils/theme";
+import type { Theme } from "@mui/material/styles";
+
+function findPerformance(
+  performanceStatistics?: PortfolioPerformanceStatistics["assets"],
+  assetId?: string,
+  period?: string
+): AnnualizedCalculation | undefined {
+  if (performanceStatistics == null || assetId == null || period == null) {
+    return undefined;
+  }
+  return performanceStatistics.find(
+    (assetPerformance) => assetPerformance.id === assetId
+  )?.performance?.[period];
+}
 
 export default function AssetsPerformance(props: {
   assets?: AssetSnapshot[];
   performanceStatistics?: PortfolioPerformanceStatistics["assets"];
 }) {
   const { t } = useTranslation();
-  const { amountFormat, percentFormat } = useFormat();
   const [period, setPeriod] = useState<string>();
   const periods = useMemo(
     () => Object.keys(props.performanceStatistics?.[0]?.performance ?? {}),
@@ -36,12 +50,11 @@ export default function AssetsPerformance(props: {
     () =>
       props.assets?.map((asset) => ({
         ...asset,
-        performance:
-          period != null
-            ? props.performanceStatistics?.find(
-                (assetPerformance) => assetPerformance.id === asset.id
-              )?.performance?.[period]
-            : undefined,
+        performance: findPerformance(
+          props.performanceStatistics,
+          asset.id,
+          period
+        ),
       })),
     [props.assets, props.performanceStatistics, period]
   );
@@ -69,90 +82,93 @@ export default function AssetsPerformance(props: {
       ) : (
         <List sx={{ pb: 2 }}>
           {assetsData.map((asset, index) => (
-            <ListItem
+            <AssetItem
               key={asset.id}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                py: 1,
-                "&:hover": {
-                  // add alpha 0.2 to background paper color
-                  backgroundColor: (theme) =>
-                    theme.palette.mode === "light"
-                      ? theme.palette.grey[100]
-                      : theme.palette.grey[900],
-                },
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Box
-                  sx={{
-                    width: 5,
-                    height: 45,
-                    borderRadius: 1,
-                    backgroundColor:
-                      assetsPalette[index % assetsPalette.length],
-                    mr: 2,
-                  }}
-                />
-                <Box>
-                  <ListItemText primary={asset.name} />
-                  <Box>
-                    <Tooltip
-                      title={t("portfolioPerformance.capitalChange")}
-                      arrow
-                    >
-                      <Chip
-                        icon={<TbPigMoney />}
-                        label={
-                          amountFormat(
-                            asset.performance?.capitalChange,
-                            0,
-                            true
-                          ) ?? "-"
-                        }
-                        size={"small"}
-                        variant="outlined"
-                        sx={{ mr: 1 }}
-                      />
-                    </Tooltip>
-                    <Tooltip
-                      title={t("portfolioPerformance.valueChange")}
-                      arrow
-                    >
-                      <Chip
-                        icon={<TbReportMoney />}
-                        label={
-                          amountFormat(
-                            asset.performance?.valueChange,
-                            0,
-                            true
-                          ) ?? "-"
-                        }
-                        size={"small"}
-                        variant="outlined"
-                      />
-                    </Tooltip>
-                  </Box>
-                </Box>
-              </Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  color: (theme) =>
-                    (asset.performance?.annualizedTwr ?? 0) < 0
-                      ? theme.palette.error.main
-                      : (asset.performance?.annualizedTwr ?? 0) > 0
-                      ? theme.palette.success.main
-                      : null,
-                }}
-              >
-                {percentFormat(asset.performance?.annualizedTwr ?? 0, 1)}
-              </Typography>
-            </ListItem>
+              asset={asset}
+              assetColor={assetsPalette[index % assetsPalette.length]}
+            />
           ))}
         </List>
       )}
     </Paper>
+  );
+}
+
+function AssetItem(props: {
+  asset: AssetSnapshot & { performance?: AnnualizedCalculation };
+  assetColor: string;
+}) {
+  const { t } = useTranslation();
+  const { percentFormat } = useFormat();
+  const annualizedTwr = props.asset.performance?.annualizedTwr;
+  const getAnnualizedTwrColor = (theme: Theme) =>
+    annualizedTwr == null || annualizedTwr === 0
+      ? null
+      : annualizedTwr > 0
+      ? theme.palette.success.main
+      : theme.palette.error.main;
+
+  return (
+    <ListItem
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        py: 1,
+        "&:hover": {
+          backgroundColor: (theme) => theme.palette.grey[500] + "15",
+        },
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box
+          sx={{
+            width: 5,
+            height: 45,
+            borderRadius: 1,
+            backgroundColor: props.assetColor,
+            mr: 2,
+          }}
+        />
+        <Box>
+          <ListItemText primary={props.asset.name} />
+          <Box>
+            <PerformanceChip
+              icon={<TbPigMoney />}
+              value={props.asset.performance?.capitalChange}
+              title={t("portfolioPerformance.capitalChange")}
+            />
+            <PerformanceChip
+              icon={<TbReportMoney />}
+              value={props.asset.performance?.valueChange}
+              title={t("portfolioPerformance.valueChange")}
+            />
+          </Box>
+        </Box>
+      </Box>
+      <Tooltip title={t("general.annuallyPhraseDescription")}>
+        <Typography variant="h6" sx={{ color: getAnnualizedTwrColor }}>
+          {percentFormat(annualizedTwr ?? 0, 1)}
+        </Typography>
+      </Tooltip>
+    </ListItem>
+  );
+}
+
+function PerformanceChip(props: {
+  icon: React.ReactElement;
+  title: string;
+  value?: number;
+}) {
+  const { amountFormat } = useFormat();
+  return (
+    <Tooltip title={props.title} arrow>
+      <Chip
+        icon={props.icon}
+        label={amountFormat(props.value, 0, true) ?? "-"}
+        size={"small"}
+        variant="outlined"
+        sx={{ mr: 1 }}
+      />
+    </Tooltip>
   );
 }

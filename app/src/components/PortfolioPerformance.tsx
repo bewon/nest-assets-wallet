@@ -174,7 +174,7 @@ const PerformanceValues = (props: {
 
   const profitTooltip = (
     <>
-      {t("portfolioPerformance.annuallyPhraseDescription")}
+      {t("general.annuallyPhraseDescription")}
       <Box component="span" sx={{ display: { xs: "inline", lg: "none" } }}>
         {", " + t("portfolioPerformance.profitChange") + ": "}
         {amountFormat(props.performanceData?.profitChange, 0, true)}

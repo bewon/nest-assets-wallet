@@ -32,6 +32,7 @@
     }
   },
   "general": {
+    "annuallyPhraseDescription": "TWR per annum (rocznie)",
     "cancel": "Anuluj",
     "close": "Zamknij",
     "confirm": "Potwierdź",
@@ -62,7 +63,6 @@
     }
   },
   "portfolioPerformance": {
-    "annuallyPhraseDescription": "TWR per annum (rocznie)",
     "capitalChange": "Zmiana kapitału",
     "profitChange": "Zmiana zysku",
     "title": "Wyniki portfela",
