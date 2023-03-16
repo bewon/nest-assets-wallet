@@ -14,8 +14,61 @@ import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
 import useFormat from "@src/utils/useFormat";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
+import { TFunction } from "i18next";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
+
+type ColumnDefinition<P> = {
+  field: string;
+  headerName?: string;
+  type?: "number" | "date" | "actions";
+  flex: number;
+  valueFormatter?: (params: { value?: number }) => string;
+  getActions?: (params: P) => JSX.Element[];
+};
+
+function prepareColumns<P>(
+  t: TFunction<"common", undefined, "common">,
+  valueFormatter: (params: { value?: number }) => string,
+  getActions: (params: P) => JSX.Element[]
+): ColumnDefinition<P>[] {
+  return [
+    { field: "name", headerName: t("assetsList.columns.name"), flex: 3 },
+    {
+      field: "capital",
+      headerName: t("assetsList.columns.capital"),
+      type: "number",
+      flex: 2,
+      valueFormatter,
+    },
+    {
+      field: "value",
+      headerName: t("assetsList.columns.value"),
+      type: "number",
+      flex: 2,
+      valueFormatter,
+    },
+    {
+      field: "profit",
+      headerName: t("assetsList.columns.profit"),
+      type: "number",
+      flex: 2,
+      valueFormatter,
+    },
+    {
+      field: "date",
+      headerName: t("assetsList.columns.date"),
+      type: "date",
+      flex: 2,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      flex: 1,
+      getActions: getActions,
+    },
+  ];
+}
 
 export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
   const { t } = useTranslation();
@@ -31,72 +84,33 @@ export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
     const handleDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
       console.log("handleDialogOpen", type, asset);
     };
-    const getActionProps = (
-      type: DialogType
-    ): React.ComponentProps<typeof GridActionsCellItem> => {
-      return {
-        showInMenu: true,
-        sx: { p: 2 },
-        label: t(`assetsList.menu.${type}`),
-      };
-    };
-    return [
-      { field: "name", headerName: t("assetsList.columns.name"), flex: 3 },
-      {
-        field: "capital",
-        headerName: t("assetsList.columns.capital"),
-        type: "number",
-        flex: 2,
-        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
-      },
-      {
-        field: "value",
-        headerName: t("assetsList.columns.value"),
-        type: "number",
-        flex: 2,
-        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
-      },
-      {
-        field: "profit",
-        headerName: t("assetsList.columns.profit"),
-        type: "number",
-        flex: 2,
-        valueFormatter: ({ value }) => amountFormat(value) ?? "-",
-      },
-      {
-        field: "date",
-        headerName: t("assetsList.columns.date"),
-        type: "date",
-        flex: 2,
-      },
 
-      {
-        field: "actions",
-        type: "actions",
-        flex: 1,
-        getActions: (params: GridRowParams<AssetSnapshot>) => [
-          <GridActionsCellItem
-            {...getActionProps("balanceUpdate")}
-            key="balanceUpdate"
-            icon={<AccountBalanceWalletIcon />}
-            onClick={() => handleDialogOpen("balanceUpdate", params.row)}
-          />,
-          <GridActionsCellItem
-            {...getActionProps("changesList")}
-            key="changesList"
-            icon={<ListIcon />}
-            onClick={() => handleDialogOpen("changesList", params.row)}
-          />,
-          <GridActionsCellItem
-            {...getActionProps("edit")}
-            key="edit"
-            icon={<EditIcon />}
-            onClick={() => handleDialogOpen("edit", params.row)}
-          />,
-        ],
-      },
+    const actions: {
+      key: DialogType;
+      icon: React.ReactElement;
+    }[] = [
+      { key: "balanceUpdate", icon: <AccountBalanceWalletIcon /> },
+      { key: "changesList", icon: <ListIcon /> },
+      { key: "edit", icon: <EditIcon /> },
     ];
+
+    return prepareColumns(
+      t,
+      ({ value }) => amountFormat(value) ?? "-",
+      (params: GridRowParams<AssetSnapshot>) =>
+        actions.map((action) => (
+          <GridActionsCellItem
+            key={action.key}
+            showInMenu
+            sx={{ p: 2 }}
+            label={t(`assetsList.menu.${action.key}`)}
+            onClick={() => handleDialogOpen(action.key, params.row)}
+            icon={action.icon}
+          />
+        ))
+    );
   }, [t, amountFormat]);
+
   return (
     <Paper>
       <Typography variant="h6" sx={{ p: 2 }}>
