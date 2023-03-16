@@ -136,7 +136,17 @@ export default function AssetsPerformance(props: {
                   </Box>
                 </Box>
               </Box>
-              <Typography variant="h6">
+              <Typography
+                variant="h6"
+                sx={{
+                  color: (theme) =>
+                    (asset.performance?.annualizedTwr ?? 0) < 0
+                      ? theme.palette.error.main
+                      : (asset.performance?.annualizedTwr ?? 0) > 0
+                      ? theme.palette.success.main
+                      : null,
+                }}
+              >
                 {percentFormat(asset.performance?.annualizedTwr ?? 0, 1)}
               </Typography>
             </ListItem>
