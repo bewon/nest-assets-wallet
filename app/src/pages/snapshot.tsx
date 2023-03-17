@@ -71,7 +71,7 @@ export default function Snapshot() {
         state={snackbarState}
         onClose={() => setSnackbarState({ ...snackbarState, open: false })}
       />
-      <Container maxWidth="lg" sx={{ pt: 2 }}>
+      <Container maxWidth="lg" sx={{ py: 2 }}>
         <Grid container spacing={2}>
           <Grid item container xs={12} md={8} spacing={2}>
             <Grid item xs={12}>

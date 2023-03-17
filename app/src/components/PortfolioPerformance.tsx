@@ -132,7 +132,9 @@ export default function PortfolioPerformance(props: {
         />
       </Box>
       {props.assets == null ? (
-        <CircularProgress sx={{ mt: 3, mb: 1 }} />
+        <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+          <CircularProgress />
+        </Box>
       ) : (
         <List sx={{ pb: 0 }}>
           {Object.keys(groupsData).map((group) => (

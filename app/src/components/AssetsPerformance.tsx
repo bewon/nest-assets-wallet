@@ -24,7 +24,7 @@ import type { Theme } from "@mui/material/styles";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 function findPerformance(
-  performanceStatistics?: PortfolioPerformanceStatistics["assets"],
+  performanceStatistics: PortfolioPerformanceStatistics["assets"],
   assetId?: string,
   period?: string
 ): AnnualizedCalculation | undefined {
@@ -49,6 +49,8 @@ export default function AssetsPerformance(props: {
   );
 
   const assetsData = useMemo(() => {
+    if (props.assets == null || props.performanceStatistics == null)
+      return null;
     const data: Array<AssetSnapshot & { performance?: AnnualizedCalculation }> =
       [];
     props.assets?.forEach((asset) => {
@@ -84,7 +86,9 @@ export default function AssetsPerformance(props: {
         />
       </Box>
       {assetsData == null ? (
-        <CircularProgress sx={{ mt: 3, mb: 1 }} />
+        <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+          <CircularProgress />
+        </Box>
       ) : (
         <List sx={{ pb: 2 }}>
           {assetsData.map((asset, index) => (

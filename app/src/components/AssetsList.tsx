@@ -8,6 +8,8 @@ import {
   Paper,
   useMediaQuery,
   Menu,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {
@@ -109,6 +111,10 @@ export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
       </Typography>
       {gridFits ? (
         <AssetsGrid assets={assets} />
+      ) : assets == null ? (
+        <Box sx={{ display: "flex", justifyContent: "center", p: 3, pt: 1 }}>
+          <CircularProgress />
+        </Box>
       ) : (
         <List>
           {assets?.map((asset) => (
@@ -212,6 +218,13 @@ function NarrowAssetsListItem(props: { asset: AssetSnapshot }) {
             <GridMoreVertIcon />
           </IconButton>
         }
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          "&:last-of-type": {
+            borderBottom: 0,
+          },
+        }}
       >
         <ListItemText primary={props.asset.name} secondary={assetSummary} />
       </ListItem>
@@ -233,7 +246,11 @@ function NarrowAssetsListItem(props: { asset: AssetSnapshot }) {
 
 function NarrowAssetSummary(props: { label: string; value: string | null }) {
   return (
-    <Typography key={props.label} component="span">
+    <Typography
+      key={props.label}
+      component="span"
+      sx={{ whiteSpace: "nowrap" }}
+    >
       <Typography component="span" variant="caption" sx={{ opacity: 0.7 }}>
         {props.label + ": "}
       </Typography>
