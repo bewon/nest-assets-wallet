@@ -195,8 +195,8 @@ const PerformanceValues = (props: {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, display: ["block", "flex"], pt: 1 }}>
-      <Box sx={{ minWidth: [0, 150], mb: 1 }}>
+    <Box sx={{ flexGrow: 1, display: "flex", pt: 1, flexWrap: "wrap" }}>
+      <Box sx={{ minWidth: [0, 130], mb: 1, mr: 1 }}>
         <Tooltip title={t("portfolioPerformance.capitalChange")} arrow>
           <Chip
             icon={<TbPigMoney />}
@@ -205,7 +205,7 @@ const PerformanceValues = (props: {
           />
         </Tooltip>
       </Box>
-      <Box sx={{ minWidth: [0, 150], mb: 1 }}>
+      <Box sx={{ minWidth: [0, 130], mb: 1, mr: 1 }}>
         <Tooltip title={t("portfolioPerformance.valueChange")} arrow>
           <Chip
             icon={<TbReportMoney />}
