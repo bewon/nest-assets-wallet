@@ -75,7 +75,7 @@ export default function Snapshot() {
         <Grid container spacing={2}>
           <Grid item container xs={12} md={8} spacing={2}>
             <Grid item xs={12}>
-              <AssetsList assets={assets} />
+              <AssetsList assets={assets} handleSnackbar={setSnackbarState} />
             </Grid>
             <Grid item xs={12}>
               <PortfolioPerformance

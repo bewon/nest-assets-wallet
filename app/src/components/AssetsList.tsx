@@ -10,6 +10,7 @@ import {
   Menu,
   CircularProgress,
   Box,
+  Tooltip,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {
@@ -25,10 +26,12 @@ import { useTranslation } from "next-i18next";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import useFormat from "@src/utils/useFormat";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import { TFunction } from "i18next";
 import type { Theme } from "@mui/material/styles";
+import NewAssetDialog from "@src/components/NewAssetDialog";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
@@ -47,31 +50,31 @@ function prepareColumns<P>(
   getActions: (params: P) => JSX.Element[]
 ): ColumnDefinition<P>[] {
   return [
-    { field: "name", headerName: t("assetsList.columns.name"), flex: 3 },
+    { field: "name", headerName: t("assetAttributes.name"), flex: 3 },
     {
       field: "capital",
-      headerName: t("assetsList.columns.capital"),
+      headerName: t("assetAttributes.capital"),
       type: "number",
       flex: 2,
       valueFormatter,
     },
     {
       field: "value",
-      headerName: t("assetsList.columns.value"),
+      headerName: t("assetAttributes.value"),
       type: "number",
       flex: 2,
       valueFormatter,
     },
     {
       field: "profit",
-      headerName: t("assetsList.columns.profit"),
+      headerName: t("assetAttributes.profit"),
       type: "number",
       flex: 2,
       valueFormatter,
     },
     {
       field: "date",
-      headerName: t("assetsList.columns.date"),
+      headerName: t("assetAttributes.date"),
       type: "date",
       flex: 2,
     },
@@ -93,22 +96,38 @@ const actions: {
   { key: "edit", getIcon: () => <EditIcon /> },
 ];
 
-export default function AssetsList(props: { assets?: AssetSnapshot[] }) {
+export default function AssetsList(props: {
+  assets?: AssetSnapshot[];
+  handleSnackbar: (state: AppSnackbarState) => void;
+}) {
   const { t } = useTranslation();
   const userSettings = useContext(UserSettingsContext);
+  const [newAssetDialogOpen, setNewAssetDialogOpen] = useState(false);
   const assets = useMemo(() => {
     if (!userSettings?.hideZeroAssets || props.assets == null)
       return props.assets;
     return props.assets.filter((asset) => (asset.value ?? 0) !== 0) ?? [];
   }, [props.assets, userSettings?.hideZeroAssets]);
 
-  const gridFits = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
+  const gridFits = useMediaQuery<Theme>((theme) => theme.breakpoints.up("sm"));
 
   return (
     <Paper>
-      <Typography variant="h6" sx={{ p: 2 }}>
-        {t("assetsList.title")}
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
+        <Typography variant="h6" sx={{ mr: 1, pt: 1, pl: 1 }}>
+          {t("assetsList.title")}
+        </Typography>
+        <Tooltip title={t("assetsList.newAsset")}>
+          <IconButton onClick={() => setNewAssetDialogOpen(true)}>
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <NewAssetDialog
+        open={newAssetDialogOpen}
+        onClose={() => setNewAssetDialogOpen(false)}
+        handleSnackbar={props.handleSnackbar}
+      />
       {gridFits ? (
         <AssetsGrid assets={assets} />
       ) : assets == null ? (
@@ -187,22 +206,22 @@ function NarrowAssetsListItem(props: { asset: AssetSnapshot }) {
     return (
       <>
         <NarrowAssetSummary
-          label={t("assetsList.columns.capital")}
+          label={t("assetAttributes.capital")}
           value={amountFormat(props.asset.capital)}
         />
         {" · "}
         <NarrowAssetSummary
-          label={t("assetsList.columns.value")}
+          label={t("assetAttributes.value")}
           value={amountFormat(props.asset.value)}
         />
         {" · "}
         <NarrowAssetSummary
-          label={t("assetsList.columns.profit")}
+          label={t("assetAttributes.profit")}
           value={amountFormat(props.asset.profit)}
         />
         {" · "}
         <NarrowAssetSummary
-          label={t("assetsList.columns.date")}
+          label={t("assetAttributes.date")}
           value={date == null ? "-" : dateFormat(date)}
         />
       </>

@@ -1,17 +1,18 @@
 {
+  "assetAttributes": {
+    "capital": "Kapitał",
+    "date": "Ostatnia aktualizacja",
+    "name": "Nazwa",
+    "profit": "Całkowity zysk / strata",
+    "value": "Wartość"
+  },
   "assetsList": {
-    "columns": {
-      "capital": "Kapitał",
-      "date": "Ostatnia aktualizacja",
-      "name": "Nazwa",
-      "profit": "Całkowity zysk / strata",
-      "value": "Wartość"
-    },
     "menu": {
       "balanceUpdate": "Aktualizuj saldo",
       "changesList": "Lista aktualizacji salda",
       "edit": "Edytuj aktywo"
     },
+    "newAsset": "Nowe aktywo",
     "title": "Aktywa"
   },
   "assetsPerformance": {
@@ -36,6 +37,7 @@
     "cancel": "Anuluj",
     "close": "Zamknij",
     "confirm": "Potwierdź",
+    "date": "Data",
     "delete": "Usuń",
     "edit": "Edytuj",
     "language": "Język",

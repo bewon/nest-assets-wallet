@@ -78,6 +78,11 @@ const useApi = () => {
           "GET",
           prepareErrorHandler(true)
         ),
+      createAsset: createEndpointFunction<AssetSnapshot>(
+        "/api/portfolios/default/assets",
+        "POST",
+        prepareErrorHandler(true)
+      ),
     };
   }, [router]);
 };
