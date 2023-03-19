@@ -33,6 +33,7 @@ import { TFunction } from "i18next";
 import type { Theme } from "@mui/material/styles";
 import NewAssetDialog from "@src/components/NewAssetDialog";
 import { AppSnackbarState } from "@src/components/AppSnackbar";
+import EditAssetDialog from "@src/components/EditAssetDialog";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
@@ -105,13 +106,29 @@ export default function AssetsList(props: {
   const { t } = useTranslation();
   const userSettings = useContext(UserSettingsContext);
   const [newAssetDialogOpen, setNewAssetDialogOpen] = useState(false);
+  const [assetDialog, setAssetDialog] = useState<{
+    type: DialogType;
+    asset: AssetSnapshot;
+  } | null>(null);
+
   const assets = useMemo(() => {
     if (!userSettings?.hideZeroAssets || props.assets == null)
       return props.assets;
     return props.assets.filter((asset) => (asset.value ?? 0) !== 0) ?? [];
   }, [props.assets, userSettings?.hideZeroAssets]);
 
+  const groups = useMemo(() => {
+    if (props.assets == null) return [];
+    return Array.from(
+      new Set(props.assets.map((asset) => asset.group ?? ""))
+    ).filter((group) => group !== "");
+  }, [props.assets]);
+
   const gridFits = useMediaQuery<Theme>((theme) => theme.breakpoints.up("sm"));
+
+  const handleAssetDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
+    setAssetDialog({ type, asset });
+  };
 
   return (
     <Paper>
@@ -131,8 +148,16 @@ export default function AssetsList(props: {
         handleSnackbar={props.handleSnackbar}
         onDataRefresh={props.onDataRefresh}
       />
+      <EditAssetDialog
+        open={assetDialog?.type === "edit"}
+        asset={assetDialog?.asset}
+        onClose={() => setAssetDialog(null)}
+        handleSnackbar={props.handleSnackbar}
+        onDataRefresh={props.onDataRefresh}
+        groups={groups}
+      />
       {gridFits ? (
-        <AssetsGrid assets={assets} />
+        <AssetsGrid assets={assets} onDialogOpen={handleAssetDialogOpen} />
       ) : assets == null ? (
         <Box sx={{ display: "flex", justifyContent: "center", p: 3, pt: 1 }}>
           <CircularProgress />
@@ -140,7 +165,11 @@ export default function AssetsList(props: {
       ) : (
         <List>
           {assets?.map((asset) => (
-            <NarrowAssetsListItem key={asset.id} asset={asset} />
+            <NarrowAssetsListItem
+              key={asset.id}
+              asset={asset}
+              onDialogOpen={() => handleAssetDialogOpen("balanceUpdate", asset)}
+            />
           ))}
         </List>
       )}
@@ -148,15 +177,15 @@ export default function AssetsList(props: {
   );
 }
 
-function AssetsGrid(props: { assets?: AssetSnapshot[] }) {
+function AssetsGrid(props: {
+  assets?: AssetSnapshot[];
+  onDialogOpen: (type: DialogType, asset: AssetSnapshot) => void;
+}) {
   const { t } = useTranslation();
   const { amountFormat } = useFormat();
+  const handleDialogOpen = props.onDialogOpen;
 
-  const columns = React.useMemo<GridColumns<AssetSnapshot>>(() => {
-    const handleDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
-      console.log("handleDialogOpen", type, asset);
-    };
-
+  const columns = useMemo<GridColumns<AssetSnapshot>>(() => {
     return prepareColumns(
       t,
       ({ value }) => amountFormat(value) ?? "-",
@@ -172,7 +201,7 @@ function AssetsGrid(props: { assets?: AssetSnapshot[] }) {
           />
         ))
     );
-  }, [t, amountFormat]);
+  }, [t, amountFormat, handleDialogOpen]);
 
   return (
     <DataGrid
@@ -200,7 +229,10 @@ function AssetsGrid(props: { assets?: AssetSnapshot[] }) {
   );
 }
 
-function NarrowAssetsListItem(props: { asset: AssetSnapshot }) {
+function NarrowAssetsListItem(props: {
+  asset: AssetSnapshot;
+  onDialogOpen: (type: DialogType) => void;
+}) {
   const { t } = useTranslation();
   const { amountFormat, dateFormat } = useFormat();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -256,7 +288,10 @@ function NarrowAssetsListItem(props: { asset: AssetSnapshot }) {
         onClose={() => setAnchorEl(null)}
       >
         {actions.map((action) => (
-          <MenuItem key={action.key}>
+          <MenuItem
+            key={action.key}
+            onClick={() => props.onDialogOpen(action.key)}
+          >
             <ListItemIcon>{action.getIcon()}</ListItemIcon>
             <ListItemText>{t(`assetsList.menu.${action.key}`)}</ListItemText>
           </MenuItem>

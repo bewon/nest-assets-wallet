@@ -19,7 +19,7 @@ export default function AppSnackbar({ state, onClose }: AppSnackbarProps) {
       open={state.open ?? false}
       autoHideDuration={6000}
       onClose={onClose}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
     >
       <Alert
         onClose={onClose}

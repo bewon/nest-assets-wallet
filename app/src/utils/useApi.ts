@@ -8,7 +8,10 @@ import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-type EndpointFunction<T> = (config: { data?: object; params?: object }) => {
+type EndpointFunction<T> = (config: {
+  data?: Record<string, any>;
+  params?: Record<string, any>;
+}) => {
   makeRequest: () => Promise<AxiosResponse<T> | null>;
   abortRequest: () => void;
 };
@@ -26,6 +29,16 @@ const createEndpointFunction = <T>(
     if (session != null && session.accessToken) {
       headers["Authorization"] = `Bearer ${session.accessToken}`;
     }
+    let urlWithParams = url;
+    if (params != null) {
+      Object.entries(params).forEach(([key, value]) => {
+        const paramRegex = new RegExp(`:${key}`);
+        if (paramRegex.test(urlWithParams)) {
+          urlWithParams = urlWithParams.replace(paramRegex, value);
+          delete params[key];
+        }
+      });
+    }
     const abortController = new AbortController();
     const signal = abortController.signal;
     const abortRequest = () => {
@@ -33,7 +46,14 @@ const createEndpointFunction = <T>(
     };
     const makeRequest = () =>
       axios
-        .request<T>({ method, url, headers, data, signal, params })
+        .request<T>({
+          method,
+          url: urlWithParams,
+          headers,
+          data,
+          signal,
+          params,
+        })
         .catch((error) => handleError(error));
     return { makeRequest, abortRequest };
   };
@@ -80,6 +100,11 @@ const useApi = () => {
         ),
       createAsset: createEndpointFunction<AssetSnapshot>(
         "/api/portfolios/default/assets",
+        "POST",
+        prepareErrorHandler(true)
+      ),
+      updateAsset: createEndpointFunction<AssetSnapshot>(
+        "/api/assets/:assetId",
         "POST",
         prepareErrorHandler(true)
       ),

@@ -180,7 +180,7 @@ const PerformanceValues = (props: {
       {t("general.annuallyPhraseDescription")}
       <Box component="span" sx={{ display: { xs: "inline", lg: "none" } }}>
         {", " + t("portfolioPerformance.profitChange") + ": "}
-        {amountFormat(props.performanceData?.profitChange, 0, true)}
+        {amountFormat(props.performanceData?.profitChange, 0, true) ?? "-"}
       </Box>
       <Box component="span" sx={{ display: { xs: "none", lg: "inline" } }}>
         {" / " + t("portfolioPerformance.profitChange")}
@@ -192,7 +192,8 @@ const PerformanceValues = (props: {
     <>
       {percentFormat(annualizedTwr ?? 0, 1, true)}
       <Box component="span" sx={{ display: { xs: "none", lg: "inline" } }}>
-        {" / " + amountFormat(props.performanceData?.profitChange, 0, true)}
+        {" / "}
+        {amountFormat(props.performanceData?.profitChange, 0, true) ?? "-"}
       </Box>
     </>
   );
@@ -203,7 +204,9 @@ const PerformanceValues = (props: {
         <Tooltip title={t("portfolioPerformance.capitalChange")} arrow>
           <Chip
             icon={<TbPigMoney />}
-            label={amountFormat(props.performanceData?.capitalChange, 0, true)}
+            label={
+              amountFormat(props.performanceData?.capitalChange, 0, true) ?? "-"
+            }
             variant={variant}
           />
         </Tooltip>
@@ -212,7 +215,9 @@ const PerformanceValues = (props: {
         <Tooltip title={t("portfolioPerformance.valueChange")} arrow>
           <Chip
             icon={<TbReportMoney />}
-            label={amountFormat(props.performanceData?.valueChange, 0, true)}
+            label={
+              amountFormat(props.performanceData?.valueChange, 0, true) ?? "-"
+            }
             variant={variant}
             color="primary"
           />

@@ -2,6 +2,7 @@
   "assetAttributes": {
     "capital": "Capital",
     "date": "Last update",
+    "group": "Group",
     "name": "Name",
     "profit": "Total Gain / Loss",
     "value": "Value"

@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next";
 import useApi from "@src/utils/useApi";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import {
   Button,
   Dialog,
@@ -25,10 +25,12 @@ export default function NewAssetDialog(props: {
   const [value, setValue] = useState("0");
   const [date, setDate] = useState(initialDate);
   const clearForm = () => {
-    setName("");
-    setCapital("0");
-    setValue("0");
-    setDate(initialDate);
+    startTransition(() => {
+      setName("");
+      setCapital("0");
+      setValue("0");
+      setDate(initialDate);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,7 +115,6 @@ function NewAssetTextField(props: {
   return (
     <TextField
       required
-      margin="dense"
       id={props.label}
       label={props.label}
       type={props.type ?? "text"}

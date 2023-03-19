@@ -2,6 +2,7 @@
   "assetAttributes": {
     "capital": "Kapitał",
     "date": "Ostatnia aktualizacja",
+    "group": "Grupa",
     "name": "Nazwa",
     "profit": "Całkowity zysk / strata",
     "value": "Wartość"
@@ -11,6 +12,11 @@
       "balanceUpdate": "Aktualizuj saldo",
       "changesList": "Lista aktualizacji salda",
       "edit": "Edytuj aktywo"
+    },
+    "messages": {
+      "assetCreated": "Aktywo utworzone",
+      "assetDeleted": "Aktywo usunięte",
+      "assetUpdated": "Aktywo zaktualizowane"
     },
     "newAsset": "Nowe aktywo",
     "title": "Aktywa"
