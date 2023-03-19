@@ -108,6 +108,11 @@ const useApi = () => {
         "POST",
         prepareErrorHandler(true)
       ),
+      deleteAsset: createEndpointFunction<void>(
+        "/api/assets/:assetId",
+        "DELETE",
+        prepareErrorHandler(true)
+      ),
     };
   }, [router]);
 };

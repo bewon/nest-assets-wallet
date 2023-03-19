@@ -2,6 +2,7 @@ import React, { startTransition, useEffect, useState } from "react";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import {
   Autocomplete,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -12,6 +13,7 @@ import {
 import { useTranslation } from "next-i18next";
 import { AppSnackbarState } from "@src/components/AppSnackbar";
 import useApi from "@src/utils/useApi";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function EditAssetDialog(props: {
   asset?: AssetSnapshot;
@@ -55,12 +57,42 @@ export default function EditAssetDialog(props: {
       });
     }
   };
+  const handleDelete = async () => {
+    if (!window.confirm(t("assetsList.deleteConfirm"))) {
+      return;
+    }
+    try {
+      const { makeRequest } = api.deleteAsset({
+        params: { assetId: props.asset?.id },
+      });
+      await makeRequest();
+      props.handleSnackbar({
+        open: true,
+        message: t("assetsList.messages.assetDeleted"),
+        severity: "success",
+      });
+      props.onDataRefresh();
+      props.onClose();
+      clearForm();
+    } catch (error: any) {
+      props.handleSnackbar({
+        open: true,
+        message: error.response?.data?.message ?? t("general.messages.error"),
+        severity: "error",
+      });
+    }
+  };
   useEffect(() => {
     if (props.asset) {
       setName(props.asset.name ?? "");
       setGroup(props.asset.group ?? "");
     }
   }, [props.asset]);
+  useEffect(() => {
+    if (!props.open) {
+      clearForm();
+    }
+  }, [props.open]);
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
@@ -73,18 +105,26 @@ export default function EditAssetDialog(props: {
             gap: 2,
           }}
         >
-          {props.asset && (
-            <FormFields
-              asset={props.asset}
-              groups={props.groups}
-              onNameChange={setName}
-              onGroupChange={setGroup}
-            />
-          )}
+          <FormFields
+            name={name}
+            group={group}
+            groups={props.groups}
+            onNameChange={setName}
+            onGroupChange={setGroup}
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={props.onClose}>{t("general.cancel")}</Button>
-          <Button type="submit">{t("general.save")}</Button>
+        <DialogActions sx={{ justifyContent: "space-between" }}>
+          <Button
+            onClick={handleDelete}
+            startIcon={<DeleteOutlineIcon />}
+            color="error"
+          >
+            {t("general.delete")}
+          </Button>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button onClick={props.onClose}>{t("general.cancel")}</Button>
+            <Button type="submit">{t("general.save")}</Button>
+          </Box>
         </DialogActions>
       </form>
     </Dialog>
@@ -92,7 +132,8 @@ export default function EditAssetDialog(props: {
 }
 
 function FormFields(props: {
-  asset?: AssetSnapshot;
+  name: string;
+  group: string;
   groups: string[];
   onNameChange: (name: string) => void;
   onGroupChange: (group: string) => void;
@@ -104,7 +145,7 @@ function FormFields(props: {
         required
         id="name"
         label={t("assetAttributes.name")}
-        value={props.asset?.name ?? ""}
+        value={props.name}
         onChange={(e) => props.onNameChange(e.target.value)}
         sx={{ m: 0, flexGrow: 1, flexBasis: 200 }}
       />
@@ -113,7 +154,7 @@ function FormFields(props: {
         disableClearable
         id="group-autocomplete"
         options={props.groups}
-        value={props.asset?.group ?? ""}
+        value={props.group}
         onInputChange={(e, value) => props.onGroupChange(value)}
         sx={{ flexGrow: 1, flexBasis: 200 }}
         renderInput={(params) => (

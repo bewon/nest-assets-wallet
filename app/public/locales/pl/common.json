@@ -8,6 +8,7 @@
     "value": "Wartość"
   },
   "assetsList": {
+    "deleteConfirm": "Czy na pewno chcesz usunąć aktywo?",
     "editAsset": "Edytuj aktywo",
     "menu": {
       "balanceUpdate": "Aktualizuj saldo",

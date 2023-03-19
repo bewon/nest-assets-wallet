@@ -24,7 +24,9 @@ export class AssetBalanceChangeEntity extends BalanceChangeModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => AssetEntity)
+  @ManyToOne(() => AssetEntity, (asset) => asset.balanceChanges, {
+    onDelete: 'CASCADE',
+  })
   asset: AssetEntity;
 
   @Column({ nullable: false })

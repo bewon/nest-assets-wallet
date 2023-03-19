@@ -8,12 +8,13 @@ export default function PeriodSelector(props: {
   allPeriods: string[];
 }) {
   const { t } = useTranslation();
+  const value = (props.allPeriods.length > 0 && props.period) || "";
   return (
     <FormControl sx={{ width: 120 }} variant="standard">
       <InputLabel id="period-selector-label">{t("general.period")}</InputLabel>
       <Select
         labelId="period-selector-label"
-        value={props.period ?? ""}
+        value={value}
         label={t("general.period")}
         onChange={(e) => props.onPeriodChange(e.target.value)}
       >
