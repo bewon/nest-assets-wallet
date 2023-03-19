@@ -8,6 +8,7 @@
     "value": "Value"
   },
   "assetsList": {
+    "editAsset": "Edit asset",
     "menu": {
       "balanceUpdate": "Update asset balance",
       "changesList": "Asset balance changes list",

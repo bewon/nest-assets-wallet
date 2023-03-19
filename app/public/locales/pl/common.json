@@ -8,6 +8,7 @@
     "value": "Wartość"
   },
   "assetsList": {
+    "editAsset": "Edytuj aktywo",
     "menu": {
       "balanceUpdate": "Aktualizuj saldo",
       "changesList": "Lista aktualizacji salda",
