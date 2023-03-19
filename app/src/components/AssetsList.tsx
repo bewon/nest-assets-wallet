@@ -32,6 +32,7 @@ import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import { TFunction } from "i18next";
 import type { Theme } from "@mui/material/styles";
 import NewAssetDialog from "@src/components/NewAssetDialog";
+import { AppSnackbarState } from "@src/components/AppSnackbar";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
@@ -99,6 +100,7 @@ const actions: {
 export default function AssetsList(props: {
   assets?: AssetSnapshot[];
   handleSnackbar: (state: AppSnackbarState) => void;
+  onDataRefresh: () => void;
 }) {
   const { t } = useTranslation();
   const userSettings = useContext(UserSettingsContext);
@@ -127,6 +129,7 @@ export default function AssetsList(props: {
         open={newAssetDialogOpen}
         onClose={() => setNewAssetDialogOpen(false)}
         handleSnackbar={props.handleSnackbar}
+        onDataRefresh={props.onDataRefresh}
       />
       {gridFits ? (
         <AssetsGrid assets={assets} />

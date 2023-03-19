@@ -76,6 +76,7 @@ async function callApiForGroup<T>(
 export default function PortfolioPerformance(props: {
   assets?: AssetSnapshot[];
   performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
+  periods: string[];
 }) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>();
@@ -128,7 +129,7 @@ export default function PortfolioPerformance(props: {
         <PeriodSelector
           period={period}
           onPeriodChange={setPeriod}
-          allPeriods={Object.keys(props.performanceStatistics ?? {})}
+          allPeriods={props.periods}
         />
       </Box>
       {props.assets == null ? (

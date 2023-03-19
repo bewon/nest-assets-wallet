@@ -39,14 +39,11 @@ function findPerformance(
 export default function AssetsPerformance(props: {
   assets?: AssetSnapshot[];
   performanceStatistics?: PortfolioPerformanceStatistics["assets"];
+  periods: string[];
 }) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>();
   const userSettings = useContext(UserSettingsContext);
-  const periods = useMemo(
-    () => Object.keys(props.performanceStatistics?.[0]?.performance ?? {}),
-    [props.performanceStatistics]
-  );
 
   const assetsData = useMemo(() => {
     if (props.assets == null || props.performanceStatistics == null)
@@ -68,10 +65,10 @@ export default function AssetsPerformance(props: {
   }, [props.assets, props.performanceStatistics, period, userSettings]);
 
   useEffect(() => {
-    if (periods.length > 0) {
-      setPeriod(periods[0]);
+    if (props.periods.length > 0) {
+      setPeriod(props.periods[0]);
     }
-  }, [periods]);
+  }, [props.periods]);
 
   return (
     <Paper>
@@ -82,7 +79,7 @@ export default function AssetsPerformance(props: {
         <PeriodSelector
           period={period}
           onPeriodChange={setPeriod}
-          allPeriods={periods}
+          allPeriods={props.periods}
         />
       </Box>
       {assetsData == null ? (

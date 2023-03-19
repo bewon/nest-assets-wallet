@@ -29,12 +29,12 @@ export class AssetsController {
     @Param('portfolioId') portfolioId: string,
     @Body() createAssetDto: CreateAssetDto,
   ) {
-    await this.portfolioService.getAndCheckPortfolioForUser(
+    const portfolio = await this.portfolioService.getAndCheckPortfolioForUser(
       req.user?.id,
       portfolioId,
     );
     try {
-      return this.assetService.create(portfolioId, createAssetDto);
+      return this.assetService.create(portfolio.id, createAssetDto);
     } catch (error) {
       throw this.updateError(error);
     }

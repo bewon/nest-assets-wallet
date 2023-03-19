@@ -15,13 +15,21 @@ export default function NewAssetDialog(props: {
   open: boolean;
   onClose: () => void;
   handleSnackbar: (state: AppSnackbarState) => void;
+  onDataRefresh: () => void;
 }) {
   const { t } = useTranslation();
   const api = useApi();
+  const initialDate = new Date().toISOString().split("T")[0];
   const [name, setName] = useState("");
-  const [capital, setCapital] = useState("");
-  const [value, setValue] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [capital, setCapital] = useState("0");
+  const [value, setValue] = useState("0");
+  const [date, setDate] = useState(initialDate);
+  const clearForm = () => {
+    setName("");
+    setCapital("0");
+    setValue("0");
+    setDate(initialDate);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +48,9 @@ export default function NewAssetDialog(props: {
         message: t("assetsList.messages.assetCreated"),
         severity: "success",
       });
+      props.onDataRefresh();
       props.onClose();
+      clearForm();
     } catch (error: any) {
       props.handleSnackbar({
         open: true,
@@ -54,7 +64,13 @@ export default function NewAssetDialog(props: {
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>{t("assetsList.newAsset")} </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ display: "flex", flexWrap: "wrap" }}>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
           <NewAssetTextField
             label={t("assetAttributes.name")}
             value={name}
@@ -96,13 +112,14 @@ function NewAssetTextField(props: {
 }) {
   return (
     <TextField
+      required
       margin="dense"
       id={props.label}
       label={props.label}
       type={props.type ?? "text"}
       value={props.value}
       onChange={props.onChange}
-      sx={{ mr: 1, mb: 1, minWidth: 200, flexGrow: 1 }}
+      sx={{ m: 0, flexGrow: 1, flexBasis: 200 }}
     />
   );
 }

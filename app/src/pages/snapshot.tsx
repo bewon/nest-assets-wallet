@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useApi from "@src/utils/useApi";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { useTranslation } from "next-i18next";
@@ -47,22 +47,50 @@ export default function Snapshot() {
   const { t } = useTranslation();
   const generalErrorMessage = t("general.messages.error");
 
-  useEffect(() => {
-    const { makeRequest, abortRequest } = api.getAssetsSnapshot({});
-    callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
-    return () => abortRequest();
-  }, [generalErrorMessage, api]);
+  const updateAssets = useMemo(
+    () => () => {
+      if (assets !== undefined) setAssets(undefined);
+      const { makeRequest, abortRequest } = api.getAssetsSnapshot({});
+      callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
+      return abortRequest;
+    },
+    [generalErrorMessage, api]
+  );
+
+  const updatePerformanceStatistics = useMemo(
+    () => () => {
+      if (performanceStatistics !== undefined)
+        setPerformanceStatistics(undefined);
+      const { makeRequest, abortRequest } = api.getPerformanceStatistics({});
+      callApi(
+        makeRequest,
+        setPerformanceStatistics,
+        generalErrorMessage,
+        setSnackbarState
+      );
+      return abortRequest;
+    },
+    [generalErrorMessage, api]
+  );
+
+  const periods = useMemo(() => {
+    return Object.keys(performanceStatistics?.portfolio ?? {});
+  }, [performanceStatistics]);
 
   useEffect(() => {
-    const { makeRequest, abortRequest } = api.getPerformanceStatistics({});
-    callApi(
-      makeRequest,
-      setPerformanceStatistics,
-      generalErrorMessage,
-      setSnackbarState
-    );
+    const abortRequest = updateAssets();
     return () => abortRequest();
-  }, [generalErrorMessage, api]);
+  }, [updateAssets]);
+
+  useEffect(() => {
+    const abortRequest = updatePerformanceStatistics();
+    return () => abortRequest();
+  }, [updatePerformanceStatistics]);
+
+  const handleDataRefresh = () => {
+    updateAssets();
+    updatePerformanceStatistics();
+  };
 
   return (
     <>
@@ -75,12 +103,17 @@ export default function Snapshot() {
         <Grid container spacing={2}>
           <Grid item container xs={12} md={8} spacing={2}>
             <Grid item xs={12}>
-              <AssetsList assets={assets} handleSnackbar={setSnackbarState} />
+              <AssetsList
+                assets={assets}
+                handleSnackbar={setSnackbarState}
+                onDataRefresh={handleDataRefresh}
+              />
             </Grid>
             <Grid item xs={12}>
               <PortfolioPerformance
                 assets={assets}
                 performanceStatistics={performanceStatistics?.portfolio}
+                periods={periods}
               />
             </Grid>
           </Grid>
@@ -100,6 +133,7 @@ export default function Snapshot() {
               <AssetsPerformance
                 assets={assets}
                 performanceStatistics={performanceStatistics?.assets}
+                periods={periods}
               />
             </Grid>
           </Grid>
