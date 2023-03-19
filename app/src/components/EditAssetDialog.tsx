@@ -35,10 +35,13 @@ export default function EditAssetDialog(props: {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!props.asset) {
+      return;
+    }
     try {
       const { makeRequest } = api.updateAsset({
         data: { name, group },
-        params: { assetId: props.asset?.id },
+        params: { assetId: props.asset.id },
       });
       await makeRequest();
       props.handleSnackbar({
@@ -61,9 +64,12 @@ export default function EditAssetDialog(props: {
     if (!window.confirm(t("assetsList.deleteConfirm"))) {
       return;
     }
+    if (!props.asset) {
+      return;
+    }
     try {
       const { makeRequest } = api.deleteAsset({
-        params: { assetId: props.asset?.id },
+        params: { assetId: props.asset.id },
       });
       await makeRequest();
       props.handleSnackbar({
@@ -118,12 +124,15 @@ export default function EditAssetDialog(props: {
             onClick={handleDelete}
             startIcon={<DeleteOutlineIcon />}
             color="error"
+            disabled={!props.asset}
           >
             {t("general.delete")}
           </Button>
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button onClick={props.onClose}>{t("general.cancel")}</Button>
-            <Button type="submit">{t("general.save")}</Button>
+            <Button type="submit" disabled={!props.asset}>
+              {t("general.save")}
+            </Button>
           </Box>
         </DialogActions>
       </form>

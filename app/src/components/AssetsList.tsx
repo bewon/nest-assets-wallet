@@ -168,7 +168,7 @@ export default function AssetsList(props: {
             <NarrowAssetsListItem
               key={asset.id}
               asset={asset}
-              onDialogOpen={() => handleAssetDialogOpen("balanceUpdate", asset)}
+              onDialogOpen={(type) => handleAssetDialogOpen(type, asset)}
             />
           ))}
         </List>
