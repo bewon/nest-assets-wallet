@@ -113,6 +113,11 @@ const useApi = () => {
         "DELETE",
         prepareErrorHandler(true)
       ),
+      createBalanceChange: createEndpointFunction<void>(
+        "/api/assets/:assetId/balance-changes",
+        "POST",
+        prepareErrorHandler(true)
+      ),
     };
   }, [router]);
 };

@@ -1,6 +1,7 @@
 import React, { startTransition, useEffect, useMemo, useState } from "react";
 import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -43,7 +44,27 @@ export default function BalanceUpdateDialog(props: {
     if (!props.asset) {
       return;
     }
-    // todo
+    try {
+      const { makeRequest } = api.createBalanceChange({
+        data: { capital, value, date },
+        params: { assetId: props.asset.id },
+      });
+      await makeRequest();
+      props.handleSnackbar({
+        open: true,
+        message: t("assetsList.messages.balanceUpdated"),
+        severity: "success",
+      });
+      props.onDataRefresh();
+      props.onClose();
+      clearForm();
+    } catch (error: any) {
+      props.handleSnackbar({
+        open: true,
+        message: error.response?.data?.message ?? t("general.messages.error"),
+        severity: "error",
+      });
+    }
   };
 
   useEffect(() => {
@@ -54,27 +75,43 @@ export default function BalanceUpdateDialog(props: {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle>{t("assetsList.balanceUpdate")}</DialogTitle>
+      <DialogTitle>
+        {t("assetsList.balanceUpdate")}
+        <Typography variant="body1">{props.asset?.name}</Typography>
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-          }}
-        >
-          <FormColumn
-            columnType="capital"
-            currentValue={props.asset?.capital}
-            newValue={capital}
-            onNewValueChange={setCapital}
-          />
-          <FormColumn
-            columnType="value"
-            currentValue={props.asset?.value}
-            newValue={value}
-            onNewValueChange={setValue}
-          />
+        <DialogContent>
+          <Box sx={{ display: "flex", gap: 2, flexWrap: ["wrap", "nowrap"] }}>
+            <TextField
+              label={t("assetsList.balanceUpdateDate")}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              sx={{ minWidth: 160 }}
+            />
+            <TipBox tip={t("assetsList.balanceUpdateTip")} />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mt: 3,
+              flexWrap: ["wrap", "nowrap"],
+            }}
+          >
+            <FormColumn
+              columnType="capital"
+              currentValue={props.asset?.capital}
+              newValue={capital}
+              onNewValueChange={setCapital}
+            />
+            <FormColumn
+              columnType="value"
+              currentValue={props.asset?.value}
+              newValue={value}
+              onNewValueChange={setValue}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={props.onClose}>{t("general.cancel")}</Button>
@@ -84,6 +121,29 @@ export default function BalanceUpdateDialog(props: {
         </DialogActions>
       </form>
     </Dialog>
+  );
+}
+
+function TipBox(props: { tip: string }) {
+  const [showFullTip, setShowFullTip] = useState(false);
+  const { t } = useTranslation();
+  const tip = useMemo(() => {
+    if (showFullTip) {
+      return props.tip;
+    }
+    return props.tip.slice(0, 27) + "...";
+  }, [props.tip, showFullTip]);
+  return (
+    <Alert severity="info">
+      {tip}
+      <Button
+        color="inherit"
+        size="small"
+        onClick={() => setShowFullTip(!showFullTip)}
+      >
+        {showFullTip ? t("general.readLess") : t("general.readMore")}
+      </Button>
+    </Alert>
   );
 }
 
@@ -107,7 +167,7 @@ function FormColumn(props: {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flexGrow: 1 }}>
       <Typography variant="h6">
         {t(`assetsList.balanceUpdateColumns.${props.columnType}.header`)}
       </Typography>
@@ -125,6 +185,7 @@ function FormColumn(props: {
         icon={<FaPlus />}
       />
       <ColumnTextField
+        required
         columnType={props.columnType}
         textFieldType="new"
         value={props.newValue}
@@ -142,6 +203,7 @@ function ColumnTextField(props: {
   onChange?: (value: number) => void;
   disabled?: boolean;
   icon?: React.ReactNode;
+  required?: boolean;
 }) {
   const { t } = useTranslation();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,6 +227,7 @@ function ColumnTextField(props: {
         `assetsList.balanceUpdateColumns.${props.columnType}.${props.textFieldType}`
       )}
       value={props?.value?.toString() ?? ""}
+      required={props.required}
       disabled={props.disabled}
       type="number"
       onChange={handleChange}
