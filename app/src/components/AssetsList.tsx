@@ -34,6 +34,7 @@ import type { Theme } from "@mui/material/styles";
 import NewAssetDialog from "@src/components/NewAssetDialog";
 import { AppSnackbarState } from "@src/components/AppSnackbar";
 import EditAssetDialog from "@src/components/EditAssetDialog";
+import BalanceUpdateDialog from "@src/components/BalanceUpdateDialog";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
@@ -155,6 +156,13 @@ export default function AssetsList(props: {
         handleSnackbar={props.handleSnackbar}
         onDataRefresh={props.onDataRefresh}
         groups={groups}
+      />
+      <BalanceUpdateDialog
+        open={assetDialog?.type === "balanceUpdate"}
+        asset={assetDialog?.asset}
+        onClose={() => setAssetDialog(null)}
+        handleSnackbar={props.handleSnackbar}
+        onDataRefresh={props.onDataRefresh}
       />
       {gridFits ? (
         <AssetsGrid assets={assets} onDialogOpen={handleAssetDialogOpen} />

@@ -8,6 +8,21 @@
     "value": "Wartość"
   },
   "assetsList": {
+    "balanceUpdate": "Aktualizacja salda",
+    "balanceUpdateColumns": {
+      "capital": {
+        "header": "Kapitał",
+        "current": "Dotychczasowy kapitał",
+        "plus": "Zmiana kapitału",
+        "new": "Kapitał po aktualizacji"
+      },
+      "value": {
+        "header": "Wartość",
+        "current": "Dotychczasowa wartość",
+        "plus": "Zmiana wartości",
+        "new": "Wartość po aktualizacji"
+      }
+    },
     "deleteConfirm": "Czy na pewno chcesz usunąć aktywo?",
     "editAsset": "Edytuj aktywo",
     "menu": {

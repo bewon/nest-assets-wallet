@@ -8,6 +8,21 @@
     "value": "Value"
   },
   "assetsList": {
+    "balanceUpdate": "Balance Update",
+    "balanceUpdateColumns": {
+      "capital": {
+        "header": "Capital",
+        "current": "Capital before update",
+        "plus": "Capital change",
+        "new": "Capital after update"
+      },
+      "value": {
+        "header": "Value",
+        "current": "Value before update",
+        "plus": "Value change",
+        "new": "Value after update"
+      }
+    },
     "deleteConfirm": "Are you sure you want to delete this asset?",
     "editAsset": "Edit asset",
     "menu": {
