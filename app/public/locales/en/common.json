@@ -25,6 +25,7 @@
     },
     "balanceUpdateTip": "In the first column, enter the capital change OR the new capital of the asset, and in the second one the value change OR the new value of the asset.",
     "balanceUpdateDate": "Date of the update",
+    "changesList": "Balance Changes",
     "deleteConfirm": "Are you sure you want to delete this asset?",
     "editAsset": "Edit asset",
     "menu": {

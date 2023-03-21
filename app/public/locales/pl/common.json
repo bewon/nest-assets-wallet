@@ -25,6 +25,7 @@
     },
     "balanceUpdateTip": "W pierwszej kolumnie należy wpisać zmianę kapitału LUB nowy kapitał danego aktywa, a w drugiej zmianę wartości LUB nową wartość danego aktywa.",
     "balanceUpdateDate": "Data aktualizacji",
+    "changesList": "Aktualizacje salda",
     "deleteConfirm": "Czy na pewno chcesz usunąć aktywo?",
     "editAsset": "Edytuj aktywo",
     "menu": {
