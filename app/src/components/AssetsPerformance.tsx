@@ -22,6 +22,12 @@ import useFormat from "@src/utils/useFormat";
 import { assetsPalette } from "@src/utils/theme";
 import type { Theme } from "@mui/material/styles";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
+import AssetPoint from "@src/components/AssetPoint";
+
+type AssetItemData = AssetSnapshot & {
+  performance?: AnnualizedCalculation;
+  color: string;
+};
 
 function findPerformance(
   performanceStatistics: PortfolioPerformanceStatistics["assets"],
@@ -48,9 +54,8 @@ export default function AssetsPerformance(props: {
   const assetsData = useMemo(() => {
     if (props.assets == null || props.performanceStatistics == null)
       return null;
-    const data: Array<AssetSnapshot & { performance?: AnnualizedCalculation }> =
-      [];
-    props.assets?.forEach((asset) => {
+    const data: Array<AssetItemData> = [];
+    props.assets?.forEach((asset, index) => {
       if (userSettings?.hideZeroAssets && (asset.value ?? 0) === 0) return;
       data.push({
         ...asset,
@@ -59,6 +64,7 @@ export default function AssetsPerformance(props: {
           asset.id,
           period
         ),
+        color: assetsPalette[index % assetsPalette.length],
       });
     });
     return data;
@@ -88,12 +94,8 @@ export default function AssetsPerformance(props: {
         </Box>
       ) : (
         <List sx={{ pb: 2 }}>
-          {assetsData.map((asset, index) => (
-            <AssetItem
-              key={asset.id}
-              asset={asset}
-              assetColor={assetsPalette[index % assetsPalette.length]}
-            />
+          {assetsData.map((asset) => (
+            <AssetItem key={asset.id} asset={asset} />
           ))}
         </List>
       )}
@@ -101,10 +103,7 @@ export default function AssetsPerformance(props: {
   );
 }
 
-function AssetItem(props: {
-  asset: AssetSnapshot & { performance?: AnnualizedCalculation };
-  assetColor: string;
-}) {
+function AssetItem(props: { asset: AssetItemData }) {
   const { t } = useTranslation();
   const { percentFormat } = useFormat();
   const annualizedTwr = props.asset.performance?.annualizedTwr;
@@ -127,15 +126,7 @@ function AssetItem(props: {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Box
-          sx={{
-            width: 5,
-            height: 45,
-            borderRadius: 1,
-            backgroundColor: props.assetColor,
-            mr: 2,
-          }}
-        />
+        <AssetPoint color={props.asset.color} sx={{ mr: 2, height: 45 }} />
         <Box>
           <ListItemText primary={props.asset.name} />
           <Box>

@@ -36,6 +36,7 @@ import { AppSnackbarState } from "@src/components/AppSnackbar";
 import EditAssetDialog from "@src/components/EditAssetDialog";
 import BalanceUpdateDialog from "@src/components/BalanceUpdateDialog";
 import ChangesListDialog from "@src/components/ChangesListDialog";
+import { assetsPalette } from "@src/utils/theme";
 
 type DialogType = "balanceUpdate" | "edit" | "changesList";
 
@@ -132,6 +133,14 @@ export default function AssetsList(props: {
     setAssetDialog({ type, asset });
   };
 
+  const assetColor = useMemo(() => {
+    if (assetDialog?.asset == null) return undefined;
+    const index = props.assets?.findIndex((a) => a.id === assetDialog.asset.id);
+    return index != null
+      ? assetsPalette[index % assetsPalette.length]
+      : undefined;
+  }, [assetDialog?.asset, props.assets]);
+
   return (
     <Paper>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
@@ -161,6 +170,7 @@ export default function AssetsList(props: {
       <BalanceUpdateDialog
         open={assetDialog?.type === "balanceUpdate"}
         asset={assetDialog?.asset}
+        assetColor={assetColor}
         onClose={() => setAssetDialog(null)}
         handleSnackbar={props.handleSnackbar}
         onDataRefresh={props.onDataRefresh}
@@ -168,6 +178,7 @@ export default function AssetsList(props: {
       <ChangesListDialog
         open={assetDialog?.type === "changesList"}
         asset={assetDialog?.asset}
+        assetColor={assetColor}
         onClose={() => setAssetDialog(null)}
         handleSnackbar={props.handleSnackbar}
         onDataRefresh={props.onDataRefresh}

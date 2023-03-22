@@ -16,11 +16,13 @@ import { useTranslation } from "next-i18next";
 import { AppSnackbarState } from "@src/components/AppSnackbar";
 import useApi from "@src/utils/useApi";
 import { FaEquals, FaPlus } from "react-icons/fa";
+import AssetPoint from "@src/components/AssetPoint";
 
 const amountRound = (amount: number) => Math.round(amount * 100) / 100;
 
 export default function BalanceUpdateDialog(props: {
   asset?: AssetSnapshot;
+  assetColor?: string;
   open: boolean;
   onClose: () => void;
   handleSnackbar: (state: AppSnackbarState) => void;
@@ -77,7 +79,10 @@ export default function BalanceUpdateDialog(props: {
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>
         {t("assetsList.balanceUpdate")}
-        <Typography variant="body1">{props.asset?.name}</Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <AssetPoint color={props.assetColor} sx={{ mr: 1 }} />
+          <Typography variant="body1">{props.asset?.name}</Typography>
+        </Box>
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>

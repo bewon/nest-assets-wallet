@@ -74,7 +74,10 @@ export class AssetService {
   }
 
   findAssetsForPortfolio(portfolio: PortfolioEntity): Promise<AssetEntity[]> {
-    return this.assetRepository.findBy({ portfolioId: portfolio.id });
+    return this.assetRepository.find({
+      where: { portfolioId: portfolio.id },
+      order: { createdAt: 'ASC' },
+    });
   }
 
   findPortfolioChanges(
