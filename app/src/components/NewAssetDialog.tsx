@@ -64,7 +64,7 @@ export default function NewAssetDialog(props: {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle>{t("assetsList.newAsset")} </DialogTitle>
+      <DialogTitle>{t("assetsList.newAsset")}</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent
           sx={{
