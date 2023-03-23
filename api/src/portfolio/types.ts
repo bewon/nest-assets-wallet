@@ -1,10 +1,17 @@
-export interface AssetSnapshot {
+export interface AssetSnapshotInterface {
   id?: string;
   name?: string;
   group?: string;
   capital?: number;
   value?: number;
   profit?: number;
+  date?: string;
+}
+
+export interface AssetBalanceChangeInterface {
+  id?: string;
+  capital?: number;
+  value?: number;
   date?: string;
 }
 

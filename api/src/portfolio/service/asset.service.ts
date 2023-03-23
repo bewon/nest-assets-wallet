@@ -9,6 +9,7 @@ import { CreateAssetDto } from '../dto/create-asset.dto';
 import { UpdateAssetDto } from '../dto/update-asset.dto';
 import { CreateBalanceChangeDto } from '../dto/create-balance-change.dto';
 import { UpdateBalanceChangeDto } from '../dto/update-balance-change.dto';
+import { AssetBalanceChangeDto } from '../dto/asset-balance-change.dto';
 
 @Injectable()
 export class AssetService {
@@ -54,23 +55,25 @@ export class AssetService {
       );
   }
 
-  findChangesInGivenYear(
+  async findChangesInGivenYear(
     asset: AssetEntity,
     year: number,
-  ): Promise<AssetBalanceChangeEntity[]> {
+  ): Promise<AssetBalanceChangeDto[]> {
     const from = new Date(year, 0, 1).toISOString();
     const to = new Date(year, 11, 31, 23, 59, 59).toISOString();
-    return this.assetBalanceChangeRepository.find({
+    const entities = await this.assetBalanceChangeRepository.find({
       where: { assetId: asset.id, date: Between(from, to) },
       order: { date: 'ASC' },
     });
+    return entities.map((change) => new AssetBalanceChangeDto(change));
   }
 
-  findAllChanges(asset: AssetEntity): Promise<AssetBalanceChangeEntity[]> {
-    return this.assetBalanceChangeRepository.find({
+  async findAllChanges(asset: AssetEntity): Promise<AssetBalanceChangeDto[]> {
+    const entities = await this.assetBalanceChangeRepository.find({
       where: { assetId: asset.id },
       order: { date: 'ASC' },
     });
+    return entities.map((change) => new AssetBalanceChangeDto(change));
   }
 
   findAssetsForPortfolio(portfolio: PortfolioEntity): Promise<AssetEntity[]> {

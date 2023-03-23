@@ -1,4 +1,4 @@
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
 import {
   Button,
   Dialog,
@@ -27,8 +27,8 @@ import { useTranslation } from "next-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-export const groupAssets = (assets: AssetSnapshot[]) => {
-  const data: Record<string, AssetSnapshot[]> = {};
+export const groupAssets = (assets: AssetSnapshotInterface[]) => {
+  const data: Record<string, AssetSnapshotInterface[]> = {};
   assets.forEach((asset) => {
     if (asset.group == null) {
       return;
@@ -44,7 +44,7 @@ export const groupAssets = (assets: AssetSnapshot[]) => {
 export default function PortfolioStatusDialog(props: {
   open: boolean;
   onClose: () => void;
-  assets: AssetSnapshot[];
+  assets: AssetSnapshotInterface[];
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();

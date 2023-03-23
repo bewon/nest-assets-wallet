@@ -21,7 +21,7 @@ import {
   GridRowParams,
 } from "@mui/x-data-grid";
 import React, { useContext, useMemo, useState } from "react";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
 import { useTranslation } from "next-i18next";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EditIcon from "@mui/icons-material/Edit";
@@ -102,7 +102,7 @@ const actions: {
 ];
 
 export default function AssetsList(props: {
-  assets?: AssetSnapshot[];
+  assets?: AssetSnapshotInterface[];
   handleSnackbar: (state: AppSnackbarState) => void;
   onDataRefresh: () => void;
 }) {
@@ -111,7 +111,7 @@ export default function AssetsList(props: {
   const [newAssetDialogOpen, setNewAssetDialogOpen] = useState(false);
   const [assetDialog, setAssetDialog] = useState<{
     type: DialogType;
-    asset: AssetSnapshot;
+    asset: AssetSnapshotInterface;
   } | null>(null);
 
   const assets = useMemo(() => {
@@ -129,7 +129,10 @@ export default function AssetsList(props: {
 
   const gridFits = useMediaQuery<Theme>((theme) => theme.breakpoints.up("sm"));
 
-  const handleAssetDialogOpen = (type: DialogType, asset: AssetSnapshot) => {
+  const handleAssetDialogOpen = (
+    type: DialogType,
+    asset: AssetSnapshotInterface
+  ) => {
     setAssetDialog({ type, asset });
   };
 
@@ -205,18 +208,18 @@ export default function AssetsList(props: {
 }
 
 function AssetsGrid(props: {
-  assets?: AssetSnapshot[];
-  onDialogOpen: (type: DialogType, asset: AssetSnapshot) => void;
+  assets?: AssetSnapshotInterface[];
+  onDialogOpen: (type: DialogType, asset: AssetSnapshotInterface) => void;
 }) {
   const { t } = useTranslation();
   const { amountFormat } = useFormat();
   const handleDialogOpen = props.onDialogOpen;
 
-  const columns = useMemo<GridColumns<AssetSnapshot>>(() => {
+  const columns = useMemo<GridColumns<AssetSnapshotInterface>>(() => {
     return prepareColumns(
       t,
       ({ value }) => amountFormat(value) ?? "-",
-      (params: GridRowParams<AssetSnapshot>) =>
+      (params: GridRowParams<AssetSnapshotInterface>) =>
         actions.map((action) => (
           <GridActionsCellItem
             key={action.key}
@@ -257,7 +260,7 @@ function AssetsGrid(props: {
 }
 
 function NarrowAssetsListItem(props: {
-  asset: AssetSnapshot;
+  asset: AssetSnapshotInterface;
   onDialogOpen: (type: DialogType) => void;
 }) {
   const { t } = useTranslation();

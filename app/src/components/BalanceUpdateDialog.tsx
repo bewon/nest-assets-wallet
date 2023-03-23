@@ -1,5 +1,5 @@
 import React, { startTransition, useEffect, useMemo, useState } from "react";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
 import {
   Alert,
   Box,
@@ -21,7 +21,7 @@ import AssetPoint from "@src/components/AssetPoint";
 const amountRound = (amount: number) => Math.round(amount * 100) / 100;
 
 export default function BalanceUpdateDialog(props: {
-  asset?: AssetSnapshot;
+  asset?: AssetSnapshotInterface;
   assetColor?: string;
   open: boolean;
   onClose: () => void;

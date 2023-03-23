@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Button, CircularProgress, Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
 import useFormat from "@src/utils/useFormat";
 import { useTranslation } from "next-i18next";
 import PortfolioStatusDialog from "@src/components/PortfolioStatusDialog";
 
-export default function PortfolioStatus(props: { assets?: AssetSnapshot[] }) {
+export default function PortfolioStatus(props: {
+  assets?: AssetSnapshotInterface[];
+}) {
   const [open, setOpen] = useState(false);
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
-  const calculateTotalValue = (assets: AssetSnapshot[]) =>
+  const calculateTotalValue = (assets: AssetSnapshotInterface[]) =>
     assets.reduce((acc, asset) => acc + (asset.value ?? 0), 0);
 
   return (

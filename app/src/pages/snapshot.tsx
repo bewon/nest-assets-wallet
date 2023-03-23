@@ -9,7 +9,7 @@ import Header from "@src/components/Header";
 import { Grid } from "@mui/material";
 import Container from "@mui/material/Container";
 import type {
-  AssetSnapshot,
+  AssetSnapshotInterface,
   PortfolioPerformanceStatistics,
 } from "@assets-wallet/api/src/portfolio/types";
 import AssetsList from "@src/components/AssetsList";
@@ -39,7 +39,7 @@ async function callApi<T>(
 }
 
 export default function Snapshot() {
-  const [assets, setAssets] = useState<AssetSnapshot[]>();
+  const [assets, setAssets] = useState<AssetSnapshotInterface[]>();
   const [performanceStatistics, setPerformanceStatistics] =
     useState<PortfolioPerformanceStatistics>();
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});

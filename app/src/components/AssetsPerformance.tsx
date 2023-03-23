@@ -1,5 +1,5 @@
 import type {
-  AssetSnapshot,
+  AssetSnapshotInterface,
   PortfolioPerformanceStatistics,
   AnnualizedCalculation,
 } from "@assets-wallet/api/src/portfolio/types";
@@ -24,7 +24,7 @@ import type { Theme } from "@mui/material/styles";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import AssetPoint from "@src/components/AssetPoint";
 
-type AssetItemData = AssetSnapshot & {
+type AssetItemData = AssetSnapshotInterface & {
   performance?: AnnualizedCalculation;
   color: string;
 };
@@ -43,7 +43,7 @@ function findPerformance(
 }
 
 export default function AssetsPerformance(props: {
-  assets?: AssetSnapshot[];
+  assets?: AssetSnapshotInterface[];
   performanceStatistics?: PortfolioPerformanceStatistics["assets"];
   periods: string[];
 }) {

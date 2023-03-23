@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSessionData, logoutUser } from "@src/utils/session";
 import type {
-  AssetSnapshot,
+  AssetSnapshotInterface,
   PortfolioPerformanceStatistics,
+  AssetBalanceChangeInterface,
 } from "@assets-wallet/api/src/portfolio/types";
 import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
@@ -81,7 +82,7 @@ const useApi = () => {
         "POST",
         prepareErrorHandler(false)
       ),
-      getAssetsSnapshot: createEndpointFunction<AssetSnapshot[]>(
+      getAssetsSnapshot: createEndpointFunction<AssetSnapshotInterface[]>(
         "/api/portfolios/default/assets-snapshot",
         "GET",
         prepareErrorHandler(true)
@@ -98,12 +99,12 @@ const useApi = () => {
           "GET",
           prepareErrorHandler(true)
         ),
-      createAsset: createEndpointFunction<AssetSnapshot>(
+      createAsset: createEndpointFunction<AssetSnapshotInterface>(
         "/api/portfolios/default/assets",
         "POST",
         prepareErrorHandler(true)
       ),
-      updateAsset: createEndpointFunction<AssetSnapshot>(
+      updateAsset: createEndpointFunction<AssetSnapshotInterface>(
         "/api/assets/:assetId",
         "POST",
         prepareErrorHandler(true)
@@ -113,9 +114,26 @@ const useApi = () => {
         "DELETE",
         prepareErrorHandler(true)
       ),
+      getAssetBalanceChanges: createEndpointFunction<
+        AssetBalanceChangeInterface[]
+      >(
+        "/api/assets/:assetId/balance-changes",
+        "GET",
+        prepareErrorHandler(true)
+      ),
       createBalanceChange: createEndpointFunction<void>(
         "/api/assets/:assetId/balance-changes",
         "POST",
+        prepareErrorHandler(true)
+      ),
+      updateBalanceChange: createEndpointFunction<void>(
+        "/api/assets/:assetId/balance-changes/:balanceChangeId",
+        "POST",
+        prepareErrorHandler(true)
+      ),
+      deleteBalanceChange: createEndpointFunction<void>(
+        "/api/assets/:assetId/balance-changes/:balanceChangeId",
+        "DELETE",
         prepareErrorHandler(true)
       ),
     };

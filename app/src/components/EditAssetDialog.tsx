@@ -1,5 +1,5 @@
 import React, { startTransition, useEffect, useState } from "react";
-import type { AssetSnapshot } from "@assets-wallet/api/src/portfolio/types";
+import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
 import {
   Autocomplete,
   Box,
@@ -16,7 +16,7 @@ import useApi from "@src/utils/useApi";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function EditAssetDialog(props: {
-  asset?: AssetSnapshot;
+  asset?: AssetSnapshotInterface;
   open: boolean;
   onClose: () => void;
   handleSnackbar: (state: AppSnackbarState) => void;

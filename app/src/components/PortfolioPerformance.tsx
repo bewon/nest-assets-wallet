@@ -1,5 +1,5 @@
 import type {
-  AssetSnapshot,
+  AssetSnapshotInterface,
   PortfolioPerformanceStatistics,
 } from "@assets-wallet/api/src/portfolio/types";
 import {
@@ -42,7 +42,7 @@ type PerformanceData = {
 };
 
 const preparePerformanceValues = (
-  assets: AssetSnapshot[],
+  assets: AssetSnapshotInterface[],
   period: string,
   statistics?: PortfolioPerformanceStatistics["portfolio"]
 ): PerformanceData => {
@@ -74,7 +74,7 @@ async function callApiForGroup<T>(
 }
 
 export default function PortfolioPerformance(props: {
-  assets?: AssetSnapshot[];
+  assets?: AssetSnapshotInterface[];
   performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
   periods: string[];
 }) {
