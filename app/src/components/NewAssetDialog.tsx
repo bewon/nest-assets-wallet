@@ -35,15 +35,17 @@ export default function NewAssetDialog(props: {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const { makeRequest } = api.createAsset({
+      data: {
+        name,
+        capital: Number(capital),
+        value: Number(value),
+        date,
+      },
+    });
+
     try {
-      const { makeRequest } = api.createAsset({
-        data: {
-          name,
-          capital: Number(capital),
-          value: Number(value),
-          date,
-        },
-      });
       await makeRequest();
       props.handleSnackbar({
         open: true,

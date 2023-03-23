@@ -10,6 +10,7 @@ import {
   Post,
   Body,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AssetService } from '../service/asset.service';
 import { PortfolioService } from '../service/portfolio.service';
@@ -28,7 +29,7 @@ export class BalanceChangesController {
   async findAll(
     @Request() req: ExpressRequest,
     @Param('assetId') assetId: string,
-    @Param('year') year?: string,
+    @Query('year') year?: string,
   ) {
     const asset = await this.getAndCheckAssetForUser(req.user?.id, assetId);
     if (year != null) {
