@@ -127,12 +127,12 @@ const useApi = () => {
         prepareErrorHandler(true)
       ),
       updateBalanceChange: createEndpointFunction<void>(
-        "/api/assets/:assetId/balance-changes/:balanceChangeId",
+        "/api/assets/:assetId/balance-changes/:changeId",
         "POST",
         prepareErrorHandler(true)
       ),
       deleteBalanceChange: createEndpointFunction<void>(
-        "/api/assets/:assetId/balance-changes/:balanceChangeId",
+        "/api/assets/:assetId/balance-changes/:changeId",
         "DELETE",
         prepareErrorHandler(true)
       ),

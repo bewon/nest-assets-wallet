@@ -37,7 +37,9 @@
       "assetCreated": "Asset created",
       "assetDeleted": "Asset deleted",
       "assetUpdated": "Asset updated",
-      "balanceUpdated": "Balance updated"
+      "balanceUpdated": "Balance updated",
+      "changeUpdated": "Change updated",
+      "changeDeleted": "Change deleted"
     },
     "newAsset": "New asset",
     "noChangesForYear": "No changes for selected year",

@@ -37,7 +37,9 @@
       "assetCreated": "Aktywo utworzone",
       "assetDeleted": "Aktywo usunięte",
       "assetUpdated": "Aktywo zaktualizowane",
-      "balanceUpdated": "Saldo zaktualizowane"
+      "balanceUpdated": "Saldo zaktualizowane",
+      "changeUpdated": "Aktualizacja salda zaktualizowana",
+      "changeDeleted": "Aktualizacja salda usunięta"
     },
     "newAsset": "Nowe aktywo",
     "noChangesForYear": "Brak zmian w wybranym roku",

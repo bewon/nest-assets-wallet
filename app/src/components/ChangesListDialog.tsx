@@ -54,7 +54,7 @@ function changesReducer(
   }
 }
 
-async function callApi<T>(
+async function setDataByApi<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
   setData: (data: T) => void,
   generalErrorMessage: string,
@@ -89,14 +89,34 @@ export default function ChangesListDialog(props: {
   const api = useApi();
   const [year, setYear] = useState(currentYear);
   const [changes, dispatchChanges] = useReducer(changesReducer, undefined);
+  const [dataChanged, setDataChanged] = useState(false);
+  const asset = props.asset;
+
+  const handleUpdateChange = (change: AssetBalanceChangeInterface) => {
+    dispatchChanges({ type: "updateOne", change });
+    setDataChanged(true);
+  };
+
+  const handleDeleteChange = (change: AssetBalanceChangeInterface) => {
+    dispatchChanges({ type: "deleteOne", change });
+    setDataChanged(true);
+  };
+
+  const handleClose = () => {
+    if (dataChanged) {
+      props.onDataRefresh();
+    }
+    props.onClose();
+    setDataChanged(false);
+  };
 
   useEffect(() => {
-    if (props.asset) {
+    if (asset) {
       dispatchChanges({ type: "updateAll" });
       const { makeRequest, abortRequest } = api.getAssetBalanceChanges({
-        params: { assetId: props.asset.id, year },
+        params: { assetId: asset.id, year },
       });
-      callApi(
+      setDataByApi(
         makeRequest,
         (data) => dispatchChanges({ type: "updateAll", changes: data }),
         t("general.messages.error"),
@@ -104,7 +124,7 @@ export default function ChangesListDialog(props: {
       );
       return abortRequest;
     }
-  }, [props.asset, year, t]);
+  }, [asset, year, t, api, props.handleSnackbar]);
 
   const years = useMemo(() => {
     return Array(currentYear - 1999)
@@ -113,13 +133,13 @@ export default function ChangesListDialog(props: {
   }, [currentYear]);
   // set minimal width for the dialog
   return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="sm" fullWidth>
+    <Dialog open={props.open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box>
           {t("assetsList.changesList")}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <AssetPoint color={props.assetColor} sx={{ mr: 1 }} />
-            <Typography variant="body1">{props.asset?.name}</Typography>
+            <Typography variant="body1">{asset?.name}</Typography>
           </Box>
         </Box>
         <Select
@@ -135,7 +155,7 @@ export default function ChangesListDialog(props: {
         </Select>
       </DialogTitle>
       <DialogContent>
-        {changes === undefined ? (
+        {changes == null ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <CircularProgress />
           </Box>
@@ -162,61 +182,148 @@ export default function ChangesListDialog(props: {
                 </Typography>
               ))}
             </Box>
-            {changes.map((change) => (
-              <Box
-                key={change.id}
-                sx={{
-                  display: "flex",
-                  pt: 1,
-                  gap: 1,
-                  flexWrap: ["wrap", "nowrap"],
-                }}
-              >
-                <ChangeTextField
-                  label={t("general.date")}
-                  value={change.date ?? ""}
-                  type="date"
-                  onChange={() => {}}
+            {asset != null &&
+              changes.map((change) => (
+                <BalanceChange
+                  key={change.id}
+                  change={change}
+                  asset={asset}
+                  handleSnackbar={props.handleSnackbar}
+                  onUpdate={handleUpdateChange}
+                  onDelete={handleDeleteChange}
                 />
-                <ChangeTextField
-                  label={t("assetAttributes.capital")}
-                  value={change.capital?.toString() ?? ""}
-                  type="number"
-                  onChange={() => {}}
-                  alignRight
-                />
-                <ChangeTextField
-                  label={t("assetAttributes.value")}
-                  value={change.value?.toString() ?? ""}
-                  type="number"
-                  onChange={() => {}}
-                  alignRight
-                />
-                <Box sx={{ display: "flex" }}>
-                  <IconButton
-                    color="primary"
-                    aria-label="save"
-                    component="span"
-                  >
-                    <SaveIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    aria-label="delete"
-                    component="span"
-                  >
-                    <DeleteOutlineIcon />
-                  </IconButton>
-                </Box>
-              </Box>
-            ))}
+              ))}
           </>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose}>{t("general.close")}</Button>
+        <Button onClick={handleClose}>{t("general.close")}</Button>
       </DialogActions>
     </Dialog>
+  );
+}
+
+function BalanceChange(props: {
+  change: AssetBalanceChangeInterface;
+  asset: AssetSnapshotInterface;
+  onUpdate: (change: AssetBalanceChangeInterface) => void;
+  onDelete: (change: AssetBalanceChangeInterface) => void;
+  handleSnackbar: (state: AppSnackbarState) => void;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const [change, setChange] = useState(props.change);
+  const isChanged = useMemo(
+    () =>
+      change.date !== props.change.date ||
+      change.capital !== props.change.capital ||
+      change.value !== props.change.value,
+    [change, props.change]
+  );
+
+  const handleUpdate = async () => {
+    const { makeRequest } = api.updateBalanceChange({
+      data: change,
+      params: { assetId: props.asset.id, changeId: change.id },
+    });
+    try {
+      await makeRequest();
+      props.onUpdate(change);
+      props.handleSnackbar({
+        open: true,
+        message: t("assetsList.messages.changeUpdated"),
+        severity: "success",
+      });
+    } catch (error: any) {
+      props.handleSnackbar({
+        open: true,
+        message: error.response?.data?.message ?? t("general.messages.error"),
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    const { makeRequest } = api.deleteBalanceChange({
+      params: { assetId: props.asset.id, changeId: change.id },
+    });
+    try {
+      await makeRequest();
+      props.onDelete(change);
+      props.handleSnackbar({
+        open: true,
+        message: t("assetsList.messages.changeDeleted"),
+        severity: "success",
+      });
+    } catch (error: any) {
+      props.handleSnackbar({
+        open: true,
+        message: error.response?.data?.message ?? t("general.messages.error"),
+        severity: "error",
+      });
+    }
+  };
+
+  return (
+    <Box sx={{ display: "flex", pt: 1, gap: 1, flexWrap: ["wrap", "nowrap"] }}>
+      <ChangeTextField
+        label={t("general.date")}
+        value={change.date ?? ""}
+        type="date"
+        onChange={(value) => setChange({ ...change, date: value })}
+      />
+      <ChangeTextField
+        label={t("assetAttributes.capital")}
+        value={change.capital?.toString() ?? ""}
+        type="number"
+        onChange={(value) => setChange({ ...change, capital: Number(value) })}
+        alignRight
+      />
+      <ChangeTextField
+        label={t("assetAttributes.value")}
+        value={change.value?.toString() ?? ""}
+        type="number"
+        onChange={(value) => setChange({ ...change, value: Number(value) })}
+        alignRight
+      />
+      <Box sx={{ display: "flex" }}>
+        <LoadingIconButton
+          color="primary"
+          disabled={!isChanged}
+          onClick={handleUpdate}
+        >
+          <SaveIcon />
+        </LoadingIconButton>
+        <LoadingIconButton color="error" onClick={handleDelete}>
+          <DeleteOutlineIcon />
+        </LoadingIconButton>
+      </Box>
+    </Box>
+  );
+}
+
+function LoadingIconButton(props: {
+  onClick: () => Promise<void>;
+  children: React.ReactNode;
+  color: "primary" | "error";
+  disabled?: boolean;
+}) {
+  const [loading, setLoading] = useState(false);
+  const handleClick = async () => {
+    setLoading(true);
+    await props.onClick();
+    setLoading(false);
+  };
+  return (
+    <IconButton
+      color={props.color}
+      component="span"
+      onClick={handleClick}
+      disabled={props.disabled}
+      sx={{ width: 40, height: 40 }}
+    >
+      {loading ? <CircularProgress size={20} /> : props.children}
+    </IconButton>
   );
 }
 
