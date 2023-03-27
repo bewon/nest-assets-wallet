@@ -50,6 +50,7 @@
   },
   "auth": {
     "logIn": "Zaloguj",
+    "loggingIn": "Logowanie...",
     "logOut": "Wyloguj",
     "messages": {
       "loginFailure": "Niepoprawny email lub hasło",
@@ -69,6 +70,7 @@
     "confirm": "Potwierdź",
     "date": "Data",
     "delete": "Usuń",
+    "deleting": "Usuwanie...",
     "edit": "Edytuj",
     "language": "Język",
     "messages": {
@@ -77,6 +79,7 @@
     },
     "period": "Okres",
     "save": "Zapisz",
+    "saving": "Zapisywanie...",
     "totalPeriod": "Całkowity",
     "readLess": "Zwiń",
     "readMore": "Czytaj więcej"

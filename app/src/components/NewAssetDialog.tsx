@@ -24,6 +24,7 @@ export default function NewAssetDialog(props: {
   const [capital, setCapital] = useState("0");
   const [value, setValue] = useState("0");
   const [date, setDate] = useState(initialDate);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const clearForm = () => {
     startTransition(() => {
       setName("");
@@ -46,12 +47,14 @@ export default function NewAssetDialog(props: {
     });
 
     try {
+      setIsSubmitting(true);
       await makeRequest();
       props.handleSnackbar({
         open: true,
         message: t("assetsList.messages.assetCreated"),
         severity: "success",
       });
+      setIsSubmitting(false);
       props.onDataRefresh();
       props.onClose();
       clearForm();
@@ -61,6 +64,7 @@ export default function NewAssetDialog(props: {
         message: error.response?.data?.message ?? t("general.messages.error"),
         severity: "error",
       });
+      setIsSubmitting(false);
     }
   };
 
@@ -101,10 +105,19 @@ export default function NewAssetDialog(props: {
         </DialogContent>
         <DialogActions>
           <Button onClick={props.onClose}>{t("general.cancel")}</Button>
-          <Button type="submit">{t("general.save")}</Button>
+          <SaveButton isSubmitting={isSubmitting} />
         </DialogActions>
       </form>
     </Dialog>
+  );
+}
+
+function SaveButton(props: { isSubmitting: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <Button type="submit" disabled={props.isSubmitting}>
+      {props.isSubmitting ? t("general.saving") : t("general.save")}
+    </Button>
   );
 }
 

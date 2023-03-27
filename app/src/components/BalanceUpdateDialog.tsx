@@ -46,11 +46,11 @@ export default function BalanceUpdateDialog(props: {
     if (!props.asset) {
       return;
     }
+    const { makeRequest } = api.createBalanceChange({
+      data: { capital, value, date },
+      params: { assetId: props.asset.id },
+    });
     try {
-      const { makeRequest } = api.createBalanceChange({
-        data: { capital, value, date },
-        params: { assetId: props.asset.id },
-      });
       await makeRequest();
       props.handleSnackbar({
         open: true,

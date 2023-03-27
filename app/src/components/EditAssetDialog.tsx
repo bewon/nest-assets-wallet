@@ -25,6 +25,8 @@ export default function EditAssetDialog(props: {
 }) {
   const [name, setName] = useState("");
   const [group, setGroup] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { t } = useTranslation();
   const api = useApi();
   const clearForm = () => {
@@ -38,17 +40,19 @@ export default function EditAssetDialog(props: {
     if (!props.asset) {
       return;
     }
+    const { makeRequest } = api.updateAsset({
+      data: { name, group },
+      params: { assetId: props.asset.id },
+    });
     try {
-      const { makeRequest } = api.updateAsset({
-        data: { name, group },
-        params: { assetId: props.asset.id },
-      });
+      setIsSubmitting(true);
       await makeRequest();
       props.handleSnackbar({
         open: true,
         message: t("assetsList.messages.assetUpdated"),
         severity: "success",
       });
+      setIsSubmitting(false);
       props.onDataRefresh();
       props.onClose();
       clearForm();
@@ -58,8 +62,10 @@ export default function EditAssetDialog(props: {
         message: error.response?.data?.message ?? t("general.messages.error"),
         severity: "error",
       });
+      setIsSubmitting(false);
     }
   };
+
   const handleDelete = async () => {
     if (!window.confirm(t("assetsList.deleteConfirm"))) {
       return;
@@ -67,16 +73,18 @@ export default function EditAssetDialog(props: {
     if (!props.asset) {
       return;
     }
+    const { makeRequest } = api.deleteAsset({
+      params: { assetId: props.asset.id },
+    });
     try {
-      const { makeRequest } = api.deleteAsset({
-        params: { assetId: props.asset.id },
-      });
+      setIsDeleting(true);
       await makeRequest();
       props.handleSnackbar({
         open: true,
         message: t("assetsList.messages.assetDeleted"),
         severity: "success",
       });
+      setIsDeleting(false);
       props.onDataRefresh();
       props.onClose();
       clearForm();
@@ -86,8 +94,10 @@ export default function EditAssetDialog(props: {
         message: error.response?.data?.message ?? t("general.messages.error"),
         severity: "error",
       });
+      setIsDeleting(false);
     }
   };
+
   useEffect(() => {
     if (props.asset) {
       setName(props.asset.name ?? "");
@@ -120,23 +130,45 @@ export default function EditAssetDialog(props: {
           />
         </DialogContent>
         <DialogActions sx={{ justifyContent: "space-between" }}>
-          <Button
-            onClick={handleDelete}
-            startIcon={<DeleteOutlineIcon />}
-            color="error"
+          <DeleteButton
+            isDeleting={isDeleting}
             disabled={!props.asset}
-          >
-            {t("general.delete")}
-          </Button>
+            onClick={handleDelete}
+          />
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button onClick={props.onClose}>{t("general.cancel")}</Button>
-            <Button type="submit" disabled={!props.asset}>
-              {t("general.save")}
-            </Button>
+            <SaveButton isSubmitting={isSubmitting} disabled={!props.asset} />
           </Box>
         </DialogActions>
       </form>
     </Dialog>
+  );
+}
+
+function SaveButton(props: { isSubmitting: boolean; disabled: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <Button type="submit" disabled={props.disabled || props.isSubmitting}>
+      {props.isSubmitting ? t("general.saving") : t("general.save")}
+    </Button>
+  );
+}
+
+function DeleteButton(props: {
+  isDeleting: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Button
+      onClick={props.onClick}
+      disabled={props.disabled || props.isDeleting}
+      color="error"
+      startIcon={<DeleteOutlineIcon />}
+    >
+      {props.isDeleting ? t("general.deleting") : t("general.delete")}
+    </Button>
   );
 }
 

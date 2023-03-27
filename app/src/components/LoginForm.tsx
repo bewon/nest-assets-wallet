@@ -3,16 +3,19 @@ import { Button, TextField } from "@mui/material";
 import { useTranslation } from "next-i18next";
 
 type LoginFormProps = {
-  onLogin: (email: string, password: string) => void;
+  onLogin: (email: string, password: string) => Promise<void>;
 };
 
 export default function LoginForm({ onLogin: handleLogin }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    handleLogin(email, password);
+    setIsSubmitting(true);
+    await handleLogin(email, password);
+    setIsSubmitting(false);
   };
   return (
     <form onSubmit={handleSubmit}>
@@ -35,9 +38,22 @@ export default function LoginForm({ onLogin: handleLogin }: LoginFormProps) {
         required
         sx={{ mb: 3 }}
       />
-      <Button type="submit" variant="contained" color="secondary" fullWidth>
-        {t("auth.logIn")}
-      </Button>
+      <SubmitButton isSubmitting={isSubmitting} />
     </form>
+  );
+}
+
+function SubmitButton(props: { isSubmitting: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <Button
+      type="submit"
+      variant="contained"
+      color="secondary"
+      fullWidth
+      disabled={props.isSubmitting}
+    >
+      {props.isSubmitting ? t("auth.loggingIn") : t("auth.logIn")}
+    </Button>
   );
 }

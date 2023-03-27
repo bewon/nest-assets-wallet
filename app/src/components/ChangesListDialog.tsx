@@ -131,7 +131,7 @@ export default function ChangesListDialog(props: {
       .fill(currentYear)
       .map((x, y) => x - y);
   }, [currentYear]);
-  // set minimal width for the dialog
+
   return (
     <Dialog open={props.open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>

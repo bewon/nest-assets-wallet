@@ -50,6 +50,7 @@
   },
   "auth": {
     "logIn": "Log in",
+    "loggingIn": "Logging in...",
     "logOut": "Log out",
     "messages": {
       "loginFailure": "Invalid email or password.",
@@ -69,6 +70,7 @@
     "confirm": "Confirm",
     "date": "Date",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "language": "Language",
     "messages": {
@@ -77,6 +79,7 @@
     },
     "period": "Period",
     "save": "Save",
+    "saving": "Saving...",
     "totalPeriod": "Total",
     "readLess": "Read less",
     "readMore": "Read more"
