@@ -18,7 +18,10 @@ import { defaultDateFormat } from '../../app.module';
 import * as dayjs from 'dayjs';
 import {
   AnnualizedCalculation,
+  AssetHistoryStatistics,
+  HistoryStatistics,
   PortfolioPerformanceStatistics,
+  TransformedHistoryStatistics,
 } from '../types';
 
 const round = (
@@ -92,10 +95,7 @@ export class PortfolioService {
     portfolio: PortfolioEntity,
     group?: string,
     withAssets?: boolean,
-  ): Promise<{
-    portfolio: (string | number | null)[][];
-    assets?: Record<string, any>[];
-  }> {
+  ): Promise<HistoryStatistics> {
     const changes = await this.assetService.findPortfolioChanges(
       portfolio,
       group,
@@ -170,7 +170,9 @@ export class PortfolioService {
   }
 
   // prepare history/statistics of asset changes from changes Set
-  private async prepareAssetsHistoryStatistics() {
+  private async prepareAssetsHistoryStatistics(): Promise<
+    AssetHistoryStatistics[]
+  > {
     const entries = Object.entries(
       this.portfolioBalanceChangeSetService.prepareHistoryForAssets(),
     ).map(async ([assetId, calculations]) => {
@@ -189,19 +191,22 @@ export class PortfolioService {
   }
 
   // transform history statistics generated from changes Set to flatten one
-  private transformHistoryStatistics(calculations: PeriodHistory) {
-    return calculations.map((record) => [
-      ...[
+  private transformHistoryStatistics(
+    calculations: PeriodHistory,
+  ): TransformedHistoryStatistics {
+    return calculations.map((record) => {
+      const baseValues: [string, number, number, number, number | null] = [
         record.change.date,
         record.change.capital,
         record.change.value,
         record.change.getProfit(),
         round(record?.periodCalculation?.total?.annualizedTwr, 4) ?? null,
-      ],
-      ...Object.keys(periods).map(
+      ];
+      const periodValues = Object.keys(periods).map(
         (period) =>
           round(record?.periodCalculation?.[period]?.annualizedTwr, 4) ?? null,
-      ),
-    ]);
+      );
+      return [...baseValues, ...periodValues];
+    });
   }
 }

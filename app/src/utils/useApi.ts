@@ -4,6 +4,7 @@ import type {
   AssetSnapshotInterface,
   PortfolioPerformanceStatistics,
   AssetBalanceChangeInterface,
+  HistoryStatistics,
 } from "@assets-wallet/api/src/portfolio/types";
 import type { SessionData } from "@assets-wallet/api/src/auth/types";
 import { useRouter } from "next/router";
@@ -99,6 +100,16 @@ const useApi = () => {
           "GET",
           prepareErrorHandler(true)
         ),
+      getHistoryStatistics: createEndpointFunction<HistoryStatistics>(
+        "/api/portfolios/default/history-statistics",
+        "GET",
+        prepareErrorHandler(true)
+      ),
+      getPortfolioGroups: createEndpointFunction<string[]>(
+        "/api/portfolios/default/groups",
+        "GET",
+        prepareErrorHandler(true)
+      ),
       createAsset: createEndpointFunction<AssetSnapshotInterface>(
         "/api/portfolios/default/assets",
         "POST",

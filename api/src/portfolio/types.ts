@@ -29,3 +29,21 @@ export type PortfolioPerformanceStatistics = {
     performance: Record<string, AnnualizedCalculation | undefined>;
   }[];
 };
+
+export type HistoryStatistics = {
+  portfolio: TransformedHistoryStatistics;
+  assets?: AssetHistoryStatistics[];
+};
+
+export type TransformedHistoryStatistics = Array<
+  [string, number, number, number, number | null, ...Array<number | null>]
+>;
+
+export type AssetHistoryStatistics = {
+  id: string;
+  name?: string;
+  group?: string;
+  values: TransformedHistoryStatistics;
+  value?: number;
+  capital?: number;
+};
