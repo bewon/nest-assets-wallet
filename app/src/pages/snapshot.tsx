@@ -43,6 +43,7 @@ export default function Snapshot() {
   const [performanceStatistics, setPerformanceStatistics] =
     useState<PortfolioPerformanceStatistics>();
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
+  const [period, setPeriod] = useState<string>();
   const api = useApi();
   const { t } = useTranslation();
   const generalErrorMessage = t("general.messages.error");
@@ -92,6 +93,12 @@ export default function Snapshot() {
     updatePerformanceStatistics();
   };
 
+  useEffect(() => {
+    if (periods.length > 0) {
+      setPeriod(periods[0]);
+    }
+  }, [periods]);
+
   return (
     <>
       <Header />
@@ -114,6 +121,8 @@ export default function Snapshot() {
                 assets={assets}
                 performanceStatistics={performanceStatistics?.portfolio}
                 periods={periods}
+                period={period}
+                onPeriodChange={setPeriod}
               />
             </Grid>
           </Grid>
@@ -134,6 +143,8 @@ export default function Snapshot() {
                 assets={assets}
                 performanceStatistics={performanceStatistics?.assets}
                 periods={periods}
+                period={period}
+                onPeriodChange={setPeriod}
               />
             </Grid>
           </Grid>

@@ -4,7 +4,7 @@ import type {
   AnnualizedCalculation,
 } from "@assets-wallet/api/src/portfolio/types";
 import { useTranslation } from "next-i18next";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   Box,
   CircularProgress,
@@ -46,9 +46,10 @@ export default function AssetsPerformance(props: {
   assets?: AssetSnapshotInterface[];
   performanceStatistics?: PortfolioPerformanceStatistics["assets"];
   periods: string[];
+  period?: string;
+  onPeriodChange: (period: string) => void;
 }) {
   const { t } = useTranslation();
-  const [period, setPeriod] = useState<string>();
   const userSettings = useContext(UserSettingsContext);
 
   const assetsData = useMemo(() => {
@@ -62,19 +63,13 @@ export default function AssetsPerformance(props: {
         performance: findPerformance(
           props.performanceStatistics,
           asset.id,
-          period
+          props.period
         ),
         color: assetsPalette[index % assetsPalette.length],
       });
     });
     return data;
-  }, [props.assets, props.performanceStatistics, period, userSettings]);
-
-  useEffect(() => {
-    if (props.periods.length > 0) {
-      setPeriod(props.periods[0]);
-    }
-  }, [props.periods]);
+  }, [props.assets, props.performanceStatistics, props.period, userSettings]);
 
   return (
     <Paper>
@@ -83,8 +78,8 @@ export default function AssetsPerformance(props: {
           {t("assetsPerformance.title")}
         </Typography>
         <PeriodSelector
-          period={period}
-          onPeriodChange={setPeriod}
+          period={props.period}
+          onPeriodChange={props.onPeriodChange}
           allPeriods={props.periods}
         />
       </Box>

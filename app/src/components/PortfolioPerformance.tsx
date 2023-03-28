@@ -77,18 +77,13 @@ export default function PortfolioPerformance(props: {
   assets?: AssetSnapshotInterface[];
   performanceStatistics?: PortfolioPerformanceStatistics["portfolio"];
   periods: string[];
+  period?: string;
+  onPeriodChange: (period: string) => void;
 }) {
   const { t } = useTranslation();
-  const [period, setPeriod] = useState<string>();
   const [groupsPerformanceStatistics, setGroupsPerformanceStatistics] =
     useState<Record<string, PortfolioPerformanceStatistics>>({});
   const api = useApi();
-
-  useEffect(() => {
-    if (props.performanceStatistics != null) {
-      setPeriod(Object.keys(props.performanceStatistics)[0]);
-    }
-  }, [props.performanceStatistics]);
 
   const groupedAssets = useMemo(() => {
     if (props.assets == null) return [];
@@ -96,6 +91,7 @@ export default function PortfolioPerformance(props: {
   }, [props.assets]);
 
   const groupsData = useMemo<Record<string, PerformanceData>>(() => {
+    const period = props.period;
     if (period == null) return {};
     return Object.fromEntries(
       Object.entries(groupedAssets).map(([group, assets]) => {
@@ -103,12 +99,16 @@ export default function PortfolioPerformance(props: {
         return [group, preparePerformanceValues(assets, period, statistics)];
       })
     );
-  }, [groupedAssets, groupsPerformanceStatistics, period]);
+  }, [groupedAssets, groupsPerformanceStatistics, props.period]);
 
   const portfolioData = useMemo<PerformanceData | undefined>(() => {
-    if (period == null || props.performanceStatistics == null) return;
-    return preparePerformanceValues([], period, props.performanceStatistics);
-  }, [props.performanceStatistics, period]);
+    if (props.period == null || props.performanceStatistics == null) return;
+    return preparePerformanceValues(
+      [],
+      props.period,
+      props.performanceStatistics
+    );
+  }, [props.performanceStatistics, props.period]);
 
   useEffect(() => {
     const abortRequests: (() => void)[] = [];
@@ -127,8 +127,8 @@ export default function PortfolioPerformance(props: {
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
         <PeriodSelector
-          period={period}
-          onPeriodChange={setPeriod}
+          period={props.period}
+          onPeriodChange={props.onPeriodChange}
           allPeriods={props.periods}
         />
       </Box>
