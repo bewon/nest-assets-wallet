@@ -48,7 +48,7 @@ export default function PortfolioStatusDialog(props: {
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
-  setChartDefaults(defaults, useTheme());
+  const theme = useTheme();
 
   const groupsData = useMemo(() => groupAssets(props.assets), [props.assets]);
 
@@ -65,8 +65,9 @@ export default function PortfolioStatusDialog(props: {
     };
   }, [props.assets, groupsData]);
 
-  const options = useMemo<ChartOptions<"bar">>(
-    () => ({
+  const options = useMemo<ChartOptions<"bar">>(() => {
+    setChartDefaults(defaults, theme);
+    return {
       indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
@@ -107,9 +108,8 @@ export default function PortfolioStatusDialog(props: {
           },
         },
       },
-    }),
-    [amountFormat, groupsData, t]
-  );
+    };
+  }, [amountFormat, groupsData, t, theme]);
 
   const chartHeight =
     (Object.keys(groupsData).length + 1) * 50 + (props.assets.length + 1) * 20;

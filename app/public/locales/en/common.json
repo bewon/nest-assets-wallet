@@ -100,6 +100,10 @@
       "light": "Light"
     }
   },
+  "historyFilters": {
+    "showAssets": "Show assets on charts",
+    "allGroups": "- All groups -"
+  },
   "portfolioPerformance": {
     "capitalChange": "Capital change",
     "profitChange": "Profit change",

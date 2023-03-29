@@ -100,6 +100,10 @@
       "light": "Jasny"
     }
   },
+  "historyFilters": {
+    "showAssets": "Pokazuj aktywa na wykresach",
+    "allGroups": "- Wszystkie grupy -"
+  },
   "portfolioPerformance": {
     "capitalChange": "Zmiana kapitału",
     "profitChange": "Zmiana zysku",
