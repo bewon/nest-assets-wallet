@@ -43,7 +43,9 @@ export default function History() {
   }, [api]);
 
   useEffect(() => {
-    const { makeRequest, abortRequest } = api.getHistoryStatistics({});
+    const { makeRequest, abortRequest } = api.getHistoryStatistics({
+      params: { withAssets: showAssets },
+    });
     makeRequest().then((response) => {
       if (response?.data) {
         setPortfolioData(response.data.portfolio);
@@ -51,7 +53,7 @@ export default function History() {
       }
     });
     return abortRequest;
-  }, [api]);
+  }, [api, showAssets]);
 
   return (
     <>

@@ -21,6 +21,7 @@ import { alpha, useMediaQuery, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { useTranslation } from "next-i18next";
+import { assetsPalette } from "@src/utils/theme";
 
 ChartJS.register(
   CategoryScale,
@@ -61,9 +62,20 @@ export default function TimeChart(props: {
           pointHitRadius: 10,
           borderWidth: 2,
         },
+        ...(props.assetsData ?? []).map((asset, index) => ({
+          label: asset.name,
+          data: asset.values.map(([, , value]) => value),
+          borderColor: assetsPalette[index],
+          backgroundColor: alpha(assetsPalette[index], 0.1),
+          fill: true,
+          stepped: true,
+          pointRadius: 0,
+          pointHitRadius: 10,
+          borderWidth: 2,
+        })),
       ],
     };
-  }, [props.portfolioData, theme, t]);
+  }, [props.portfolioData, props.assetsData, theme, t]);
 
   const options = useMemo<ChartOptions<"line">>(
     () => ({
