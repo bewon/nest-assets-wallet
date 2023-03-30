@@ -116,5 +116,8 @@
     "groupLabel": "Group",
     "totalValue": "Total portfolio value",
     "valueLabel": "Value"
+  },
+  "valueChart": {
+    "title": "Portfolio value history"
   }
 }

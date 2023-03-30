@@ -13,9 +13,13 @@ import {
   Legend,
   ChartOptions,
   ChartData,
+  Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import useChartDefaults from "@src/utils/useChartDefaults";
+import { alpha, useMediaQuery, useTheme } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
 ChartJS.register(
   CategoryScale,
@@ -25,14 +29,19 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
-export default function ValueChart(props: {
+export default function TimeChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
 }) {
   const chartDefaults = useChartDefaults();
+  const theme = useTheme();
+  const isMdDown = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.down("md")
+  );
 
   const data = useMemo<ChartData<"line">>(() => {
     const labels = (props.portfolioData ?? []).map(([date]) => date);
@@ -42,24 +51,24 @@ export default function ValueChart(props: {
         {
           label: "Portfolio",
           data: (props.portfolioData ?? []).map(([, , value]) => value),
-          borderColor: "#000000",
-          backgroundColor: "#000000",
+          borderColor: theme.palette.secondary.main,
+          backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           fill: true,
+          stepped: true,
+          pointRadius: 0,
+          borderWidth: 2,
         },
       ],
     };
-  }, [props.portfolioData]);
+  }, [props.portfolioData, theme]);
 
   const options = useMemo<ChartOptions<"line">>(
     () => ({
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: "bottom",
-        },
-        title: {
-          display: true,
-          text: "Portfolio value",
+          position: isMdDown ? "bottom" : "right",
         },
       },
       scales: {
@@ -71,8 +80,12 @@ export default function ValueChart(props: {
         },
       },
     }),
-    [chartDefaults]
+    [chartDefaults, isMdDown]
   );
 
-  return <Line data={data} options={options} />;
+  return (
+    <Box sx={{ height: 450 }}>
+      <Line data={data} options={options} />
+    </Box>
+  );
 }

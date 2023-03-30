@@ -116,5 +116,8 @@
     "groupLabel": "Grupa",
     "totalValue": "Całkowita wartość portfela",
     "valueLabel": "Wartość"
+  },
+  "valueChart": {
+    "title": "Wartość portfela (historia)"
   }
 }

@@ -11,11 +11,12 @@ import {
   Paper,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import type { HistoryStatistics } from "@assets-wallet/api/src/portfolio/types";
 import useApi from "@src/utils/useApi";
 import { useTranslation } from "next-i18next";
-import ValueChart from "@src/components/ValueChart";
+import TimeChart from "@src/components/TimeChart";
 
 export default function History() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -100,7 +101,10 @@ export default function History() {
           />
         </Paper>
         <Paper sx={{ p: 2, mt: 2 }}>
-          <ValueChart assetsData={assetsData} portfolioData={portfolioData} />
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            {t("valueChart.title")}
+          </Typography>
+          <TimeChart assetsData={assetsData} portfolioData={portfolioData} />
         </Paper>
       </Container>
     </>
