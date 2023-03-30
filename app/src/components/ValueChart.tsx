@@ -1,6 +1,6 @@
 import type { HistoryStatistics } from "@assets-wallet/api/src/portfolio/types";
 import "chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,13 +13,9 @@ import {
   Legend,
   ChartOptions,
   ChartData,
-  defaults,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { setChartDefaults } from "@src/utils/theme";
-import { useTheme } from "@mui/material";
-import setDayjsLocale from "@src/utils/setDayjsLocale";
-import { useTranslation } from "next-i18next";
+import useChartDefaults from "@src/utils/useChartDefaults";
 
 ChartJS.register(
   CategoryScale,
@@ -36,12 +32,7 @@ export default function ValueChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
 }) {
-  const theme = useTheme();
-  const { i18n } = useTranslation();
-  const [chartLocale, setChartLocale] = useState<string>();
-  useEffect(() => {
-    setDayjsLocale(i18n.language).then(() => setChartLocale(i18n.language));
-  }, [i18n.language]);
+  const chartDefaults = useChartDefaults();
 
   const data = useMemo<ChartData<"line">>(() => {
     const labels = (props.portfolioData ?? []).map(([date]) => date);
@@ -59,9 +50,8 @@ export default function ValueChart(props: {
     };
   }, [props.portfolioData]);
 
-  const options = useMemo<ChartOptions<"line">>(() => {
-    setChartDefaults(defaults, theme);
-    return {
+  const options = useMemo<ChartOptions<"line">>(
+    () => ({
       responsive: true,
       plugins: {
         legend: {
@@ -80,11 +70,9 @@ export default function ValueChart(props: {
           },
         },
       },
-    };
-  }, [theme]);
+    }),
+    [chartDefaults]
+  );
 
-  if (chartLocale !== i18n.language) {
-    return null;
-  }
   return <Line data={data} options={options} />;
 }

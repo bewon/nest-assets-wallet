@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  useTheme,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import {
@@ -15,15 +14,15 @@ import {
   Chart as ChartJS,
   ChartData,
   ChartOptions,
-  defaults,
   Legend,
   LinearScale,
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import useFormat from "@src/utils/useFormat";
-import { assetsPalette, setChartDefaults } from "@src/utils/theme";
+import { assetsPalette } from "@src/utils/theme";
 import { useTranslation } from "next-i18next";
+import useChartDefaults from "@src/utils/useChartDefaults";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -48,7 +47,7 @@ export default function PortfolioStatusDialog(props: {
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
-  const theme = useTheme();
+  const chartDefaults = useChartDefaults();
 
   const groupsData = useMemo(() => groupAssets(props.assets), [props.assets]);
 
@@ -66,7 +65,6 @@ export default function PortfolioStatusDialog(props: {
   }, [props.assets, groupsData]);
 
   const options = useMemo<ChartOptions<"bar">>(() => {
-    setChartDefaults(defaults, theme);
     return {
       indexAxis: "y",
       responsive: true,
@@ -109,7 +107,7 @@ export default function PortfolioStatusDialog(props: {
         },
       },
     };
-  }, [amountFormat, groupsData, t, theme]);
+  }, [amountFormat, groupsData, t, chartDefaults]);
 
   const chartHeight =
     (Object.keys(groupsData).length + 1) * 50 + (props.assets.length + 1) * 20;
