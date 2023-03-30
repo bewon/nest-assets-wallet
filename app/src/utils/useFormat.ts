@@ -1,6 +1,7 @@
 import { useTranslation } from "next-i18next";
 
 export const defaultCurrency = "PLN";
+export const defaultDateFormat = "YYYY-MM-DD";
 
 const useFormat = () => {
   const { i18n } = useTranslation();

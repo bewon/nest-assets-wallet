@@ -20,6 +20,7 @@ import useChartDefaults from "@src/utils/useChartDefaults";
 import { alpha, useMediaQuery, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import { useTranslation } from "next-i18next";
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,7 @@ export default function TimeChart(props: {
 }) {
   const chartDefaults = useChartDefaults();
   const theme = useTheme();
+  const { t } = useTranslation();
   const isMdDown = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.down("md")
   );
@@ -49,18 +51,19 @@ export default function TimeChart(props: {
       labels,
       datasets: [
         {
-          label: "Portfolio",
+          label: t("general.portfolio"),
           data: (props.portfolioData ?? []).map(([, , value]) => value),
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           fill: true,
           stepped: true,
           pointRadius: 0,
+          pointHitRadius: 10,
           borderWidth: 2,
         },
       ],
     };
-  }, [props.portfolioData, theme]);
+  }, [props.portfolioData, theme, t]);
 
   const options = useMemo<ChartOptions<"line">>(
     () => ({
@@ -69,6 +72,13 @@ export default function TimeChart(props: {
       plugins: {
         legend: {
           position: isMdDown ? "bottom" : "right",
+        },
+        tooltip: {
+          callbacks: {
+            title: (tooltipItem) => {
+              return tooltipItem[0].label.replace(/,\s*\d+:\d+:\d+\s*\w*/i, "");
+            },
+          },
         },
       },
       scales: {
