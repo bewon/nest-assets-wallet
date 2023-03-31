@@ -21,7 +21,7 @@ export default function ValueChart(props: {
         assetsData={props.assetsData}
         portfolioData={props.portfolioData}
         pickValue={(data) => data[2]}
-        formatValue={(value) => amountFormat(value ?? undefined) ?? ""}
+        formatValue={(value) => amountFormat(value ?? undefined, 0) ?? ""}
       />
     </Paper>
   );

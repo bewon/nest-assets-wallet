@@ -98,6 +98,10 @@ export default function TimeChart(props: {
             title: (tooltipItem) => {
               return tooltipItem[0].label.replace(/,\s*\d+:\d+:\d+\s*\w*/i, "");
             },
+            label: (context) => {
+              const value = context.parsed.y;
+              return `${context.dataset.label}: ${props.formatValue(value)}`;
+            },
           },
         },
       },
@@ -106,6 +110,12 @@ export default function TimeChart(props: {
           type: "time",
           time: {
             unit: "month",
+          },
+        },
+        y: {
+          ticks: {
+            callback: (value) =>
+              typeof value === "string" ? value : props.formatValue(value),
           },
         },
       },

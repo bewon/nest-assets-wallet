@@ -104,12 +104,12 @@ export default function History() {
         </Paper>
         <ValueChart assetsData={assetsData} portfolioData={portfolioData} />
         <PerformanceChart
-          twrPeriod={"1Y"}
+          twrPeriod="1Y"
           assetsData={assetsData}
           portfolioData={portfolioData}
         />
         <PerformanceChart
-          twrPeriod={"3Y"}
+          twrPeriod="3Y"
           assetsData={assetsData}
           portfolioData={portfolioData}
         />
