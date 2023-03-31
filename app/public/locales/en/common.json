@@ -105,6 +105,9 @@
     "showAssets": "Show assets on charts",
     "allGroups": "- All groups -"
   },
+  "performanceChart": {
+    "title": "TWR (period {{period}})"
+  },
   "portfolioPerformance": {
     "capitalChange": "Capital change",
     "profitChange": "Profit change",

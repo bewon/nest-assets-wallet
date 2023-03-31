@@ -1,4 +1,7 @@
-import type { HistoryStatistics } from "@assets-wallet/api/src/portfolio/types";
+import type {
+  HistoryStatistics,
+  TransformedHistoryStatistics,
+} from "@assets-wallet/api/src/portfolio/types";
 import "chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm";
 import { useMemo } from "react";
 import {
@@ -38,6 +41,9 @@ ChartJS.register(
 export default function TimeChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
+  stepped?: boolean;
+  pickValue: (data: TransformedHistoryStatistics[0]) => number | null;
+  formatValue: (value: number | null) => string;
 }) {
   const chartDefaults = useChartDefaults();
   const theme = useTheme();
@@ -53,22 +59,24 @@ export default function TimeChart(props: {
       datasets: [
         {
           label: t("general.portfolio"),
-          data: (props.portfolioData ?? []).map(([, , value]) => value),
+          data: (props.portfolioData ?? []).map((data) =>
+            props.pickValue(data)
+          ),
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           fill: true,
-          stepped: true,
+          stepped: props.stepped ?? false,
           pointRadius: 0,
           pointHitRadius: 10,
           borderWidth: 2,
         },
         ...(props.assetsData ?? []).map((asset, index) => ({
           label: asset.name,
-          data: asset.values.map(([, , value]) => value),
+          data: asset.values.map((data) => props.pickValue(data)),
           borderColor: assetsPalette[index],
           backgroundColor: alpha(assetsPalette[index], 0.1),
           fill: true,
-          stepped: true,
+          stepped: props.stepped ?? false,
           pointRadius: 0,
           pointHitRadius: 10,
           borderWidth: 2,

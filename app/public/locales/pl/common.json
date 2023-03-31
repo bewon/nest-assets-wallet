@@ -105,6 +105,9 @@
     "showAssets": "Pokazuj aktywa na wykresach",
     "allGroups": "- Wszystkie grupy -"
   },
+  "performanceChart": {
+    "title": "TWR (okres {{period}})"
+  },
   "portfolioPerformance": {
     "capitalChange": "Zmiana kapitału",
     "profitChange": "Zmiana zysku",
