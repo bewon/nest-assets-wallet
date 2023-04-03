@@ -74,6 +74,7 @@
     "edit": "Edytuj",
     "language": "Język",
     "messages": {
+      "confirmLeave": "Czy na pewno chcesz opuścić tę stronę?",
       "error": "Wystąpił błąd",
       "noData": "Brak danych"
     },

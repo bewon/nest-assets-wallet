@@ -243,6 +243,19 @@ function BalanceChange(props: {
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isChanged) {
+        e.preventDefault();
+        e.returnValue = t("general.messages.confirmLeave");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isChanged, t]);
+
   const handleDelete = async () => {
     const { makeRequest } = api.deleteBalanceChange({
       params: { assetId: props.asset.id, changeId: change.id },

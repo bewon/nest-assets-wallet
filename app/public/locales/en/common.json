@@ -74,6 +74,7 @@
     "edit": "Edit",
     "language": "Language",
     "messages": {
+      "confirmLeave": "Are you sure you want to leave?",
       "error": "An error occurred",
       "noData": "No data available"
     },
