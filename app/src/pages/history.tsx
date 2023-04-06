@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -18,19 +18,42 @@ import { useTranslation } from "next-i18next";
 import ValueChart from "@src/components/ValueChart";
 import PerformanceChart from "@src/components/PerformanceChart";
 
+interface DataState {
+  portfolioData: Record<string, HistoryStatistics["portfolio"]>;
+  assetsData: Record<string, HistoryStatistics["assets"]>;
+}
+
+interface DataAction {
+  group: string;
+  assets: HistoryStatistics["assets"];
+  portfolio: HistoryStatistics["portfolio"];
+}
+
+const dataReducer: React.Reducer<DataState, DataAction> = (state, action) => {
+  return {
+    portfolioData: {
+      ...state.portfolioData,
+      [action.group]: action.portfolio,
+    },
+    assetsData: {
+      ...state.assetsData,
+      [action.group]: action.assets,
+    },
+  };
+};
+
 export default function History() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
-  const [portfolioData, setPortfolioData] =
-    useState<HistoryStatistics["portfolio"]>();
-  const [assetsData, setAssetsData] = useState<HistoryStatistics["assets"]>();
+  const [{ portfolioData, assetsData }, dispatchData] = useReducer(
+    dataReducer,
+    { portfolioData: {}, assetsData: {} } as DataState
+  );
   const [groups, setGroups] = useState<string[]>();
   const [periods, setPeriods] = useState<string[]>(["total"]);
   const [group, setGroup] = useState<string>("");
   const [period, setPeriod] = useState<string>("total");
   const [showAssets, setShowAssets] = useState(false);
-
   const api = useApi();
-  const { t } = useTranslation();
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getPortfolioGroups({});
@@ -44,16 +67,24 @@ export default function History() {
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getHistoryStatistics({
-      params: { withAssets: showAssets },
+      params: { withAssets: showAssets, group: group === "" ? null : group },
     });
-    makeRequest().then((response) => {
-      if (response?.data) {
-        setPortfolioData(response.data.portfolio);
-        setAssetsData(response.data.assets);
-      }
-    });
+    if (
+      portfolioData[group] == null ||
+      (showAssets && assetsData[group] == null)
+    ) {
+      makeRequest().then((response) => {
+        if (response?.data) {
+          dispatchData({
+            group,
+            assets: response.data.assets,
+            portfolio: response.data.portfolio,
+          });
+        }
+      });
+    }
     return abortRequest;
-  }, [api, showAssets]);
+  }, [api, showAssets, group]);
 
   return (
     <>
@@ -64,57 +95,93 @@ export default function History() {
       />
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
-          {groups && groups.length > 0 && (
-            <TextField
-              label={t("assetAttributes.group")}
-              select
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
-              sx={{ width: 200 }}
-            >
-              {groups?.map((group) => (
-                <MenuItem key={group} value={group}>
-                  {group || t("historyFilters.allGroups")}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-          <TextField
-            label={t("general.period")}
-            select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            sx={{ width: 200 }}
-          >
-            {periods.map((period) => (
-              <MenuItem key={period} value={period}>
-                {period}
-              </MenuItem>
-            ))}
-          </TextField>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={showAssets}
-                onChange={(e) => setShowAssets(e.target.checked)}
-              />
-            }
-            label={t("historyFilters.showAssets")}
-          />
+          <GroupSelect groups={groups} value={group} onChange={setGroup} />
+          <PeriodSelect periods={periods} value={period} onChange={setPeriod} />
+          <ShowAssetsSwitch showAssets={showAssets} onChange={setShowAssets} />
         </Paper>
-        <ValueChart assetsData={assetsData} portfolioData={portfolioData} />
+        <ValueChart
+          assetsData={showAssets ? assetsData[group] : undefined}
+          portfolioData={portfolioData[group]}
+        />
         <PerformanceChart
           twrPeriod="1Y"
-          assetsData={assetsData}
-          portfolioData={portfolioData}
+          assetsData={showAssets ? assetsData[group] : undefined}
+          portfolioData={portfolioData[group]}
         />
         <PerformanceChart
           twrPeriod="3Y"
-          assetsData={assetsData}
-          portfolioData={portfolioData}
+          assetsData={showAssets ? assetsData[group] : undefined}
+          portfolioData={portfolioData[group]}
         />
       </Container>
     </>
+  );
+}
+
+function GroupSelect(props: {
+  groups?: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const { t } = useTranslation();
+  if (!props.groups || props.groups.length === 0) {
+    return null;
+  }
+  return (
+    <TextField
+      label={t("assetAttributes.group")}
+      select
+      value={props.value}
+      onChange={(e) => props.onChange(e.target.value)}
+      sx={{ width: 200 }}
+    >
+      {props.groups.map((group) => (
+        <MenuItem key={group} value={group}>
+          {group || t("historyFilters.allGroups")}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
+function PeriodSelect(props: {
+  periods: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <TextField
+      label={t("general.period")}
+      select
+      value={props.value}
+      onChange={(e) => props.onChange(e.target.value)}
+      sx={{ width: 200 }}
+    >
+      {props.periods.map((period) => (
+        <MenuItem key={period} value={period}>
+          {period}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
+function ShowAssetsSwitch(props: {
+  showAssets: boolean;
+  onChange: (showAssets: boolean) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <FormControlLabel
+      control={
+        <Switch
+          checked={props.showAssets}
+          onChange={(e) => props.onChange(e.target.checked)}
+        />
+      }
+      label={t("historyFilters.showAssets")}
+    />
   );
 }
 
