@@ -3,7 +3,7 @@ import type {
   TransformedHistoryStatistics,
 } from "@assets-wallet/api/src/portfolio/types";
 import "chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,7 +25,6 @@ import { Theme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { useTranslation } from "next-i18next";
 import { assetsPalette } from "@src/utils/theme";
-import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 
 ChartJS.register(
   CategoryScale,
@@ -45,8 +44,8 @@ export default function TimeChart(props: {
   stepped?: boolean;
   pickValue: (data: TransformedHistoryStatistics[0]) => number | null;
   formatValue: (value: number | null) => string;
+  labels: string[];
 }) {
-  const userSettings = useContext(UserSettingsContext);
   const chartDefaults = useChartDefaults();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -55,15 +54,15 @@ export default function TimeChart(props: {
   );
 
   const data = useMemo<ChartData<"line">>(() => {
-    const labels = (props.portfolioData ?? []).map(([date]) => date);
     return {
-      labels,
+      labels: props.labels,
       datasets: [
         {
           label: t("general.portfolio"),
-          data: (props.portfolioData ?? []).map((data) =>
-            props.pickValue(data)
-          ),
+          data: props.labels.map((label) => {
+            const value = props.portfolioData?.find(([date]) => date === label);
+            return value == null ? null : props.pickValue(value);
+          }),
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           fill: true,
@@ -72,33 +71,23 @@ export default function TimeChart(props: {
           pointHitRadius: 10,
           borderWidth: 2,
         },
-        ...(props.assetsData ?? [])
-          .filter(
-            (asset) => !userSettings.hideZeroAssets || (asset.value ?? 0 > 0)
-          )
-          .map((asset, index) => ({
-            label: asset.name,
-            data: labels.map((label) => {
-              const value = asset.values.find(([date]) => date === label);
-              return value == null ? null : props.pickValue(value);
-            }),
-            borderColor: assetsPalette[index],
-            backgroundColor: alpha(assetsPalette[index], 0.1),
-            fill: true,
-            stepped: props.stepped ?? false,
-            pointRadius: 0,
-            pointHitRadius: 10,
-            borderWidth: 2,
-          })),
+        ...(props.assetsData ?? []).map((asset, index) => ({
+          label: asset.name,
+          data: props.labels.map((label) => {
+            const value = asset.values.find(([date]) => date === label);
+            return value == null ? null : props.pickValue(value);
+          }),
+          borderColor: assetsPalette[index],
+          backgroundColor: alpha(assetsPalette[index], 0.1),
+          fill: true,
+          stepped: props.stepped ?? false,
+          pointRadius: 0,
+          pointHitRadius: 10,
+          borderWidth: 2,
+        })),
       ],
     };
-  }, [
-    props.portfolioData,
-    props.assetsData,
-    theme,
-    t,
-    userSettings.hideZeroAssets,
-  ]);
+  }, [props.portfolioData, props.assetsData, theme, t, props.labels]);
 
   const options = useMemo<ChartOptions<"line">>(
     () => ({

@@ -14,6 +14,7 @@ export default function PerformanceChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
   twrPeriod: keyof typeof twrPeriodColumnMapper;
+  labels: string[];
 }) {
   const { percentFormat } = useFormat();
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function PerformanceChart(props: {
         portfolioData={props.portfolioData}
         pickValue={(data) => data[twrPeriodColumnMapper[props.twrPeriod]]}
         formatValue={(value) => (value != null ? percentFormat(value, 1) : "")}
+        labels={props.labels}
       />
     </Paper>
   );

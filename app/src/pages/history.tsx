@@ -1,4 +1,10 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -17,6 +23,8 @@ import useApi from "@src/utils/useApi";
 import { useTranslation } from "next-i18next";
 import ValueChart from "@src/components/ValueChart";
 import PerformanceChart from "@src/components/PerformanceChart";
+import { UserSettingsContext } from "@src/components/UserSettingsProvider";
+import dayjs from "dayjs";
 
 interface DataState {
   portfolioData: Record<string, HistoryStatistics["portfolio"]>;
@@ -42,6 +50,8 @@ const dataReducer: React.Reducer<DataState, DataAction> = (state, action) => {
   };
 };
 
+const periods = ["total", "1Y", "3Y"] as const;
+
 export default function History() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const [{ portfolioData, assetsData }, dispatchData] = useReducer(
@@ -49,10 +59,10 @@ export default function History() {
     { portfolioData: {}, assetsData: {} } as DataState
   );
   const [groups, setGroups] = useState<string[]>();
-  const [periods, setPeriods] = useState<string[]>(["total"]);
   const [group, setGroup] = useState<string>("");
-  const [period, setPeriod] = useState<string>("total");
+  const [period, setPeriod] = useState<(typeof periods)[number]>(periods[0]);
   const [showAssets, setShowAssets] = useState(false);
+  const userSettings = useContext(UserSettingsContext);
   const api = useApi();
 
   useEffect(() => {
@@ -86,6 +96,26 @@ export default function History() {
     return abortRequest;
   }, [api, showAssets, group]);
 
+  const currentAssetsData = useMemo(() => {
+    if (showAssets) {
+      return assetsData[group]?.filter(
+        (asset) => !userSettings.hideZeroAssets || (asset.value ?? 0 > 0)
+      );
+    }
+    return undefined;
+  }, [showAssets, group, assetsData, userSettings.hideZeroAssets]);
+
+  const labels = useMemo(() => {
+    const dates = (portfolioData[group] ?? []).map(([date]) => date);
+    if (period === "total") {
+      return dates;
+    } else {
+      const years = period === "1Y" ? 1 : period === "3Y" ? 3 : 0;
+      const startDay = dayjs().subtract(years, "year");
+      return dates.filter((date) => dayjs(date).isAfter(startDay));
+    }
+  }, [portfolioData, group, period]);
+
   return (
     <>
       <Header />
@@ -96,22 +126,25 @@ export default function History() {
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
           <GroupSelect groups={groups} value={group} onChange={setGroup} />
-          <PeriodSelect periods={periods} value={period} onChange={setPeriod} />
+          <PeriodSelect value={period} onChange={setPeriod} />
           <ShowAssetsSwitch showAssets={showAssets} onChange={setShowAssets} />
         </Paper>
         <ValueChart
-          assetsData={showAssets ? assetsData[group] : undefined}
+          assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
+          labels={labels}
         />
         <PerformanceChart
           twrPeriod="1Y"
-          assetsData={showAssets ? assetsData[group] : undefined}
+          assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
+          labels={labels}
         />
         <PerformanceChart
           twrPeriod="3Y"
-          assetsData={showAssets ? assetsData[group] : undefined}
+          assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
+          labels={labels}
         />
       </Container>
     </>
@@ -145,9 +178,8 @@ function GroupSelect(props: {
 }
 
 function PeriodSelect(props: {
-  periods: string[];
-  value: string;
-  onChange: (value: string) => void;
+  value: (typeof periods)[number];
+  onChange: (value: (typeof periods)[number]) => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -155,12 +187,14 @@ function PeriodSelect(props: {
       label={t("general.period")}
       select
       value={props.value}
-      onChange={(e) => props.onChange(e.target.value)}
+      onChange={(e) =>
+        props.onChange(e.target.value as (typeof periods)[number])
+      }
       sx={{ width: 200 }}
     >
-      {props.periods.map((period) => (
+      {periods.map((period) => (
         <MenuItem key={period} value={period}>
-          {period}
+          {t(`historyFilters.periods.${period}`)}
         </MenuItem>
       ))}
     </TextField>

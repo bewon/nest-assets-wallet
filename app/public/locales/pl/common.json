@@ -104,7 +104,12 @@
   },
   "historyFilters": {
     "showAssets": "Pokazuj aktywa na wykresach",
-    "allGroups": "- Wszystkie grupy -"
+    "allGroups": "- Wszystkie grupy -",
+    "periods": {
+      "1Y": "Ostatni rok",
+      "3Y": "Ostatnie 3 lata",
+      "total": "Całkowity"
+    }
   },
   "performanceChart": {
     "title": "TWR (okres {{period}})"

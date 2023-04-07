@@ -8,6 +8,7 @@ import { useTranslation } from "next-i18next";
 export default function ValueChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
+  labels: string[];
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ export default function ValueChart(props: {
         portfolioData={props.portfolioData}
         pickValue={(data) => data[2]}
         formatValue={(value) => amountFormat(value ?? undefined, 0) ?? ""}
+        labels={props.labels}
       />
     </Paper>
   );

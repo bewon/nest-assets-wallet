@@ -104,7 +104,12 @@
   },
   "historyFilters": {
     "showAssets": "Show assets on charts",
-    "allGroups": "- All groups -"
+    "allGroups": "- All groups -",
+    "periods": {
+      "1Y": "Last year",
+      "3Y": "Last 3 years",
+      "total": "Total"
+    }
   },
   "performanceChart": {
     "title": "TWR (period {{period}})"
