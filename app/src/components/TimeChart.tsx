@@ -20,7 +20,12 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import useChartDefaults from "@src/utils/useChartDefaults";
-import { alpha, useMediaQuery, useTheme } from "@mui/material";
+import {
+  alpha,
+  CircularProgress,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { useTranslation } from "next-i18next";
@@ -53,16 +58,21 @@ export default function TimeChart(props: {
     theme.breakpoints.down("md")
   );
 
-  const data = useMemo<ChartData<"line">>(() => {
+  const data = useMemo<ChartData<"line"> | undefined>(() => {
+    const getValue = (data: TransformedHistoryStatistics, label: string) => {
+      const value = data.find(([date]) => date === label);
+      return value == null ? null : props.pickValue(value);
+    };
+    const { portfolioData } = props;
+    if (portfolioData == null) {
+      return undefined;
+    }
     return {
       labels: props.labels,
       datasets: [
         {
           label: t("general.portfolio"),
-          data: props.labels.map((label) => {
-            const value = props.portfolioData?.find(([date]) => date === label);
-            return value == null ? null : props.pickValue(value);
-          }),
+          data: props.labels.map((label) => getValue(portfolioData, label)),
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           fill: true,
@@ -73,10 +83,7 @@ export default function TimeChart(props: {
         },
         ...(props.assetsData ?? []).map((asset, index) => ({
           label: asset.name,
-          data: props.labels.map((label) => {
-            const value = asset.values.find(([date]) => date === label);
-            return value == null ? null : props.pickValue(value);
-          }),
+          data: props.labels.map((label) => getValue(asset.values, label)),
           borderColor: assetsPalette[index],
           backgroundColor: alpha(assetsPalette[index], 0.1),
           fill: true,
@@ -129,7 +136,11 @@ export default function TimeChart(props: {
 
   return (
     <Box sx={{ height: 450 }}>
-      <Line data={data} options={options} />
+      {data == null ? (
+        <CircularProgress sx={{ margin: "auto", display: "block" }} />
+      ) : (
+        <Line data={data} options={options} />
+      )}
     </Box>
   );
 }

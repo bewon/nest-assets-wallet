@@ -11,6 +11,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n } from "../../next-i18next.config";
 import Header from "@src/components/Header";
 import {
+  CircularProgress,
   Container,
   FormControlLabel,
   MenuItem,
@@ -50,7 +51,7 @@ const dataReducer: React.Reducer<DataState, DataAction> = (state, action) => {
   };
 };
 
-const periods = ["total", "1Y", "3Y"] as const;
+const periods = ["", "1Y", "3Y"] as const;
 
 export default function History() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -79,10 +80,9 @@ export default function History() {
     const { makeRequest, abortRequest } = api.getHistoryStatistics({
       params: { withAssets: showAssets, group: group === "" ? null : group },
     });
-    if (
-      portfolioData[group] == null ||
-      (showAssets && assetsData[group] == null)
-    ) {
+    const dataMissing =
+      portfolioData[group] == null || (showAssets && assetsData[group] == null);
+    if (dataMissing) {
       makeRequest().then((response) => {
         if (response?.data) {
           dispatchData({
@@ -107,7 +107,7 @@ export default function History() {
 
   const labels = useMemo(() => {
     const dates = (portfolioData[group] ?? []).map(([date]) => date);
-    if (period === "total") {
+    if (period === "") {
       return dates;
     } else {
       const years = period === "1Y" ? 1 : period === "3Y" ? 3 : 0;
@@ -158,7 +158,7 @@ function GroupSelect(props: {
 }) {
   const { t } = useTranslation();
   if (!props.groups || props.groups.length === 0) {
-    return null;
+    return <CircularProgress sx={{ m: 1 }} />;
   }
   return (
     <TextField
@@ -194,7 +194,7 @@ function PeriodSelect(props: {
     >
       {periods.map((period) => (
         <MenuItem key={period} value={period}>
-          {t(`historyFilters.periods.${period}`)}
+          {t(`historyFilters.periods.${period || "total"}`)}
         </MenuItem>
       ))}
     </TextField>
