@@ -16,6 +16,7 @@ export const dataSourceConfig: DataSourceOptions = {
   synchronize: false,
   logging: dev,
   migrationsTableName: 'orm_migration',
+  ssl: { rejectUnauthorized: false },
 };
 
 export const AppDataSource = new DataSource(dataSourceConfig);
