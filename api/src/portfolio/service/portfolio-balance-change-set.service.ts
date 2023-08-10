@@ -1,6 +1,6 @@
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
 import { BalanceChangeModel } from '../model/balance-change.model';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { defaultDateFormat } from '../../app.module';
 import { AnnualizedCalculation } from '../types';
 

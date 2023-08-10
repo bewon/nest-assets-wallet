@@ -15,7 +15,7 @@ import {
   PortfolioBalanceChangeSetService,
 } from './portfolio-balance-change-set.service';
 import { defaultDateFormat } from '../../app.module';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   AnnualizedCalculation,
   AssetHistoryStatistics,
