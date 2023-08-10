@@ -26,6 +26,8 @@ import ValueChart from "@src/components/ValueChart";
 import PerformanceChart from "@src/components/PerformanceChart";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import dayjs from "dayjs";
+import Head from "next/head";
+import { appName } from "@src/pages/index";
 
 interface DataState {
   portfolioData: Record<string, HistoryStatistics["portfolio"]>;
@@ -65,6 +67,7 @@ export default function History() {
   const [showAssets, setShowAssets] = useState(false);
   const userSettings = useContext(UserSettingsContext);
   const api = useApi();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getPortfolioGroups({});
@@ -118,6 +121,11 @@ export default function History() {
 
   return (
     <>
+      <Head>
+        <title>
+          {t("head.title.history")} | {appName}
+        </title>
+      </Head>
       <Header />
       <AppSnackbar
         state={snackbarState}

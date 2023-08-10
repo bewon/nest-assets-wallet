@@ -1,54 +1,32 @@
 import * as React from "react";
 import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Link from "@src/components/Link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getSessionData } from "@src/utils/session";
-import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { GetStaticProps } from "next";
 import { i18n } from "next-i18next.config";
+import { useRouter } from "next/router";
+import { CircularProgress } from "@mui/material";
+import Head from "next/head";
+
+export const appName = "AssetsWallet";
 
 export default function Home() {
-  const [userEmail, setUserEmail] = useState<string | undefined>();
-  const { t } = useTranslation();
+  const router = useRouter();
 
   useEffect(() => {
     const session = getSessionData();
-    if (session) {
-      setUserEmail(session.userEmail);
-    }
+    router.push(session ? "/snapshot" : "/auth/login");
   }, []);
 
   return (
     <Container maxWidth="lg">
-      <Box
-        sx={{
-          my: 4,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          AssetsWallet
-        </Typography>
-        {userEmail ? (
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Welcome {userEmail}
-            </Typography>
-            <Link href="/auth/logout" color="secondary">
-              {t("auth.logOut")}
-            </Link>
-          </>
-        ) : (
-          <Link href="/auth/login" color="secondary">
-            Go to the login page
-          </Link>
-        )}
+      <Head>
+        <title>{appName}</title>
+      </Head>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 4, mt: 8 }}>
+        <CircularProgress sx={{ m: 1 }} />
       </Box>
     </Container>
   );

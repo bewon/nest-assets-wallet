@@ -102,6 +102,13 @@
       "light": "Jasny"
     }
   },
+  "head": {
+    "title": {
+      "snapshot": "Portfel - podsumowanie",
+      "history": "Portfel - historia",
+      "login": "Logowanie"
+    }
+  },
   "historyFilters": {
     "showAssets": "Pokazuj aktywa na wykresach",
     "allGroups": "- Wszystkie grupy -",

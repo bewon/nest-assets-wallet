@@ -17,6 +17,8 @@ import PortfolioStatus from "@src/components/PortfolioStatus";
 import PortfolioPerformance from "@src/components/PortfolioPerformance";
 import { AxiosResponse } from "axios";
 import AssetsPerformance from "@src/components/AssetsPerformance";
+import Head from "next/head";
+import { appName } from "@src/pages/index";
 
 async function callApi<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
@@ -101,6 +103,11 @@ export default function Snapshot() {
 
   return (
     <>
+      <Head>
+        <title>
+          {t("head.title.snapshot")} | {appName}
+        </title>
+      </Head>
       <Header />
       <AppSnackbar
         state={snackbarState}

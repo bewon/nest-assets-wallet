@@ -102,6 +102,13 @@
       "light": "Light"
     }
   },
+  "head": {
+    "title": {
+      "snapshot": "Portfolio snapshot",
+      "history": "Portfolio history",
+      "login": "Log in"
+    }
+  },
   "historyFilters": {
     "showAssets": "Show assets on charts",
     "allGroups": "- All groups -",

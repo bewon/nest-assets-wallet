@@ -13,6 +13,8 @@ import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n } from "../../../next-i18next.config";
 import Link from "@src/components/Link";
+import Head from "next/head";
+import { appName } from "@src/pages";
 
 export default function Login() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
@@ -45,6 +47,11 @@ export default function Login() {
   };
   return (
     <Container maxWidth="sm" sx={{ pt: [9, 11], pb: 2 }}>
+      <Head>
+        <title>
+          {t("head.title.login")} | {appName}
+        </title>
+      </Head>
       <AppSnackbar state={snackbarState} onClose={handleCloseSnackbar} />
       <Card sx={{ overflow: "visible" }}>
         <CardContent>
