@@ -1,14 +1,14 @@
 {
   "functions": {
-    "dist/main.js": {
+    "src/main.ts": {
       "runtime": "@vercel/node@2.15.10"
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "main.js"
+      "destination": "src/main.ts"
     }
   ],
-  "outputDirectory": "dist"
+  "outputDirectory": ""
 }
