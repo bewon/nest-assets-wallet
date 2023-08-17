@@ -1,14 +1,8 @@
 {
-  "functions": {
-    "src/main.ts": {
-      "runtime": "@vercel/node@2.15.10"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "src/main.ts"
+      "destination": "api/index.js"
     }
-  ],
-  "outputDirectory": ""
+  ]
 }
