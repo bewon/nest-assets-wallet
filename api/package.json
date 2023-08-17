@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:prod": "nest build && ts-node ./node_modules/.bin/typeorm -d src/data-source.ts migration:run",
+    "vercel-build": "nest build && ts-node ./node_modules/.bin/typeorm -d src/data-source.ts migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
