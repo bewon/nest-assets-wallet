@@ -20,6 +20,7 @@ export default function LoginForm({ onLogin: handleLogin }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit}>
       <TextField
+        id="email"
         label={t("auth.user.email")}
         value={email}
         type="email"
@@ -30,6 +31,7 @@ export default function LoginForm({ onLogin: handleLogin }: LoginFormProps) {
         sx={{ mb: 3 }}
       />
       <TextField
+        id="password"
         label={t("auth.user.password")}
         value={password}
         type="password"
