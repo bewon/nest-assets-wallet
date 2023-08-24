@@ -1,39 +1,34 @@
 import { test, expect } from "@playwright/test";
+import { loginScript } from "./auth/auth.helper";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000");
-});
+const indexUrl = "http://localhost:3000";
 
 test("has title", async ({ page }) => {
+  await page.goto(indexUrl);
   await expect(page).toHaveTitle(/AssetsWallet/);
 });
 
 test("has progress component with progressbar role", async ({ page }) => {
+  await page.goto(indexUrl);
   await expect(page.getByRole("progressbar")).toBeVisible();
 });
 
 test("should be redirected to /auth/login if session is missing", async ({
   page,
 }) => {
-  await page.evaluate(() => {
-    localStorage.removeItem("session-data");
-  });
+  await page.goto(indexUrl);
+  const loginUrl = "http://localhost:3000/auth/login";
+  await page.waitForURL(loginUrl, { timeout: 3000 });
 
-  await page.waitForTimeout(1000);
-
-  expect(page.url()).toBe("http://localhost:3000/auth/login");
+  expect(page.url()).toBe(loginUrl);
 });
-test("should be redirected to /snapshot if session is missing", async ({
+test("should be redirected to /snapshot if session is present", async ({
   page,
 }) => {
-  await page.evaluate(() => {
-    localStorage.setItem(
-      "session-data",
-      JSON.stringify({ accessToken: "hbgujbngfu", userEmail: "test@bewon.eu" })
-    );
-  });
+  await page.addInitScript(loginScript);
+  await page.goto(indexUrl);
+  const snapshotUrl = "http://localhost:3000/snapshot";
+  await page.waitForURL(snapshotUrl, { timeout: 3000 });
 
-  await page.waitForTimeout(1000);
-
-  expect(page.url()).toBe("http://localhost:3000/snapshot");
+  expect(page.url()).toBe(snapshotUrl);
 });
