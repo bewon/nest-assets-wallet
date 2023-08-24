@@ -1,11 +1,6 @@
 name: App Playwright Tests
 on:
-  push:
-    branches: [ main, master ]
-    paths: [ 'app/**' ]
-  pull_request:
-    branches: [ main, master ]
-    paths: [ 'app/**' ]
+  deployment_status:
 jobs:
   test:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
