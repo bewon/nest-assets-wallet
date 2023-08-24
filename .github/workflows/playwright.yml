@@ -22,6 +22,7 @@ jobs:
         run: yarn playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+          DEPLOYMENT_STATUS: ${{ github.event.deployment_status }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
