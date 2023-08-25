@@ -3,14 +3,6 @@ import { loginScript } from "./auth/auth.helper";
 
 test("has title", async ({ page }) => {
   await page.goto("/");
-  throw {
-    DEPLOYMENT_STATUS_1: process.env.DEPLOYMENT_STATUS_1,
-    DEPLOYMENT_STATUS_2: process.env.DEPLOYMENT_STATUS_2,
-    DEPLOYMENT_STATUS_3: process.env.DEPLOYMENT_STATUS_3,
-    DEPLOYMENT_STATUS_4: process.env.DEPLOYMENT_STATUS_4,
-    DEPLOYMENT_STATUS_5: process.env.DEPLOYMENT_STATUS_5,
-  };
-
   await expect(page).toHaveTitle(/AssetsWallet/);
 });
 
