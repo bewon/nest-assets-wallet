@@ -3,6 +3,7 @@ import { loginScript } from "./auth/auth.helper";
 
 test("has title", async ({ page }) => {
   await page.goto("/");
+
   await expect(page).toHaveTitle(/AssetsWallet/);
 });
 
