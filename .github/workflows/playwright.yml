@@ -3,7 +3,7 @@ on:
   deployment_status:
 jobs:
   test:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && endsWith(github.event.deployment_status.environment, 'assets-wallet-app')
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +22,7 @@ jobs:
         run: yarn playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+          DEPLOYMENT_STATUS_ENVIRONMENT: ${{ github.event.deployment_status.environment }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
