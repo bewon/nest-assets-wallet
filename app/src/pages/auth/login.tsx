@@ -64,7 +64,7 @@ export default function Login() {
               {t("auth.messages.unauthenticated")}
             </Typography>
             <LoginForm onLogin={handleLogin} />
-            <Typography variant={"body1"} sx={{ mt: 4 }}>
+            <Typography id="locale-switcher" variant={"body1"} sx={{ mt: 4 }}>
               {t("general.language")}
               {": "}
               <LangSelect code="pl" label="polski" />
