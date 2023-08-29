@@ -7,3 +7,39 @@ test("has title", async ({ page }) => {
 
   await expect(page).toHaveTitle("Portfolio snapshot | AssetsWallet");
 });
+
+test("should make API call for assets snapshot", async ({ page }) => {
+  await page.addInitScript(loginScript);
+  await page.goto("/snapshot");
+  const request = await page.waitForRequest(
+    "/api/portfolios/default/assets-snapshot"
+  );
+
+  expect(request.method()).toBe("GET");
+});
+
+test("should make API call for performance statistics", async ({ page }) => {
+  await page.addInitScript(loginScript);
+  await page.goto("/snapshot");
+  const request = await page.waitForRequest(
+    "/api/portfolios/default/performance-statistics"
+  );
+
+  expect(request.method()).toBe("GET");
+});
+
+test("should display error message when API call fails", async ({ page }) => {
+  await page.addInitScript(loginScript);
+  await page.route("**/api/portfolios/default/assets-snapshot", (route) =>
+    route.fulfill({ status: 500 })
+  );
+  await page.route(
+    "**/api/portfolios/default/performance-statistics",
+    (route) => route.fulfill({ status: 200 })
+  );
+  await page.goto("/snapshot");
+  await page.waitForSelector("[role=alert]");
+  const boundingBox = await page.locator("[role=alert]").first().boundingBox();
+
+  expect(boundingBox?.width).toBeGreaterThan(1);
+});

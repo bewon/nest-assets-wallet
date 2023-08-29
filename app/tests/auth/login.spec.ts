@@ -35,14 +35,19 @@ test.describe("login form", () => {
   test("should show an error message with invalid API response", async ({
     page,
   }) => {
-    await page.goto("/auth/login");
     await page.route("**/api/auth/login", (route) => {
-      route.fulfill({ status: 200 });
+      route.fulfill({ status: 500 });
     });
+    await page.goto("/auth/login");
     await page.fill("#email", "test@bewon");
     await page.fill("#password", "test");
     await page.click("button[type=submit]");
-    await expect(page.locator("[role=alert]")).toBeVisible();
+    const boundingBox = await page
+      .locator("[role=alert]")
+      .first()
+      .boundingBox();
+
+    expect(boundingBox?.width).toBeGreaterThan(1);
   });
 });
 
@@ -50,6 +55,7 @@ test.describe("locale switcher", () => {
   test("should show a list of available locales", async ({ page }) => {
     await page.goto("/auth/login");
     const switcher = page.locator("[id=locale-switcher]");
+
     await expect(switcher.getByText("english")).toBeVisible();
     await expect(switcher.getByText("polski")).toBeVisible();
   });
@@ -57,12 +63,14 @@ test.describe("locale switcher", () => {
   test("should change locale to pl", async ({ page }) => {
     await page.goto("/auth/login");
     await page.locator("[id=locale-switcher]").getByText("polski").click();
+
     await expect(page).toHaveURL("/pl/auth/login");
   });
 
   test("should change locale to en", async ({ page }) => {
     await page.goto("/pl/auth/login");
     await page.locator("[id=locale-switcher]").getByText("english").click();
+
     await expect(page).toHaveURL("/auth/login");
   });
 });
