@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginScript } from "./auth.helper";
+import { stubDataApiRequests } from "../api.helper";
 
 test("has title", async ({ page }) => {
   await page.goto("/auth/login");
@@ -21,30 +22,38 @@ test("should remove session at the beginning", async ({ page }) => {
 
 test.describe("login form", () => {
   test("should log in with valid API response", async ({ page }) => {
-    await page.goto("/auth/login");
-    await page.route("**/api/auth/login", (route) => {
+    await stubDataApiRequests(page);
+    await page.route("/api/auth/login", (route) => {
       route.fulfill({
         status: 200,
         body: '{ "accessToken": "hbgujbngfu", "userEmail": "test@bewon.eu" }',
       });
     });
-    await page.fill("#email", "test@bewon.eu");
-    await page.fill("#password", "test");
-    await page.click("button[type=submit]");
+    await page.goto("/auth/login");
+    await page.locator("#email").fill("test@bewon.eu");
+    await page.locator("#password").fill("test");
+    const clickPromise = page.locator("button[type=submit]").click();
+    const request = await page.waitForRequest("/api/auth/login");
+    await clickPromise;
 
+    expect(request.method()).toBe("POST");
+    expect(request.postDataJSON()).toEqual({
+      email: "test@bewon.eu",
+      password: "test",
+    });
     await expect(page).toHaveURL("/");
   });
 
   test("should show an error message with invalid API response", async ({
     page,
   }) => {
-    await page.route("**/api/auth/login", (route) => {
+    await page.route("/api/auth/login", (route) => {
       route.fulfill({ status: 500 });
     });
     await page.goto("/auth/login");
-    await page.fill("#email", "test@bewon");
-    await page.fill("#password", "test");
-    await page.click("button[type=submit]");
+    await page.locator("#email").fill("test@bewon.eu");
+    await page.locator("#password").fill("test");
+    await page.locator("button[type=submit]").click();
     const boundingBox = await page
       .locator("[role=alert]")
       .first()
