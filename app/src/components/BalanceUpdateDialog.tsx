@@ -88,6 +88,7 @@ export default function BalanceUpdateDialog(props: {
         <DialogContent>
           <Box sx={{ display: "flex", gap: 2, flexWrap: ["wrap", "nowrap"] }}>
             <TextField
+              name="date"
               label={t("assetsList.balanceUpdateDate")}
               type="date"
               value={date}
@@ -228,6 +229,7 @@ function ColumnTextField(props: {
   }, [props.icon]);
   return (
     <TextField
+      name={`${props.columnType}-${props.textFieldType}`}
       label={t(
         `assetsList.balanceUpdateColumns.${props.columnType}.${props.textFieldType}`
       )}

@@ -145,18 +145,21 @@ test.describe("assets list elements", () => {
       page.locator("#assets-list [data-id='a0b1c2d3-532'] [title='Asset A']")
     ).toHaveText("Asset A");
   });
+});
 
-  test("should display menu for each asset", async ({ page }) => {
+test.describe("asset actions", () => {
+  test.beforeEach(async ({ page }) => {
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
       route.fulfill({ status: 200, body: JSON.stringify([assetA]) })
     );
     await page.goto("/snapshot");
-
-    const menu = page
+    const assetMenu = page
       .locator("#assets-list [data-id='a0b1c2d3-532']")
       .getByRole("menu");
-    await menu.click();
+    await assetMenu.click();
+  });
 
+  test("should display menu for each asset", async ({ page }) => {
     await expect(
       page.getByRole("menuitem").getByText("Update asset balance")
     ).toBeVisible();
@@ -166,5 +169,43 @@ test.describe("assets list elements", () => {
     await expect(
       page.getByRole("menuitem").getByText("Edit asset")
     ).toBeVisible();
+  });
+
+  test("should display balance update dialog when clicking on update asset balance", async ({
+    page,
+  }) => {
+    await page.getByRole("menuitem").getByText("Update asset balance").click();
+    const dialog = page.getByRole("dialog");
+
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("[name=date]")).toBeVisible();
+    await expect(dialog.locator("[name=capital-current]")).toBeVisible();
+    await expect(dialog.locator("[name=capital-plus]")).toBeVisible();
+    await expect(dialog.locator("[name=capital-new]")).toBeVisible();
+    await expect(dialog.locator("[name=value-current]")).toBeVisible();
+    await expect(dialog.locator("[name=value-plus]")).toBeVisible();
+    await expect(dialog.locator("[name=value-new]")).toBeVisible();
+  });
+
+  test("should submit update balance form with valid data using plus fields", async ({
+    page,
+  }) => {
+    await page.getByRole("menuitem").getByText("Update asset balance").click();
+    const dialog = page.getByRole("dialog");
+    await dialog.locator("[name=date]").fill("2022-01-01");
+    await dialog.locator("[name=capital-plus]").fill("300");
+    await dialog.locator("[name=value-plus]").fill("200");
+    const clickPromise = dialog.locator("button[type=submit]").click();
+    const updateAssetRequest = await page.waitForRequest(
+      "/api/portfolios/default/assets/a0b1c2d3-532"
+    );
+    await clickPromise;
+
+    expect(updateAssetRequest.method()).toBe("PATCH");
+    expect(updateAssetRequest.postDataJSON()).toEqual({
+      date: "2022-01-01",
+      capital: 9500,
+      value: 9700,
+    });
   });
 });
