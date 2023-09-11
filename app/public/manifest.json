@@ -1,0 +1,28 @@
+{
+  "name": "AssetsWallet",
+  "short_name": "AssetsWallet",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/images/assets-wallet-icon--196x196-maskable.png",
+      "type": "image/png",
+      "sizes": "196x196",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/assets-wallet-icon--192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/assets-wallet-icon--512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#1976d2",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
