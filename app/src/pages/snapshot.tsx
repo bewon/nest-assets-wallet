@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import useApi from "@src/utils/useApi";
+import useApi, { callApi } from "@src/utils/useApi";
 import AppSnackbar, { AppSnackbarState } from "@src/components/AppSnackbar";
 import { useTranslation } from "next-i18next";
 import { GetStaticProps } from "next";
@@ -15,30 +15,9 @@ import type {
 import AssetsList from "@src/components/AssetsList";
 import PortfolioStatus from "@src/components/PortfolioStatus";
 import PortfolioPerformance from "@src/components/PortfolioPerformance";
-import { AxiosResponse } from "axios";
 import AssetsPerformance from "@src/components/AssetsPerformance";
 import Head from "next/head";
 import { appName } from "@src/pages/index";
-
-async function callApi<T>(
-  makeRequest: () => Promise<AxiosResponse<T> | null>,
-  setData: (data: T) => void,
-  generalErrorMessage: string,
-  setSnackbarState: (state: AppSnackbarState) => void
-) {
-  try {
-    const response = await makeRequest();
-    if (response?.data) {
-      setData(response.data);
-    }
-  } catch (error: any) {
-    setSnackbarState({
-      open: true,
-      message: error.response?.data?.message ?? generalErrorMessage,
-      severity: "error",
-    });
-  }
-}
 
 export default function Snapshot() {
   const [assets, setAssets] = useState<AssetSnapshotInterface[]>();
