@@ -72,7 +72,7 @@ export default function AssetsPerformance(props: {
   }, [props.assets, props.performanceStatistics, props.period, userSettings]);
 
   return (
-    <Paper>
+    <Paper id="assets-performance">
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <Typography variant="h6" sx={{ mr: 1 }}>
           {t("assetsPerformance.title")}
