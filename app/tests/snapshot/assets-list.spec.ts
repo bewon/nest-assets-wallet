@@ -197,11 +197,11 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=value-plus]").fill("200");
     const clickPromise = dialog.locator("button[type=submit]").click();
     const updateAssetRequest = await page.waitForRequest(
-      "/api/portfolios/default/assets/a0b1c2d3-532"
+      "/api/assets/a0b1c2d3-532/balance-changes"
     );
     await clickPromise;
 
-    expect(updateAssetRequest.method()).toBe("PATCH");
+    expect(updateAssetRequest.method()).toBe("POST");
     expect(updateAssetRequest.postDataJSON()).toEqual({
       date: "2022-01-01",
       capital: 9500,

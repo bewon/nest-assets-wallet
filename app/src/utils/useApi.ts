@@ -21,7 +21,7 @@ type EndpointFunction<T> = (config: {
 const createEndpointFunction = <T>(
   url: string,
   method: AxiosRequestConfig["method"],
-  handleError: (error: any) => null
+  handleError: (error: any) => Promise<boolean> | null
 ): EndpointFunction<T> => {
   const headers: AxiosRequestConfig["headers"] = {
     "Content-Type": "application/json",
@@ -56,13 +56,14 @@ const createEndpointFunction = <T>(
           signal,
           params,
         })
-        .catch((error) => handleError(error));
+        .catch((error) => handleError(error) && null);
     return { makeRequest, abortRequest };
   };
 };
 
 const useApi = () => {
   const router = useRouter();
+  const changeRoute = router.push;
 
   return useMemo(() => {
     const prepareErrorHandler =
@@ -70,7 +71,7 @@ const useApi = () => {
         if (error.response?.status === 401 && redirectOnUnauthorized) {
           console.log("Unauthorized, logging out");
           logoutUser();
-          router.push("/auth/login");
+          return changeRoute("/auth/login");
         } else if (!axios.isCancel(error)) {
           throw error;
         }
@@ -148,7 +149,7 @@ const useApi = () => {
         prepareErrorHandler(true)
       ),
     };
-  }, [router]);
+  }, [changeRoute]);
 };
 
 export default useApi;

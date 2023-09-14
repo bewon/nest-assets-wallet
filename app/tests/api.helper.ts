@@ -10,4 +10,7 @@ export async function stubDataApiRequests(page: Page) {
   await page.route("/api/portfolios/default/group-performance?*", (route) =>
     route.fulfill({ status: 200 })
   );
+  await page.route("/api/assets/*/balance-changes*", (route) =>
+    route.fulfill({ status: 200 })
+  );
 }

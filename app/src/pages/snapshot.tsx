@@ -57,7 +57,7 @@ export default function Snapshot() {
       callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
       return abortRequest;
     },
-    [generalErrorMessage, api]
+    [generalErrorMessage, assets, api]
   );
 
   const updatePerformanceStatistics = useMemo(
@@ -73,7 +73,7 @@ export default function Snapshot() {
       );
       return abortRequest;
     },
-    [generalErrorMessage, api]
+    [performanceStatistics, api, generalErrorMessage]
   );
 
   const periods = useMemo(() => {
@@ -83,12 +83,12 @@ export default function Snapshot() {
   useEffect(() => {
     const abortRequest = updateAssets();
     return () => abortRequest();
-  }, [updateAssets]);
+  }, []);
 
   useEffect(() => {
     const abortRequest = updatePerformanceStatistics();
     return () => abortRequest();
-  }, [updatePerformanceStatistics]);
+  }, []);
 
   const handleDataRefresh = () => {
     updateAssets();
