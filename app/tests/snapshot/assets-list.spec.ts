@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Dialog } from "@playwright/test";
 import { loginScript } from "../auth/auth.helper";
 import { stubDataApiRequests } from "../api.helper";
 
@@ -312,13 +312,13 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=value]").fill("8500");
 
     const clickPromise = dialog.locator("[title='Save']").click();
-    const updateAssetRequest = await page.waitForRequest(
+    const updateChangeRequest = await page.waitForRequest(
       "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
     );
     await clickPromise;
 
-    expect(updateAssetRequest.method()).toBe("POST");
-    expect(updateAssetRequest.postDataJSON()).toEqual({
+    expect(updateChangeRequest.method()).toBe("POST");
+    expect(updateChangeRequest.postDataJSON()).toEqual({
       id: "a0b1c2d3-561",
       date: "2023-02-01",
       capital: 8000,
@@ -342,11 +342,64 @@ test.describe("asset actions", () => {
       .click();
     const dialog = page.getByRole("dialog");
     const clickPromise = dialog.locator("[title='Delete']").click();
-    const deleteAssetRequest = await page.waitForRequest(
+    const deleteChangeRequest = await page.waitForRequest(
       "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
     );
     await clickPromise;
 
+    expect(deleteChangeRequest.method()).toBe("DELETE");
+  });
+
+  test("should display edit asset dialog when clicking on edit asset", async ({
+    page,
+  }) => {
+    await page.getByRole("menuitem").getByText("Edit asset").click();
+    const dialog = page.getByRole("dialog");
+
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("[name=name]")).toBeVisible();
+    await expect(dialog.locator("[name=group]")).toBeVisible();
+  });
+
+  test("should submit edit asset form with valid data", async ({ page }) => {
+    await page.getByRole("menuitem").getByText("Edit asset").click();
+    const dialog = page.getByRole("dialog");
+    await dialog.locator("[name=name]").fill("Asset X");
+    await dialog.locator("[name=group]").fill("Y");
+    const clickPromise = dialog.locator("button[type=submit]").click();
+    const updateAssetRequest = await page.waitForRequest(
+      "/api/assets/a0b1c2d3-532"
+    );
+    await clickPromise;
+
+    expect(updateAssetRequest.method()).toBe("POST");
+    expect(updateAssetRequest.postDataJSON()).toEqual({
+      name: "Asset X",
+      group: "Y",
+    });
+  });
+
+  test("should delete asset when clicking on delete on edit asset dialog", async ({
+    page,
+  }) => {
+    await page.getByRole("menuitem").getByText("Edit asset").click();
+    let confirmDialog: Dialog | undefined;
+    page.on("dialog", (dialog) => {
+      confirmDialog = dialog;
+      dialog.accept();
+    });
+
+    const dialog = page.getByRole("dialog");
+    const clickPromise = dialog
+      .locator("[type=button]")
+      .getByText("Delete")
+      .click();
+    const deleteAssetRequest = await page.waitForRequest(
+      "/api/assets/a0b1c2d3-532"
+    );
+    await clickPromise;
+
     expect(deleteAssetRequest.method()).toBe("DELETE");
+    expect(confirmDialog?.type()).toBe("confirm");
   });
 });

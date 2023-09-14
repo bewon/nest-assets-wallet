@@ -105,6 +105,7 @@ export class AssetService {
     const asset = new AssetEntity();
     asset.portfolioId = portfolioId;
     asset.name = createAssetDto.name;
+    asset.group = '';
     const change = new AssetBalanceChangeEntity(
       createAssetDto.capital,
       createAssetDto.value,

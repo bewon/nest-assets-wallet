@@ -184,7 +184,7 @@ function FormFields(props: {
     <>
       <TextField
         required
-        id="name"
+        name="name"
         label={t("assetAttributes.name")}
         value={props.name}
         onChange={(e) => props.onNameChange(e.target.value)}
@@ -193,14 +193,17 @@ function FormFields(props: {
       <Autocomplete
         freeSolo
         disableClearable
-        id="group-autocomplete"
         options={props.groups}
         value={props.group}
         onInputChange={(e, value) => props.onGroupChange(value)}
         sx={{ flexGrow: 1, flexBasis: 200 }}
+        componentsProps={{
+          popper: { sx: { maxWidth: 200 }, placement: "bottom-start" },
+        }}
         renderInput={(params) => (
           <TextField
             {...params}
+            name="group"
             margin="none"
             label={t("assetAttributes.group")}
           />
