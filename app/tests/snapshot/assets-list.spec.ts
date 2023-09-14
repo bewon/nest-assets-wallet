@@ -187,7 +187,7 @@ test.describe("asset actions", () => {
     await expect(dialog.locator("[name=value-new]")).toBeVisible();
   });
 
-  test("should submit update balance form with valid data using plus fields", async ({
+  test("should submit update balance form with valid data using 'plus' fields", async ({
     page,
   }) => {
     await page.getByRole("menuitem").getByText("Update asset balance").click();
@@ -207,5 +207,146 @@ test.describe("asset actions", () => {
       capital: 9500,
       value: 9700,
     });
+  });
+
+  test("should update 'plus' fields in update balance form with valid data using 'new' fields", async ({
+    page,
+  }) => {
+    await page.getByRole("menuitem").getByText("Update asset balance").click();
+    const dialog = page.getByRole("dialog");
+    await dialog.locator("[name=date]").fill("2022-01-01");
+    await dialog.locator("[name=capital-new]").fill("9500");
+    await dialog.locator("[name=value-new]").fill("9700");
+
+    await expect(dialog.locator("[name=capital-plus]")).toHaveValue("300");
+    await expect(dialog.locator("[name=value-plus]")).toHaveValue("200");
+  });
+
+  test("should display balance changes list dialog when clicking on asset balance changes list", async ({
+    page,
+  }) => {
+    await page
+      .getByRole("menuitem")
+      .getByText("Asset balance changes list")
+      .click();
+    const dialog = page.getByRole("dialog");
+
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText("Asset A");
+  });
+
+  test("should display whole balance changes list in balance changes list dialog", async ({
+    page,
+  }) => {
+    const changes = [
+      {
+        id: "a0b1c2d3-561",
+        capital: 7000,
+        value: 7100,
+        date: "2023-01-01",
+      },
+      {
+        id: "b0b1c2d3-732",
+        capital: 8000,
+        value: 8500,
+        date: "2023-02-01",
+      },
+      {
+        id: "c0b1c2d3-622",
+        capital: 9200,
+        value: 9500,
+        date: "2023-03-01",
+      },
+    ];
+    await page.route("/api/assets/*/balance-changes*", (route) =>
+      route.fulfill({ status: 200, body: JSON.stringify(changes) })
+    );
+
+    await page
+      .getByRole("menuitem")
+      .getByText("Asset balance changes list")
+      .click();
+    const dialog = page.getByRole("dialog");
+    const dateInputs = dialog.locator("[name=date]");
+    const capitalInputs = dialog.locator("[name=capital]");
+    const valueInputs = dialog.locator("[name=value]");
+
+    expect(await dateInputs.count()).toBe(3);
+    await expect(dateInputs.nth(0)).toHaveValue("2023-01-01");
+    await expect(dateInputs.nth(1)).toHaveValue("2023-02-01");
+    await expect(dateInputs.nth(2)).toHaveValue("2023-03-01");
+    expect(await capitalInputs.count()).toBe(3);
+    await expect(capitalInputs.nth(0)).toHaveValue("7000");
+    await expect(capitalInputs.nth(1)).toHaveValue("8000");
+    await expect(capitalInputs.nth(2)).toHaveValue("9200");
+    expect(await valueInputs.count()).toBe(3);
+    await expect(valueInputs.nth(0)).toHaveValue("7100");
+    await expect(valueInputs.nth(1)).toHaveValue("8500");
+    await expect(valueInputs.nth(2)).toHaveValue("9500");
+  });
+
+  test("should be able to save change in balance changes list dialog", async ({
+    page,
+  }) => {
+    await page.route("/api/assets/*/balance-changes*", (route) =>
+      route.fulfill({
+        status: 200,
+        body: JSON.stringify([
+          {
+            id: "a0b1c2d3-561",
+            capital: 7000,
+            value: 7100,
+            date: "2023-01-01",
+          },
+        ]),
+      })
+    );
+
+    await page
+      .getByRole("menuitem")
+      .getByText("Asset balance changes list")
+      .click();
+    const dialog = page.getByRole("dialog");
+    await dialog.locator("[name=date]").fill("2023-02-01");
+    await dialog.locator("[name=capital]").fill("8000");
+    await dialog.locator("[name=value]").fill("8500");
+
+    const clickPromise = dialog.locator("[title='Save']").click();
+    const updateAssetRequest = await page.waitForRequest(
+      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
+    );
+    await clickPromise;
+
+    expect(updateAssetRequest.method()).toBe("POST");
+    expect(updateAssetRequest.postDataJSON()).toEqual({
+      id: "a0b1c2d3-561",
+      date: "2023-02-01",
+      capital: 8000,
+      value: 8500,
+    });
+  });
+
+  test("should be able to delete change in balance changes list dialog", async ({
+    page,
+  }) => {
+    await page.route("/api/assets/*/balance-changes*", (route) =>
+      route.fulfill({
+        status: 200,
+        body: JSON.stringify([{ id: "a0b1c2d3-561" }]),
+      })
+    );
+
+    await page
+      .getByRole("menuitem")
+      .getByText("Asset balance changes list")
+      .click();
+    const dialog = page.getByRole("dialog");
+    const clickPromise = dialog.locator("[title='Delete']").click();
+    const deleteAssetRequest = await page.waitForRequest(
+      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
+    );
+    await clickPromise;
+
+    expect(deleteAssetRequest.method()).toBe("DELETE");
   });
 });

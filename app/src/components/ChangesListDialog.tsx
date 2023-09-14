@@ -280,12 +280,14 @@ function BalanceChange(props: {
   return (
     <Box sx={{ display: "flex", pt: 1, gap: 1, flexWrap: ["wrap", "nowrap"] }}>
       <ChangeTextField
+        name="date"
         label={t("general.date")}
         value={change.date ?? ""}
         type="date"
         onChange={(value) => setChange({ ...change, date: value })}
       />
       <ChangeTextField
+        name="capital"
         label={t("assetAttributes.capital")}
         value={change.capital?.toString() ?? ""}
         type="number"
@@ -293,6 +295,7 @@ function BalanceChange(props: {
         alignRight
       />
       <ChangeTextField
+        name="value"
         label={t("assetAttributes.value")}
         value={change.value?.toString() ?? ""}
         type="number"
@@ -301,13 +304,18 @@ function BalanceChange(props: {
       />
       <Box sx={{ display: "flex" }}>
         <LoadingIconButton
+          title={t("general.save")}
           color="primary"
           disabled={!isChanged}
           onClick={handleUpdate}
         >
           <SaveIcon />
         </LoadingIconButton>
-        <LoadingIconButton color="error" onClick={handleDelete}>
+        <LoadingIconButton
+          title={t("general.delete")}
+          color="error"
+          onClick={handleDelete}
+        >
           <DeleteOutlineIcon />
         </LoadingIconButton>
       </Box>
@@ -320,6 +328,7 @@ function LoadingIconButton(props: {
   children: React.ReactNode;
   color: "primary" | "error";
   disabled?: boolean;
+  title?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const handleClick = async () => {
@@ -329,6 +338,7 @@ function LoadingIconButton(props: {
   };
   return (
     <IconButton
+      title={props.title}
       color={props.color}
       component="span"
       onClick={handleClick}
@@ -341,6 +351,7 @@ function LoadingIconButton(props: {
 }
 
 function ChangeTextField(props: {
+  name?: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -349,6 +360,7 @@ function ChangeTextField(props: {
 }) {
   return (
     <TextField
+      name={props.name}
       label={props.label}
       value={props.value}
       type={props.type}
