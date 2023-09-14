@@ -44,14 +44,14 @@ type PerformanceData = {
 const preparePerformanceValues = (
   assets: AssetSnapshotInterface[],
   period: string,
-  statistics?: PortfolioPerformanceStatistics["portfolio"]
+  statistics: PortfolioPerformanceStatistics["portfolio"]
 ): PerformanceData => {
   return {
     assetsList: assets.map((asset) => asset.name).join(", "),
-    capitalChange: statistics?.[period]?.capitalChange,
-    valueChange: statistics?.[period]?.valueChange,
-    profitChange: statistics?.[period]?.profitChange,
-    annualizedTwr: statistics?.[period]?.annualizedTwr,
+    capitalChange: statistics[period]?.capitalChange,
+    valueChange: statistics[period]?.valueChange,
+    profitChange: statistics[period]?.profitChange,
+    annualizedTwr: statistics[period]?.annualizedTwr,
   };
 };
 
@@ -95,7 +95,7 @@ export default function PortfolioPerformance(props: {
     if (period == null) return {};
     return Object.fromEntries(
       Object.entries(groupedAssets).map(([group, assets]) => {
-        const statistics = groupsPerformanceStatistics[group]?.portfolio;
+        const statistics = groupsPerformanceStatistics[group]?.portfolio ?? {};
         return [group, preparePerformanceValues(assets, period, statistics)];
       })
     );
@@ -123,7 +123,7 @@ export default function PortfolioPerformance(props: {
   }, [api, groupedAssets]);
 
   return (
-    <Paper sx={{ p: 2 }}>
+    <Paper id="portfolio-performance" sx={{ p: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6">{t("portfolioPerformance.title")}</Typography>
         <PeriodSelector
