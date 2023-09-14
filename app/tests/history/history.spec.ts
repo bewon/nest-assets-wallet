@@ -39,6 +39,7 @@ test("should display error message when API call fails", async ({ page }) => {
   const gotoPromise = page.goto("/history");
   await page.waitForRequest("/api/portfolios/default/history-statistics?*");
   await gotoPromise;
+  await page.waitForSelector("[role=alert]");
   const boundingBox = await page.locator("[role=alert]").first().boundingBox();
 
   expect(boundingBox?.width).toBeGreaterThan(1);

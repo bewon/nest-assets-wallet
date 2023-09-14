@@ -10,7 +10,7 @@ import Settings from "@src/components/Settings";
 export default function Header() {
   return (
     <AppBar position="static">
-      <Toolbar disableGutters>
+      <Toolbar id="header" disableGutters>
         <Link href="/" sx={{ ml: 2 }}>
           <Image
             src={"/images/assets-wallet-icon--46.png"}
