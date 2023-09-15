@@ -12,8 +12,9 @@ test("should remove session at the beginning", async ({ page }) => {
   await page.addInitScript(loginScript);
   await page.goto("/auth/login");
 
-  // we need to wait for the page to load
-  await page.waitForSelector("[id=locale-switcher]");
+  await page.waitForFunction(
+    () => sessionStorage.getItem("session-data") == null
+  );
 
   await expect(
     page.evaluate(() => sessionStorage.getItem("session-data"))
