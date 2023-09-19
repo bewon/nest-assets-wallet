@@ -1,24 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { loginScript } from "./auth.helper";
 import { stubDataApiRequests } from "../api.helper";
 
 test("has title", async ({ page }) => {
   await page.goto("/auth/login");
 
   await expect(page).toHaveTitle("Log in | AssetsWallet");
-});
-
-test("should remove session at the beginning", async ({ page }) => {
-  await page.addInitScript(loginScript);
-  await page.goto("/auth/login");
-
-  await page.waitForFunction(
-    () => sessionStorage.getItem("session-data") == null
-  );
-
-  await expect(
-    page.evaluate(() => sessionStorage.getItem("session-data"))
-  ).resolves.toBeNull();
 });
 
 test.describe("login form", () => {

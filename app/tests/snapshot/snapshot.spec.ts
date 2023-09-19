@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { loginScript } from "../auth/auth.helper";
+import { stubDataApiRequests } from "../api.helper";
 
 test("has title", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   await page.goto("/snapshot");
 
   await expect(page).toHaveTitle("Portfolio snapshot | AssetsWallet");
@@ -10,6 +12,7 @@ test("has title", async ({ page }) => {
 
 test("should make API call for assets snapshot", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   const gotoPromise = page.goto("/snapshot");
   const request = await page.waitForRequest(
     "/api/portfolios/default/assets-snapshot"
@@ -21,6 +24,7 @@ test("should make API call for assets snapshot", async ({ page }) => {
 
 test("should make API call for performance statistics", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   const gotoPromise = page.goto("/snapshot");
   const request = await page.waitForRequest(
     "/api/portfolios/default/performance-statistics"

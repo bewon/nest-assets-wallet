@@ -9,9 +9,10 @@ test("has title", async ({ page }) => {
 });
 
 test("has progress component with progressbar role", async ({ page }) => {
-  await page.goto("/");
+  const gotoPromise = page.goto("/");
 
   await expect(page.getByRole("progressbar")).toBeVisible();
+  await gotoPromise;
 });
 
 test("should be redirected to /auth/login if session is missing", async ({
