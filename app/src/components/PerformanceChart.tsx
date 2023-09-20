@@ -15,11 +15,12 @@ export default function PerformanceChart(props: {
   portfolioData?: HistoryStatistics["portfolio"];
   twrPeriod: keyof typeof twrPeriodColumnMapper;
   labels: string[];
+  id?: string;
 }) {
   const { percentFormat } = useFormat();
   const { t } = useTranslation();
   return (
-    <Paper sx={{ p: 2, mt: 2 }}>
+    <Paper id={props.id} sx={{ p: 2, mt: 2 }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         {t("performanceChart.title", { period: props.twrPeriod })}
       </Typography>

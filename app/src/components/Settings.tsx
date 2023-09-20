@@ -98,6 +98,7 @@ export default function Settings() {
           <FormControlLabel
             control={
               <Switch
+                name="hide-zero-assets"
                 checked={userSettings.hideZeroAssets}
                 sx={{ ml: 1 }}
                 onChange={(e) => handleHideZeroAssetsChange(e.target.checked)}

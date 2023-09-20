@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginScript } from "./auth/auth.helper";
+import { stubDataApiRequests } from "./api.helper";
 
 test("has title", async ({ page }) => {
   await page.goto("/");
@@ -8,9 +9,10 @@ test("has title", async ({ page }) => {
 });
 
 test("has progress component with progressbar role", async ({ page }) => {
-  await page.goto("/");
+  const gotoPromise = page.goto("/");
 
   await expect(page.getByRole("progressbar")).toBeVisible();
+  await gotoPromise;
 });
 
 test("should be redirected to /auth/login if session is missing", async ({
@@ -24,6 +26,7 @@ test("should be redirected to /snapshot if session is present", async ({
   page,
 }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   await page.goto("/");
 
   await expect(page).toHaveURL("/snapshot");

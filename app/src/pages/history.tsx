@@ -20,7 +20,7 @@ import {
   TextField,
 } from "@mui/material";
 import type { HistoryStatistics } from "@assets-wallet/api/src/portfolio/types";
-import useApi from "@src/utils/useApi";
+import useApi, { callApi } from "@src/utils/useApi";
 import { useTranslation } from "next-i18next";
 import ValueChart from "@src/components/ValueChart";
 import PerformanceChart from "@src/components/PerformanceChart";
@@ -68,16 +68,20 @@ export default function History() {
   const userSettings = useContext(UserSettingsContext);
   const api = useApi();
   const { t } = useTranslation();
+  const generalErrorMessage = t("general.messages.error");
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getPortfolioGroups({});
-    makeRequest().then((response) => {
-      if (response?.data) {
-        setGroups(["", ...response.data.filter((g) => g !== "")]);
-      }
-    });
+    callApi(
+      makeRequest,
+      (data) => {
+        setGroups(["", ...data.filter((g) => g !== "")]);
+      },
+      generalErrorMessage,
+      setSnackbarState
+    );
     return abortRequest;
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     const { makeRequest, abortRequest } = api.getHistoryStatistics({
@@ -86,18 +90,21 @@ export default function History() {
     const dataMissing =
       portfolioData[group] == null || (showAssets && assetsData[group] == null);
     if (dataMissing) {
-      makeRequest().then((response) => {
-        if (response?.data) {
+      callApi(
+        makeRequest,
+        (data) => {
           dispatchData({
             group,
-            assets: response.data.assets,
-            portfolio: response.data.portfolio,
+            assets: data.assets,
+            portfolio: data.portfolio,
           });
-        }
-      });
+        },
+        generalErrorMessage,
+        setSnackbarState
+      );
     }
     return abortRequest;
-  }, [api, showAssets, group]);
+  }, [showAssets, group]);
 
   const currentAssetsData = useMemo(() => {
     if (showAssets) {
@@ -138,17 +145,20 @@ export default function History() {
           <ShowAssetsSwitch showAssets={showAssets} onChange={setShowAssets} />
         </Paper>
         <ValueChart
+          id="value-chart"
           assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
           labels={labels}
         />
         <PerformanceChart
+          id="performance-chart-1y"
           twrPeriod="1Y"
           assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
           labels={labels}
         />
         <PerformanceChart
+          id="performance-chart-3y"
           twrPeriod="3Y"
           assetsData={currentAssetsData}
           portfolioData={portfolioData[group]}
@@ -170,6 +180,7 @@ function GroupSelect(props: {
   }
   return (
     <TextField
+      name="group"
       label={t("assetAttributes.group")}
       select
       value={props.value}
@@ -192,6 +203,7 @@ function PeriodSelect(props: {
   const { t } = useTranslation();
   return (
     <TextField
+      name="period"
       label={t("general.period")}
       select
       value={props.value}
@@ -218,6 +230,7 @@ function ShowAssetsSwitch(props: {
     <FormControlLabel
       control={
         <Switch
+          name="show-assets"
           checked={props.showAssets}
           onChange={(e) => props.onChange(e.target.checked)}
         />

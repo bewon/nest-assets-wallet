@@ -16,7 +16,7 @@ export default function PortfolioStatus(props: {
     assets.reduce((acc, asset) => acc + (asset.value ?? 0), 0);
 
   return (
-    <Paper sx={{ px: 2, py: 3, textAlign: "center" }}>
+    <Paper id="portfolio-status" sx={{ px: 2, py: 3, textAlign: "center" }}>
       <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
         {t("portfolioStatus.totalValue")}
       </Typography>

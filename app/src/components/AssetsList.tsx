@@ -145,13 +145,16 @@ export default function AssetsList(props: {
   }, [assetDialog?.asset, props.assets]);
 
   return (
-    <Paper>
+    <Paper id="assets-list">
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
         <Typography variant="h6" sx={{ mr: 1, pt: 1, pl: 1 }}>
           {t("assetsList.title")}
         </Typography>
         <Tooltip title={t("assetsList.newAsset")}>
-          <IconButton onClick={() => setNewAssetDialogOpen(true)}>
+          <IconButton
+            id="new-asset-button"
+            onClick={() => setNewAssetDialogOpen(true)}
+          >
             <AddCircleOutlineIcon />
           </IconButton>
         </Tooltip>
@@ -312,6 +315,7 @@ function NarrowAssetsListItem(props: {
       >
         <ListItemText primary={props.asset.name} secondary={assetSummary} />
       </ListItem>
+
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}

@@ -9,11 +9,12 @@ export default function ValueChart(props: {
   assetsData?: HistoryStatistics["assets"];
   portfolioData?: HistoryStatistics["portfolio"];
   labels: string[];
+  id?: string;
 }) {
   const { amountFormat } = useFormat();
   const { t } = useTranslation();
   return (
-    <Paper sx={{ p: 2, mt: 2 }}>
+    <Paper id={props.id} sx={{ p: 2, mt: 2 }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         {t("valueChart.title")}
       </Typography>

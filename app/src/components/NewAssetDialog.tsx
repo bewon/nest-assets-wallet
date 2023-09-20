@@ -130,7 +130,7 @@ function NewAssetTextField(props: {
   return (
     <TextField
       required
-      id={props.label}
+      name={props.label}
       label={props.label}
       type={props.type ?? "text"}
       value={props.value}
