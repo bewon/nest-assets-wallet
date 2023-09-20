@@ -41,12 +41,14 @@ test.describe("login form", () => {
     await page.locator("#email").fill("test@bewon.eu");
     await page.locator("#password").fill("test");
     await page.locator("button[type=submit]").click();
-    const boundingBox = await page
-      .locator("[role=alert]")
-      .first()
-      .boundingBox();
+    await page.waitForFunction(async () => {
+      const dialog = document.querySelector(".MuiSnackbar-root .MuiAlert-root");
+      return dialog?.getBoundingClientRect()?.width ?? 0 > 1;
+    });
 
-    expect(boundingBox?.width).toBeGreaterThan(1);
+    await expect(
+      page.locator(".MuiSnackbar-root .MuiAlert-root")
+    ).toBeVisible();
   });
 });
 
@@ -61,15 +63,17 @@ test.describe("locale switcher", () => {
 
   test("should change locale to pl", async ({ page }) => {
     await page.goto("/auth/login");
-    await page.locator("[id=locale-switcher]").getByText("polski").click();
+    await page.locator("[id=locale-switcher] a").getByText("polski").click();
 
     await expect(page).toHaveURL("/pl/auth/login");
   });
 
   test("should change locale to en", async ({ page }) => {
     await page.goto("/pl/auth/login");
-    await page.locator("[id=locale-switcher]").getByText("english").click();
+    const link = page.locator("[id=locale-switcher] a").getByText("english");
+    await expect(link).toHaveAttribute("href", "/auth/login");
 
+    await link.click();
     await expect(page).toHaveURL("/auth/login");
   });
 });

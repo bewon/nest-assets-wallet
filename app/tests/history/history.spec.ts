@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { loginScript } from "../auth/auth.helper";
+import { stubDataApiRequests } from "../api.helper";
 
 test("has title", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   await page.goto("/history");
 
   await expect(page).toHaveTitle("Portfolio history | AssetsWallet");
@@ -10,6 +12,7 @@ test("has title", async ({ page }) => {
 
 test("should make API call for groups", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   const gotoPromise = page.goto("/history");
   const request = await page.waitForRequest("/api/portfolios/default/groups");
   await gotoPromise;
@@ -19,6 +22,7 @@ test("should make API call for groups", async ({ page }) => {
 
 test("should make API call for history statistics", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   const gotoPromise = page.goto("/history");
   const request = await page.waitForRequest(
     "/api/portfolios/default/history-statistics?withAssets=false"
@@ -39,14 +43,17 @@ test("should display error message when API call fails", async ({ page }) => {
   const gotoPromise = page.goto("/history");
   await page.waitForRequest("/api/portfolios/default/history-statistics?*");
   await gotoPromise;
-  await page.waitForSelector("[role=alert]");
-  const boundingBox = await page.locator("[role=alert]").first().boundingBox();
+  await page.waitForFunction(async () => {
+    const dialog = document.querySelector(".MuiSnackbar-root .MuiAlert-root");
+    return dialog?.getBoundingClientRect()?.width ?? 0 > 1;
+  });
 
-  expect(boundingBox?.width).toBeGreaterThan(1);
+  await expect(page.locator(".MuiSnackbar-root .MuiAlert-root")).toBeVisible();
 });
 
 test("has period selector", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   await page.goto("/history");
 
   await expect(page.locator("[name=period]")).toBeVisible();
@@ -54,6 +61,7 @@ test("has period selector", async ({ page }) => {
 
 test("has Show Assets switch", async ({ page }) => {
   await page.addInitScript(loginScript);
+  await stubDataApiRequests(page);
   await page.goto("/history");
 
   await expect(page.locator("[name=show-assets]")).toBeVisible();

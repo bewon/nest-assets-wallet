@@ -43,8 +43,10 @@ test("should display error message when API call fails", async ({ page }) => {
     route.fulfill({ status: 200 })
   );
   await page.goto("/snapshot");
-  await page.waitForSelector("[role=alert]");
-  const boundingBox = await page.locator("[role=alert]").first().boundingBox();
+  await page.waitForFunction(async () => {
+    const dialog = document.querySelector(".MuiSnackbar-root .MuiAlert-root");
+    return dialog?.getBoundingClientRect()?.width ?? 0 > 1;
+  });
 
-  expect(boundingBox?.width).toBeGreaterThan(1);
+  await expect(page.locator(".MuiSnackbar-root .MuiAlert-root")).toBeVisible();
 });
