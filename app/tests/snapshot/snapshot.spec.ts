@@ -13,11 +13,11 @@ test("has title", async ({ page }) => {
 test("should make API call for assets snapshot", async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
-  const gotoPromise = page.goto("/snapshot");
-  const request = await page.waitForRequest(
+  const requestPromise = page.waitForRequest(
     "/api/portfolios/default/assets-snapshot"
   );
-  await gotoPromise;
+  await page.goto("/snapshot");
+  const request = await requestPromise;
 
   expect(request.method()).toBe("GET");
 });
@@ -25,11 +25,11 @@ test("should make API call for assets snapshot", async ({ page }) => {
 test("should make API call for performance statistics", async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
-  const gotoPromise = page.goto("/snapshot");
-  const request = await page.waitForRequest(
+  const requestPromise = page.waitForRequest(
     "/api/portfolios/default/performance-statistics"
   );
-  await gotoPromise;
+  await page.goto("/snapshot");
+  const request = await requestPromise;
 
   expect(request.method()).toBe("GET");
 });

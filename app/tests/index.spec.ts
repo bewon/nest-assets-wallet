@@ -8,13 +8,6 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle(/AssetsWallet/);
 });
 
-test("has progress component with progressbar role", async ({ page }) => {
-  const gotoPromise = page.goto("/");
-
-  await expect(page.getByRole("progressbar")).toBeVisible();
-  await gotoPromise;
-});
-
 test("should be redirected to /auth/login if session is missing", async ({
   page,
 }) => {

@@ -72,11 +72,11 @@ test.describe("new asset dialog", () => {
     await dialog.locator("[name=Date]").fill("2022-01-01");
     await dialog.locator("[name=Capital]").fill("9200");
     await dialog.locator("[name=Value]").fill("9500");
-    const clickPromise = dialog.locator("button[type=submit]").click();
-    const newAssetRequest = await page.waitForRequest(
+    const newAssetRequestPromise = page.waitForRequest(
       "/api/portfolios/default/assets"
     );
-    await clickPromise;
+    await dialog.locator("button[type=submit]").click();
+    const newAssetRequest = await newAssetRequestPromise;
 
     expect(newAssetRequest.method()).toBe("POST");
     expect(newAssetRequest.postDataJSON()).toEqual({
@@ -195,11 +195,11 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=date]").fill("2022-01-01");
     await dialog.locator("[name=capital-plus]").fill("300");
     await dialog.locator("[name=value-plus]").fill("200");
-    const clickPromise = dialog.locator("button[type=submit]").click();
-    const updateAssetRequest = await page.waitForRequest(
+    const updateAssetRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532/balance-changes"
     );
-    await clickPromise;
+    await dialog.locator("button[type=submit]").click();
+    const updateAssetRequest = await updateAssetRequestPromise;
 
     expect(updateAssetRequest.method()).toBe("POST");
     expect(updateAssetRequest.postDataJSON()).toEqual({
@@ -310,12 +310,11 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=date]").fill("2023-02-01");
     await dialog.locator("[name=capital]").fill("8000");
     await dialog.locator("[name=value]").fill("8500");
-
-    const clickPromise = dialog.locator("[title='Save']").click();
-    const updateChangeRequest = await page.waitForRequest(
+    const updateChangeRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
     );
-    await clickPromise;
+    await dialog.locator("[title='Save']").click();
+    const updateChangeRequest = await updateChangeRequestPromise;
 
     expect(updateChangeRequest.method()).toBe("POST");
     expect(updateChangeRequest.postDataJSON()).toEqual({
@@ -341,11 +340,11 @@ test.describe("asset actions", () => {
       .getByText("Asset balance changes list")
       .click();
     const dialog = page.getByRole("dialog");
-    const clickPromise = dialog.locator("[title='Delete']").click();
-    const deleteChangeRequest = await page.waitForRequest(
+    const deleteChangeRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
     );
-    await clickPromise;
+    await dialog.locator("[title='Delete']").click();
+    const deleteChangeRequest = await deleteChangeRequestPromise;
 
     expect(deleteChangeRequest.method()).toBe("DELETE");
   });
@@ -366,11 +365,11 @@ test.describe("asset actions", () => {
     const dialog = page.getByRole("dialog");
     await dialog.locator("[name=name]").fill("Asset X");
     await dialog.locator("[name=group]").fill("Y");
-    const clickPromise = dialog.locator("button[type=submit]").click();
-    const updateAssetRequest = await page.waitForRequest(
+    const updateAssetRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532"
     );
-    await clickPromise;
+    await dialog.locator("button[type=submit]").click();
+    const updateAssetRequest = await updateAssetRequestPromise;
 
     expect(updateAssetRequest.method()).toBe("POST");
     expect(updateAssetRequest.postDataJSON()).toEqual({
@@ -390,14 +389,11 @@ test.describe("asset actions", () => {
     });
 
     const dialog = page.getByRole("dialog");
-    const clickPromise = dialog
-      .locator("[type=button]")
-      .getByText("Delete")
-      .click();
-    const deleteAssetRequest = await page.waitForRequest(
+    const deleteAssetRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532"
     );
-    await clickPromise;
+    await dialog.locator("[type=button]").getByText("Delete").click();
+    const deleteAssetRequest = await deleteAssetRequestPromise;
 
     expect(deleteAssetRequest.method()).toBe("DELETE");
     expect(confirmDialog?.type()).toBe("confirm");

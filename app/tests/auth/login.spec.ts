@@ -19,9 +19,9 @@ test.describe("login form", () => {
     await page.goto("/auth/login");
     await page.locator("#email").fill("test@bewon.eu");
     await page.locator("#password").fill("test");
-    const clickPromise = page.locator("button[type=submit]").click();
-    const request = await page.waitForRequest("/api/auth/login");
-    await clickPromise;
+    const requestPromise = page.waitForRequest("/api/auth/login");
+    await page.locator("button[type=submit]").click();
+    const request = await requestPromise;
 
     expect(request.method()).toBe("POST");
     expect(request.postDataJSON()).toEqual({

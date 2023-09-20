@@ -28,14 +28,16 @@ test("should make request for each group-performance", async ({ page }) => {
       body: JSON.stringify({ portfolio: { "1Y": {} } }),
     })
   );
-  const gotoPromise = page.goto("/snapshot");
-  await page.waitForRequest(
+  const g1Promise = page.waitForRequest(
     "/api/portfolios/default/group-performance?group=G1"
   );
-  await page.waitForRequest(
+  const g2Promise = page.waitForRequest(
     "/api/portfolios/default/group-performance?group=G2"
   );
-  await gotoPromise;
+  await page.goto("/snapshot");
+  const [g1Request, g2Request] = await Promise.all([g1Promise, g2Promise]);
+  expect(g1Request).not.toBeNull();
+  expect(g2Request).not.toBeNull();
 });
 
 test("has all groups and summary", async ({ page }) => {
