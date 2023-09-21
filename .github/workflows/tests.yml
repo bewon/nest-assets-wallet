@@ -1,8 +1,8 @@
-name: App Playwright Tests
+name: App and API Tests
 on:
   deployment_status:
 jobs:
-  test:
+  app:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && endsWith(github.event.deployment_status.environment, 'assets-wallet-app')
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -29,3 +29,20 @@ jobs:
           name: playwright-report
           path: app/playwright-report/
           retention-days: 30
+  api:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && endsWith(github.event.deployment_status.environment, 'assets-wallet-api')
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        working-directory: ./api
+        run: yarn
+      - name: Run API tests
+        working-directory: ./api
+        run: yarn test
+        env:
+          JWT_SECRET: TestSecret
