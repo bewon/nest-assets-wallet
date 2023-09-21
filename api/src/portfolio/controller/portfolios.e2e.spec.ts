@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { PortfolioModule } from '../portfolio.module';
