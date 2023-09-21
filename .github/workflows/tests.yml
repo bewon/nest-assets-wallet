@@ -44,3 +44,5 @@ jobs:
       - name: Run API tests
         working-directory: ./api
         run: yarn test
+        env:
+          JWT_SECRET: TestSecret
