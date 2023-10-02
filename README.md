@@ -18,16 +18,11 @@ interface, making asset management a breeze.
 
 1. **User-Friendly Dashboard**: The dashboard provides a clear overview of your assets, making it easy to track their
    performance.
-
-2. **Advanced Analysis**: Calculate the profits and losses of your investments and generate charts to visualize your
+2. **Advanced Analysis**: Calculate the profits and losses of your investments plus generate charts to visualize your
    financial data.
-
 3. **User Updates**: Asset values and profits are updated by the user, ensuring full control over the data.
-
 4. **Asset Groups**: Organize your assets into groups for better organization and analysis.
-
 5. **Automation with GitHub Actions**: Utilize GitHub Actions for automating tasks like testing and deployment.
-
 6. **Responsive Design**: The application is built with a responsive design to ensure a seamless experience on various
    devices.
 
