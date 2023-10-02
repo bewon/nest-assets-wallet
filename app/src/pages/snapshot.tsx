@@ -93,7 +93,7 @@ export default function Snapshot() {
         onClose={() => setSnackbarState({ ...snackbarState, open: false })}
       />
       <Container maxWidth="lg" sx={{ py: 2 }}>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="flex-start">
           <Grid item container xs={12} md={8} spacing={2}>
             <Grid item xs={12}>
               <AssetsList
