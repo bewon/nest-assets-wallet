@@ -40,7 +40,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 export default function TimeChart(props: {
@@ -55,7 +55,7 @@ export default function TimeChart(props: {
   const theme = useTheme();
   const { t } = useTranslation();
   const isMdDown = useMediaQuery<Theme>((theme) =>
-    theme.breakpoints.down("md")
+    theme.breakpoints.down("md"),
   );
 
   const data = useMemo<ChartData<"line"> | undefined>(() => {
@@ -131,7 +131,7 @@ export default function TimeChart(props: {
         },
       },
     }),
-    [chartDefaults, isMdDown]
+    [chartDefaults, isMdDown],
   );
 
   return (

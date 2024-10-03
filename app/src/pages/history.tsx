@@ -59,7 +59,7 @@ export default function History() {
   const [snackbarState, setSnackbarState] = useState<AppSnackbarState>({});
   const [{ portfolioData, assetsData }, dispatchData] = useReducer(
     dataReducer,
-    { portfolioData: {}, assetsData: {} } as DataState
+    { portfolioData: {}, assetsData: {} } as DataState,
   );
   const [groups, setGroups] = useState<string[]>();
   const [group, setGroup] = useState<string>("");
@@ -78,7 +78,7 @@ export default function History() {
         setGroups(["", ...data.filter((g) => g !== "")]);
       },
       generalErrorMessage,
-      setSnackbarState
+      setSnackbarState,
     );
     return abortRequest;
   }, []);
@@ -100,7 +100,7 @@ export default function History() {
           });
         },
         generalErrorMessage,
-        setSnackbarState
+        setSnackbarState,
       );
     }
     return abortRequest;
@@ -109,7 +109,7 @@ export default function History() {
   const currentAssetsData = useMemo(() => {
     if (showAssets) {
       return assetsData[group]?.filter(
-        (asset) => !userSettings.hideZeroAssets || (asset.value ?? 0 > 0)
+        (asset) => !userSettings.hideZeroAssets || (asset.value ?? 0 > 0),
       );
     }
     return undefined;

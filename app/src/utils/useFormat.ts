@@ -8,7 +8,7 @@ const useFormat = () => {
 
   const dateFormat = (
     date: Date,
-    options?: Intl.DateTimeFormatOptions
+    options?: Intl.DateTimeFormatOptions,
   ): string => {
     return date.toLocaleDateString(i18n.language, options);
   };
@@ -16,14 +16,14 @@ const useFormat = () => {
   const percentFormat = (
     number: number,
     maximumFractionDigits: number,
-    showPlusSign?: boolean
+    showPlusSign?: boolean,
   ): string => {
     const options: Intl.NumberFormatOptions = {
       style: "percent",
       maximumFractionDigits,
     };
     const formatted = new Intl.NumberFormat(i18n.language, options).format(
-      number
+      number,
     );
     return showPlusSign && number > 0 ? `+${formatted}` : formatted;
   };
@@ -31,7 +31,7 @@ const useFormat = () => {
   const amountFormat = (
     number?: number,
     maximumFractionDigits?: number,
-    showPlusSign?: boolean
+    showPlusSign?: boolean,
   ): string | null => {
     if (number === undefined) {
       return null;
@@ -45,7 +45,7 @@ const useFormat = () => {
       options.minimumFractionDigits = maximumFractionDigits;
     }
     const formatted = new Intl.NumberFormat(i18n.language, options).format(
-      number
+      number,
     );
     return showPlusSign && number > 0 ? `+${formatted}` : formatted;
   };

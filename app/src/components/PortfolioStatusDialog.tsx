@@ -58,7 +58,9 @@ export default function PortfolioStatusDialog(props: {
       datasets:
         props.assets.map(({ group, value, name }, index) => ({
           label: name,
-          data: labels.map((label) => (label === group ? value ?? null : null)),
+          data: labels.map((label) =>
+            label === group ? (value ?? null) : null,
+          ),
           backgroundColor: assetsPalette[index],
         })) ?? [],
     };
@@ -83,7 +85,7 @@ export default function PortfolioStatusDialog(props: {
               const group = context[0].label;
               const sum = groupsData[group].reduce(
                 (sum, asset) => sum + (asset.value ?? 0),
-                0
+                0,
               );
               return `${group}: ${amountFormat(sum)}`;
             },

@@ -36,7 +36,7 @@ type AllChangesAction = {
 
 function changesReducer(
   changes: AssetBalanceChangeInterface[] | undefined,
-  action: SingleChangeAction | AllChangesAction
+  action: SingleChangeAction | AllChangesAction,
 ): AssetBalanceChangeInterface[] | undefined {
   if (action.type === "updateAll") {
     return action.changes;
@@ -47,7 +47,7 @@ function changesReducer(
   switch (action.type) {
     case "updateOne":
       return changes.map((change) =>
-        change.id === action.change.id ? action.change : change
+        change.id === action.change.id ? action.change : change,
       );
     case "deleteOne":
       return changes.filter((change) => change.id !== action.change.id);
@@ -58,7 +58,7 @@ async function setDataByApi<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
   setData: (data: T) => void,
   generalErrorMessage: string,
-  setSnackbarState: (state: AppSnackbarState) => void
+  setSnackbarState: (state: AppSnackbarState) => void,
 ) {
   try {
     const response = await makeRequest();
@@ -120,7 +120,7 @@ export default function ChangesListDialog(props: {
         makeRequest,
         (data) => dispatchChanges({ type: "updateAll", changes: data }),
         t("general.messages.error"),
-        props.handleSnackbar
+        props.handleSnackbar,
       );
       return abortRequest;
     }
@@ -218,7 +218,7 @@ function BalanceChange(props: {
       change.date !== props.change.date ||
       change.capital !== props.change.capital ||
       change.value !== props.change.value,
-    [change, props.change]
+    [change, props.change],
   );
 
   const handleUpdate = async () => {

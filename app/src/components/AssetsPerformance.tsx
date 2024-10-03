@@ -32,13 +32,13 @@ type AssetItemData = AssetSnapshotInterface & {
 function findPerformance(
   performanceStatistics: PortfolioPerformanceStatistics["assets"],
   assetId?: string,
-  period?: string
+  period?: string,
 ): AnnualizedCalculation | undefined {
   if (performanceStatistics == null || assetId == null || period == null) {
     return undefined;
   }
   return performanceStatistics.find(
-    (assetPerformance) => assetPerformance.id === assetId
+    (assetPerformance) => assetPerformance.id === assetId,
   )?.performance?.[period];
 }
 
@@ -63,7 +63,7 @@ export default function AssetsPerformance(props: {
         performance: findPerformance(
           props.performanceStatistics,
           asset.id,
-          props.period
+          props.period,
         ),
         color: assetsPalette[index % assetsPalette.length],
       });
@@ -106,8 +106,8 @@ function AssetItem(props: { asset: AssetItemData }) {
     annualizedTwr == null || annualizedTwr === 0
       ? null
       : annualizedTwr > 0
-      ? theme.palette.success.main
-      : theme.palette.error.main;
+        ? theme.palette.success.main
+        : theme.palette.error.main;
 
   return (
     <ListItem

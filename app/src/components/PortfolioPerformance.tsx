@@ -44,7 +44,7 @@ type PerformanceData = {
 const preparePerformanceValues = (
   assets: AssetSnapshotInterface[],
   period: string,
-  statistics: PortfolioPerformanceStatistics["portfolio"]
+  statistics: PortfolioPerformanceStatistics["portfolio"],
 ): PerformanceData => {
   return {
     assetsList: assets.map((asset) => asset.name).join(", "),
@@ -58,7 +58,7 @@ const preparePerformanceValues = (
 async function callApiForGroup<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
   group: string,
-  setData: Dispatch<SetStateAction<Record<string, T>>>
+  setData: Dispatch<SetStateAction<Record<string, T>>>,
 ) {
   try {
     const response = await makeRequest();
@@ -97,7 +97,7 @@ export default function PortfolioPerformance(props: {
       Object.entries(groupedAssets).map(([group, assets]) => {
         const statistics = groupsPerformanceStatistics[group]?.portfolio ?? {};
         return [group, preparePerformanceValues(assets, period, statistics)];
-      })
+      }),
     );
   }, [groupedAssets, groupsPerformanceStatistics, props.period]);
 
@@ -106,7 +106,7 @@ export default function PortfolioPerformance(props: {
     return preparePerformanceValues(
       [],
       props.period,
-      props.performanceStatistics
+      props.performanceStatistics,
     );
   }, [props.performanceStatistics, props.period]);
 
@@ -234,8 +234,8 @@ const PerformanceValues = (props: {
             annualizedTwr == null || annualizedTwr === 0
               ? "default"
               : annualizedTwr > 0
-              ? "success"
-              : "error"
+                ? "success"
+                : "error"
           }
           sx={{ mb: 1 }}
         />

@@ -30,7 +30,7 @@ const reducer = (
   action: {
     themeMode?: UserSettings["themeMode"];
     hideZeroAssets?: UserSettings["hideZeroAssets"];
-  }
+  },
 ) => {
   const stateUpdate: Partial<typeof state> = {};
   if (action.themeMode != null) {
@@ -62,7 +62,7 @@ export default function UserSettingsProvider(props: { children: ReactNode }) {
       setThemeMode: (themeMode) => dispatch({ themeMode }),
       setHideZeroAssets: (hideZeroAssets) => dispatch({ hideZeroAssets }),
     }),
-    [state]
+    [state],
   );
 
   return (

@@ -36,7 +36,7 @@ export default function Snapshot() {
       callApi(makeRequest, setAssets, generalErrorMessage, setSnackbarState);
       return abortRequest;
     },
-    [generalErrorMessage, assets, api]
+    [generalErrorMessage, assets, api],
   );
 
   const updatePerformanceStatistics = useMemo(
@@ -48,11 +48,11 @@ export default function Snapshot() {
         makeRequest,
         setPerformanceStatistics,
         generalErrorMessage,
-        setSnackbarState
+        setSnackbarState,
       );
       return abortRequest;
     },
-    [performanceStatistics, api, generalErrorMessage]
+    [performanceStatistics, api, generalErrorMessage],
   );
 
   const periods = useMemo(() => {

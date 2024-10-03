@@ -16,9 +16,10 @@ import Typography from "@mui/material/Typography";
 import {
   DataGrid,
   GridActionsCellItem,
-  GridColumns,
+  GridColDef,
   GridMoreVertIcon,
   GridRowParams,
+  GridValueGetterParams,
 } from "@mui/x-data-grid";
 import React, { useContext, useMemo, useState } from "react";
 import type { AssetSnapshotInterface } from "@assets-wallet/api/src/portfolio/types";
@@ -46,13 +47,14 @@ type ColumnDefinition<P> = {
   type?: "number" | "date" | "actions";
   flex: number;
   valueFormatter?: (params: { value?: number }) => string;
+  valueGetter?: (params: GridValueGetterParams) => string | Date | null;
   getActions?: (params: P) => JSX.Element[];
 };
 
 function prepareColumns<P>(
-  t: TFunction<"common", undefined, "common">,
+  t: TFunction<"common", undefined>,
   valueFormatter: (params: { value?: number }) => string,
-  getActions: (params: P) => JSX.Element[]
+  getActions: (params: P) => JSX.Element[],
 ): ColumnDefinition<P>[] {
   return [
     { field: "name", headerName: t("assetAttributes.name"), flex: 3 },
@@ -82,6 +84,8 @@ function prepareColumns<P>(
       headerName: t("assetAttributes.date"),
       type: "date",
       flex: 2,
+      valueGetter: (params) =>
+        params.value == null ? null : new Date(params.value),
     },
     {
       field: "actions",
@@ -123,7 +127,7 @@ export default function AssetsList(props: {
   const groups = useMemo(() => {
     if (props.assets == null) return [];
     return Array.from(
-      new Set(props.assets.map((asset) => asset.group ?? ""))
+      new Set(props.assets.map((asset) => asset.group ?? "")),
     ).filter((group) => group !== "");
   }, [props.assets]);
 
@@ -131,7 +135,7 @@ export default function AssetsList(props: {
 
   const handleAssetDialogOpen = (
     type: DialogType,
-    asset: AssetSnapshotInterface
+    asset: AssetSnapshotInterface,
   ) => {
     setAssetDialog({ type, asset });
   };
@@ -218,7 +222,7 @@ function AssetsGrid(props: {
   const { amountFormat } = useFormat();
   const handleDialogOpen = props.onDialogOpen;
 
-  const columns = useMemo<GridColumns<AssetSnapshotInterface>>(() => {
+  const columns = useMemo<GridColDef<AssetSnapshotInterface>[]>(() => {
     return prepareColumns(
       t,
       ({ value }) => amountFormat(value) ?? "-",
@@ -232,7 +236,7 @@ function AssetsGrid(props: {
             onClick={() => handleDialogOpen(action.key, params.row)}
             icon={action.getIcon()}
           />
-        ))
+        )),
     );
   }, [t, amountFormat, handleDialogOpen]);
 
@@ -254,7 +258,7 @@ function AssetsGrid(props: {
       rows={props.assets ?? []}
       columns={columns}
       autoHeight
-      disableSelectionOnClick
+      disableRowSelectionOnClick
       disableColumnMenu
       hideFooter
       loading={props.assets == null}

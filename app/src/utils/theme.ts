@@ -18,7 +18,7 @@ export const secondaryColor = "#f46a40";
 
 export const prepareTheme = (
   language: string,
-  themeMode: UserSettings["themeMode"]
+  themeMode: UserSettings["themeMode"],
 ) =>
   createTheme(
     {
@@ -52,7 +52,7 @@ export const prepareTheme = (
     },
     language === "pl"
       ? { ...plPL, ...plPLDataGrid }
-      : { ...enUS, ...enUSDataGrid }
+      : { ...enUS, ...enUSDataGrid },
   );
 
 export const assetsPalette = [

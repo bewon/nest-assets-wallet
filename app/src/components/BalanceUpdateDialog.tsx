@@ -165,7 +165,7 @@ function FormColumn(props: {
       props.newValue == null
         ? props.newValue
         : amountRound(props.newValue - (props.currentValue ?? 0)),
-    [props.currentValue, props.newValue]
+    [props.currentValue, props.newValue],
   );
   const handlePlusValueChange = (plusValue: number) => {
     const newValue = amountRound((props.currentValue ?? 0) + plusValue);
@@ -231,7 +231,7 @@ function ColumnTextField(props: {
     <TextField
       name={`${props.columnType}-${props.textFieldType}`}
       label={t(
-        `assetsList.balanceUpdateColumns.${props.columnType}.${props.textFieldType}`
+        `assetsList.balanceUpdateColumns.${props.columnType}.${props.textFieldType}`,
       )}
       value={props?.value?.toString() ?? ""}
       required={props.required}

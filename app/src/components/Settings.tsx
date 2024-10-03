@@ -27,13 +27,17 @@ export default function Settings() {
   const router = useRouter();
   const userSettings = useContext(UserSettingsContext);
   const handleHideZeroAssetsChange = (checked: boolean) => {
-    userSettings.setHideZeroAssets && userSettings.setHideZeroAssets(checked);
+    if (userSettings.setHideZeroAssets) {
+      userSettings.setHideZeroAssets(checked);
+    }
   };
   const handleThemeModeChange = (themeMode: UserSettings["themeMode"]) => {
-    userSettings.setThemeMode && userSettings.setThemeMode(themeMode);
+    if (userSettings.setThemeMode) {
+      userSettings.setThemeMode(themeMode);
+    }
   };
   const [anchorSettings, setAnchorSettings] = useState<null | HTMLElement>(
-    null
+    null,
   );
 
   const handleOpenSettings = (event: React.MouseEvent<HTMLElement>) => {

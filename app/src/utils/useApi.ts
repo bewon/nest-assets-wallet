@@ -22,7 +22,7 @@ type EndpointFunction<T> = (config: {
 const createEndpointFunction = <T>(
   url: string,
   method: AxiosRequestConfig["method"],
-  handleError: (error: any) => Promise<boolean> | null
+  handleError: (error: any) => Promise<boolean> | null,
 ): EndpointFunction<T> => {
   const headers: AxiosRequestConfig["headers"] = {
     "Content-Type": "application/json",
@@ -83,71 +83,71 @@ const useApi = () => {
       login: createEndpointFunction<SessionData>(
         "/api/auth/login",
         "POST",
-        prepareErrorHandler(false)
+        prepareErrorHandler(false),
       ),
       getAssetsSnapshot: createEndpointFunction<AssetSnapshotInterface[]>(
         "/api/portfolios/default/assets-snapshot",
         "GET",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       getPerformanceStatistics:
         createEndpointFunction<PortfolioPerformanceStatistics>(
           "/api/portfolios/default/performance-statistics",
           "GET",
-          prepareErrorHandler(true)
+          prepareErrorHandler(true),
         ),
       getGroupPerformanceStatistics:
         createEndpointFunction<PortfolioPerformanceStatistics>(
           "/api/portfolios/default/group-performance",
           "GET",
-          prepareErrorHandler(true)
+          prepareErrorHandler(true),
         ),
       getHistoryStatistics: createEndpointFunction<HistoryStatistics>(
         "/api/portfolios/default/history-statistics",
         "GET",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       getPortfolioGroups: createEndpointFunction<string[]>(
         "/api/portfolios/default/groups",
         "GET",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       createAsset: createEndpointFunction<AssetSnapshotInterface>(
         "/api/portfolios/default/assets",
         "POST",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       updateAsset: createEndpointFunction<AssetSnapshotInterface>(
         "/api/assets/:assetId",
         "POST",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       deleteAsset: createEndpointFunction<void>(
         "/api/assets/:assetId",
         "DELETE",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       getAssetBalanceChanges: createEndpointFunction<
         AssetBalanceChangeInterface[]
       >(
         "/api/assets/:assetId/balance-changes",
         "GET",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       createBalanceChange: createEndpointFunction<void>(
         "/api/assets/:assetId/balance-changes",
         "POST",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       updateBalanceChange: createEndpointFunction<void>(
         "/api/assets/:assetId/balance-changes/:changeId",
         "POST",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
       deleteBalanceChange: createEndpointFunction<void>(
         "/api/assets/:assetId/balance-changes/:changeId",
         "DELETE",
-        prepareErrorHandler(true)
+        prepareErrorHandler(true),
       ),
     };
   }, [changeRoute]);
@@ -159,7 +159,7 @@ export async function callApi<T>(
   makeRequest: () => Promise<AxiosResponse<T> | null>,
   setData: (data: T) => void,
   generalErrorMessage: string,
-  setSnackbarState: (state: AppSnackbarState) => void
+  setSnackbarState: (state: AppSnackbarState) => void,
 ) {
   try {
     const response = await makeRequest();

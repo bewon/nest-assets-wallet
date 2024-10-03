@@ -49,6 +49,6 @@ export default function useChartDefaults() {
 
   return useMemo(
     () => ({ chartsLocale: chartLocale, chartDefaults: chartDefaults }),
-    [chartLocale, chartDefaults]
+    [chartLocale, chartDefaults],
   );
 }
