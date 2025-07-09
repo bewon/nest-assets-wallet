@@ -28,3 +28,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 /node_modules
+api/test-results/.last-run.json

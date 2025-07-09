@@ -1,0 +1,103 @@
+---
+description: "Coding guidelines and project context for the Assets Wallet mono-repo"
+globs: "*.ts,*.tsx,*.js,*.jsx,*.json,*.md"
+---
+
+# Assets Wallet – Project Rules
+
+Assets Wallet is a compact application designed to help you manage the values and profits of your private assets,
+including stock shares, bank accounts, real estate, bonds, and more. This project is built with a focus on user-friendly
+interface, making asset management a breeze.
+
+## 1. Repository layout
+
+| Path | Purpose |
+|------|---------|
+| `app/` | Next.js 14 frontend (React + TypeScript) |
+| `api/` | NestJS backend (TypeScript) |
+| `package.json` | Yarn workspaces root – declares `app` and `api` packages |
+
+A more detailed look at the important directories:
+
+#### Frontend (`app/`)
+
+| Path | Purpose |
+|---|---|
+| `src/pages/` | Next.js page components, which map to routes. |
+| `src/components/` | Reusable React components used across pages. |
+| `src/utils/` | Custom hooks (`useApi`, `useFormat`) and helpers. |
+| `tests/` | Playwright E2E tests for the frontend. |
+| `public/locales/` | i18n translation files. |
+
+#### Backend (`api/`)
+
+| Path | Purpose |
+|---|---|
+| `src/main.ts` | Application entrypoint. |
+| `src/auth/` | Authentication module (login, JWT strategy). |
+| `src/portfolio/` | Portfolio & assets management module. |
+| `src/migration/` | TypeORM database migrations. |
+| `test/` | Jest E2E tests for the backend. |
+
+## 2. Technology stack
+
+Frontend (`app/`):
+- React 18 + Next.js 14 (pages router)
+- MUI (`@mui/material`, `@emotion/*`) for UI
+- React ChartJS 2 + Chart.js for graphs
+- i18n via `next-i18next`
+- Playwright for E2E
+
+Backend (`api/`):
+- NestJS 10
+- TypeORM with PostgreSQL
+- Authentication: `@nestjs/jwt`, `passport`, `bcrypt`
+- Jest for unit/integration tests
+
+Shared:
+- TypeScript everywhere
+- Yarn workspaces (`api`, `app`)
+- Prettier + ESLint with `@typescript-eslint`
+
+## 3. Coding conventions
+
+### General
+1. Prefer **TypeScript** – keep `strict` mode on (`app/tsconfig.json`, `api/tsconfig.json`).
+2. Use **early returns** to reduce nesting & avoid unnecessary `else` blocks.
+3. Variable naming: prefix booleans with `is`, `has`, `can`; functions start with verbs.
+4. Always write small, focused functions/components.
+
+### Frontend (`app/`)
+- Use *functional* React components; **do not** use the `React.FC` shortcut.
+- Import project files with the alias `@src/*` (configured in `app/tsconfig.json`).
+- Prefer MUI components & theming over raw HTML/CSS.
+- Charts: render with `<Line />`, `<Bar />`, etc. from `react-chartjs-2`; register required controllers.
+- Internationalisation: wrap pages with `appWithTranslation` and pull copy via `useTranslation()`.
+- Tests live in `app/tests/` and run with `yarn test` (Playwright).
+
+### Backend (`api/`)
+- Organise code by NestJS **modules** → **controllers**, **services**, **entities**.
+- Export classes with the `@Injectable()` / `@Controller()` decorators.
+- Use **DTOs** for validation and **TypeORM entities** for persistence.
+- Keep business logic inside services; controllers should stay thin.
+- Place unit tests beside the feature (`*.spec.ts`) and run with `yarn test`.
+
+## 4. Database
+Environment variables are loaded via NestJS `@nestjs/config` – see `.env` example in `README.md`.
+
+``postgres://POSTGRES_USER:POSTGRES_PASSWORD@host:port/POSTGRES_DATABASE``
+
+## 5. Common commands
+
+```bash
+# Start dev servers
+cd app && yarn dev    # localhost:3000
+cd ../api && yarn dev # localhost:3001 (default)
+
+# Run tests
+cd app && yarn test         # Playwright
+cd api && yarn test         # Jest
+```
+
+## 6. Contribution checklist
+- Run `yarn lint` & `yarn test` in both packages before committing.
