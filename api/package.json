@@ -80,7 +80,7 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s",
-      "!/migration/**"
+      "!migration/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
