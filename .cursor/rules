@@ -37,7 +37,6 @@ A more detailed look at the important directories:
 | `src/auth/` | Authentication module (login, JWT strategy). |
 | `src/portfolio/` | Portfolio & assets management module. |
 | `src/migration/` | TypeORM database migrations. |
-| `test/` | Jest E2E tests for the backend. |
 
 ## 2. Technology stack
 
