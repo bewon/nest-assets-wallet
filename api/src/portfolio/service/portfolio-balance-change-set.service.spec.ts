@@ -33,10 +33,10 @@ describe('PortfolioBalanceChangeSetService', () => {
         createChange('A1', '2022-02-01', 110, 120),
       ];
       service.setAllChanges(changes);
-      expect(service['groupedAssetChanges']['A1']).toHaveLength(2);
-      expect(service['groupedAssetChanges']['A2']).toHaveLength(1);
-      expect(service['groupedAssetChanges']['A1'][0].value).toBe(110);
-      expect(service['groupedAssetChanges']['A1'][1].value).toBe(120);
+      expect(service.groupedAssetChanges['A1']).toHaveLength(2);
+      expect(service.groupedAssetChanges['A2']).toHaveLength(1);
+      expect(service.groupedAssetChanges['A1'][0].value).toBe(110);
+      expect(service.groupedAssetChanges['A1'][1].value).toBe(120);
     });
 
     it('should create summed portfolio changes chronologically', () => {
@@ -46,7 +46,7 @@ describe('PortfolioBalanceChangeSetService', () => {
         createChange('A1', '2022-02-01', 110, 120), // New date
       ];
       service.setAllChanges(changes);
-      const portfolioChanges = service['portfolioChanges'];
+      const portfolioChanges = service.portfolioChanges;
       expect(portfolioChanges).toHaveLength(2);
       expect(portfolioChanges[0].date).toBe('2022-01-01');
       expect(portfolioChanges[0].capital).toBe(300); // 100 + 200
