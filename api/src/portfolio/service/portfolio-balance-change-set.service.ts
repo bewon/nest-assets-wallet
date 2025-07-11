@@ -28,8 +28,7 @@ const subtractMonths = (date: string, months: number): string => {
 // This code will work ony for changes sorted by date!
 
 export class PortfolioBalanceChangeSetService {
-  public groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]> =
-    {};
+  public groupedAssetChanges: Record<string, AssetBalanceChangeEntity[]> = {};
 
   public portfolioChanges: BalanceChangeModel[] = [];
 
@@ -135,10 +134,10 @@ export class PortfolioBalanceChangeSetService {
       calculation[period] =
         periodChanges.length < changes.length
           ? this.prepareCalculationForChanges(
-            periodChanges,
-            withAbsoluteValues,
-            months,
-          )
+              periodChanges,
+              withAbsoluteValues,
+              months,
+            )
           : calculation.total;
     });
     return calculation;

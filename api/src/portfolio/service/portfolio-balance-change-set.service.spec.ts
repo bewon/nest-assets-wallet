@@ -150,7 +150,8 @@ describe('PortfolioBalanceChangeSetService', () => {
         expect(lastEntry.change.value).toBe(1840);
         // see calculations above
         expect(lastEntry.periodCalculation.total?.annualizedTwr).toBeCloseTo(
-          0.1724, 4
+          0.1724,
+          4,
         );
       });
     });
@@ -167,7 +168,8 @@ describe('PortfolioBalanceChangeSetService', () => {
         expect(lastA1.change.value).toBe(1210);
         // see calculations above
         expect(lastA1.periodCalculation.total?.annualizedTwr).toBeCloseTo(
-          0.1926, 4
+          0.1926,
+          4,
         );
       });
     });
