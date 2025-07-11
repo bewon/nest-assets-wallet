@@ -59,7 +59,10 @@ describe('AuthService', () => {
         accessToken: expect.stringMatching(/.{10,}/),
         userEmail: user.email,
       });
-      expect(jwtService.sign).toBeCalledWith({ email: user.email, sub: user.id });
+      expect(jwtService.sign).toBeCalledWith({
+        email: user.email,
+        sub: user.id,
+      });
     });
 
     it('should return null if user is not provided', async () => {
@@ -95,7 +98,10 @@ describe('AuthService', () => {
       (userService.findOneByEmail as jest.Mock).mockResolvedValueOnce(userInDb);
       (bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
 
-      const result = await service.validateUser('test@test.com', 'wrong-password');
+      const result = await service.validateUser(
+        'test@test.com',
+        'wrong-password',
+      );
       expect(result).toBeNull();
     });
 
