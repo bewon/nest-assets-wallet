@@ -17,7 +17,7 @@ export const entities = [
 ];
 
 export const testDataSourceConfig: DataSourceOptions = {
-  type: 'sqlite',
+  type: 'better-sqlite3',
   database: ':memory:',
   // type: 'postgres',
   // host: 'localhost',
