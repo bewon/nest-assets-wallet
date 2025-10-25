@@ -58,10 +58,10 @@ export class FixturesService {
   }
 
   public async loadFixtures() {
-    await this.assetBalanceChangeRepository.delete({});
-    await this.assetRepository.delete({});
-    await this.portfolioRepository.delete({});
-    await this.userRepository.delete({});
+    await this.assetBalanceChangeRepository.clear();
+    await this.assetRepository.clear();
+    await this.portfolioRepository.clear();
+    await this.userRepository.clear();
     const user = await this.userRepository.save({ email: userEmail });
     const portfolio = await this.portfolioRepository.save({
       id: portfolioId,
