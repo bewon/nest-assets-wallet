@@ -1,0 +1,75 @@
+name: Vercel Postgres Backup to BorgBase
+
+on:
+  schedule:
+    # Run daily at 3:00 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  BORG_REPO: ssh://stzz32f0@stzz32f0.repo.borgbase.com/./repo
+  BORG_PASSPHRASE: ${{ secrets.BORG_PASSPHRASE }}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client borgbackup
+
+      - name: Setup SSH key for BorgBase
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BORG_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H stzz32f0.repo.borgbase.com >> ~/.ssh/known_hosts
+
+      - name: Create backup directory
+        run: mkdir -p ~/backup/db_dumps
+
+      - name: Dump Vercel Postgres database
+        env:
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          pg_dump \
+            --host=${{ secrets.POSTGRES_HOST }} \
+            --port=5432 \
+            --username=${{ secrets.POSTGRES_USER }} \
+            --dbname=${{ secrets.POSTGRES_DATABASE }} \
+            --no-password \
+            "sslmode=require" \
+            > ~/backup/db_dumps/vercel_assets_wallet.postgres.sql
+          
+          echo "Database dump completed: $(wc -l < ~/backup/db_dumps/vercel_assets_wallet.postgres.sql) lines"
+
+      - name: Create Borg backup
+        run: |
+          borg create \
+            --verbose \
+            --filter AME \
+            --list \
+            --stats \
+            --show-rc \
+            --compression zstd,3 \
+            ::assets-wallet-db-{now:%Y-%m-%d_%H-%M} \
+            ~/backup/db_dumps/
+
+      - name: Prune old backups
+        run: |
+          borg prune \
+            --list \
+            --glob-archives 'assets-wallet-db-*' \
+            --show-rc \
+            --keep-daily 6 \
+            --keep-weekly 3 \
+            --keep-monthly 6
+
+      - name: Compact repository
+        run: borg compact
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
