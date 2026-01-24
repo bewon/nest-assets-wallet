@@ -33,6 +33,7 @@ jobs:
       - name: Dump Vercel Postgres database
         env:
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          PGSSLMODE: require
         run: |
           pg_dump \
             --host=${{ secrets.POSTGRES_HOST }} \
@@ -40,7 +41,6 @@ jobs:
             --username=${{ secrets.POSTGRES_USER }} \
             --dbname=${{ secrets.POSTGRES_DATABASE }} \
             --no-password \
-            "sslmode=require" \
             > ~/backup/db_dumps/vercel_assets_wallet.postgres.sql
           
           echo "Database dump completed: $(wc -l < ~/backup/db_dumps/vercel_assets_wallet.postgres.sql) lines"
