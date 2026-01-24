@@ -9,5 +9,8 @@
   "workspaces": [
     "api",
     "app"
-  ]
+  ],
+  "resolutions": {
+    "form-data": "4.0.4"
+  }
 }

@@ -16,6 +16,7 @@ import * as fs from 'fs';
 describe('Portfolios', () => {
   let app: INestApplication;
   let fixturesService: FixturesService;
+  let testUser: { id: string; email: string };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -38,11 +39,7 @@ describe('Portfolios', () => {
       .useValue({
         canActivate: async (context: ExecutionContext) => {
           const request = context.switchToHttp().getRequest();
-          const user = await fixturesService.getUser();
-          request.user = {
-            id: user.id,
-            email: user.email,
-          } as Express.User;
+          request.user = testUser as Express.User;
           return true;
         },
       })
@@ -51,10 +48,22 @@ describe('Portfolios', () => {
     app = moduleRef.createNestApplication();
     fixturesService = moduleRef.get<FixturesService>(FixturesService);
     await app.init();
+    await fixturesService.loadFixtures();
+    const user = await fixturesService.getUser();
+    testUser = {
+      id: user.id,
+      email: user.email,
+    };
+  });
+
+  beforeEach(async () => {
+    await fixturesService.loadFixtures();
+    const user = await fixturesService.getUser();
+    testUser.id = user.id;
+    testUser.email = user.email;
   });
 
   it(`/GET /portfolios/default`, async () => {
-    await fixturesService.loadFixtures();
     const portfolio = await fixturesService.getPortfolio();
     // has portfolio id key
     const response = await request(app.getHttpServer())
@@ -64,10 +73,6 @@ describe('Portfolios', () => {
   });
 
   describe(`/GET /portfolios/:id/assets-snapshot`, () => {
-    beforeEach(async () => {
-      await fixturesService.loadFixtures();
-    });
-
     it(`return json with sample assets-snapshot result for sample portfolio`, async () => {
       const assetsSnapshot = JSON.parse(
         fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
@@ -94,10 +99,6 @@ describe('Portfolios', () => {
   });
 
   describe(`/GET /portfolios/:id/performance-statistics`, () => {
-    beforeEach(async () => {
-      await fixturesService.loadFixtures();
-    });
-
     it('return json with newest performance-statistics result for sample portfolio', async () => {
       const performanceStatistics = JSON.parse(
         fs.readFileSync(
