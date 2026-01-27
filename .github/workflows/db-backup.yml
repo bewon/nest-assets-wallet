@@ -2,8 +2,8 @@ name: Vercel Postgres Backup to BorgBase
 
 on:
   schedule:
-    # Run daily at 3:00 AM UTC
-    - cron: '0 3 * * *'
+    # Run daily at 3:12 AM UTC
+    - cron: '12 3 * * *'
   workflow_dispatch: # Allow manual trigger
 
 env:
