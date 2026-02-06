@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserService } from './user.service';
 
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 
 const moduleMocker = new ModuleMocker(global);
 describe('AuthService', () => {
