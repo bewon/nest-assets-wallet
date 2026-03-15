@@ -1,10 +1,11 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 import 'dotenv/config';
 
 const dev = process.env.NODE_ENV === 'development';
 
-export const dataSourceConfig: DataSourceOptions = {
+const baseDataSourceConfig = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST ?? 'localhost',
   port: 5432,
@@ -19,4 +20,8 @@ export const dataSourceConfig: DataSourceOptions = {
   ssl: { rejectUnauthorized: false },
 };
 
-export const AppDataSource = new DataSource(dataSourceConfig);
+export const dataSourceConfig = baseDataSourceConfig as TypeOrmModuleOptions;
+
+export const AppDataSource = new DataSource(
+  baseDataSourceConfig as DataSourceOptions,
+);

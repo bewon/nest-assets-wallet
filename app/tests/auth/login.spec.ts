@@ -47,7 +47,7 @@ test.describe("login form", () => {
     });
 
     await expect(
-      page.locator(".MuiSnackbar-root .MuiAlert-root")
+      page.locator(".MuiSnackbar-root .MuiAlert-root"),
     ).toBeVisible();
   });
 });

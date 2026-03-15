@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PortfolioService } from './portfolio.service';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { MockMetadata, ModuleMocker } from 'jest-mock';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import {
   entities,
@@ -40,8 +40,10 @@ describe('PortfolioService', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })

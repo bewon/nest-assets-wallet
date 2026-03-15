@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
     { id: "c0b1c2d3-534", name: "Asset C", group: "G2", value: 300 },
   ];
   await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-    route.fulfill({ status: 200, body: JSON.stringify(assets) })
+    route.fulfill({ status: 200, body: JSON.stringify(assets) }),
   );
 });
 

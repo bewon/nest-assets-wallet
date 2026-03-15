@@ -24,6 +24,9 @@ import type { Theme } from "@mui/material/styles";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import AssetPoint from "@src/components/AssetPoint";
 
+const PigMoneyIcon = TbPigMoney as React.ElementType;
+const ReportMoneyIcon = TbReportMoney as React.ElementType;
+
 type AssetItemData = AssetSnapshotInterface & {
   performance?: AnnualizedCalculation;
   color: string;
@@ -126,12 +129,12 @@ function AssetItem(props: { asset: AssetItemData }) {
           <ListItemText primary={props.asset.name} />
           <Box>
             <PerformanceChip
-              icon={<TbPigMoney />}
+              icon={<PigMoneyIcon />}
               value={props.asset.performance?.capitalChange}
               title={t("portfolioPerformance.capitalChange")}
             />
             <PerformanceChip
-              icon={<TbReportMoney />}
+              icon={<ReportMoneyIcon />}
               value={props.asset.performance?.valueChange}
               title={t("portfolioPerformance.valueChange")}
             />

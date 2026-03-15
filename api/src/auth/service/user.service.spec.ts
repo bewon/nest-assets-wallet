@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { MockMetadata, ModuleMocker } from 'jest-mock';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from '../model/user.entity';
 import { Repository } from 'typeorm';
@@ -29,8 +29,10 @@ describe('UsersService', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })
@@ -49,8 +51,8 @@ describe('UsersService', () => {
   it('should find user by email', async () => {
     const user = await service.findOneByEmail('test@test.com');
     expect(user).toEqual({ id: 'xyz', email: 'test@test.com' });
-    expect(userRepository.findOneBy).toBeCalledTimes(1);
-    expect(userRepository.findOneBy).toBeCalledWith({
+    expect(userRepository.findOneBy).toHaveBeenCalledTimes(1);
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({
       email: 'test@test.com',
     });
   });
@@ -62,8 +64,8 @@ describe('UsersService', () => {
       email: 'test@test.com',
       password: expect.any(String),
     });
-    expect(userRepository.save).toBeCalledTimes(1);
-    expect(userRepository.save).toBeCalledWith({
+    expect(userRepository.save).toHaveBeenCalledTimes(1);
+    expect(userRepository.save).toHaveBeenCalledWith({
       email: 'test@test.com',
       password: expect.stringMatching(/.{30,}/),
     });

@@ -35,7 +35,7 @@ describe('AppAuthGuard', () => {
       .mockResolvedValue(true);
 
     await guard.canActivate(context);
-    expect(superCanActivate).toBeCalled();
+    expect(superCanActivate).toHaveBeenCalled();
   });
 
   it('should return true when super.canActivate returns true', async () => {

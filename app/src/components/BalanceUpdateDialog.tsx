@@ -18,6 +18,9 @@ import useApi from "@src/utils/useApi";
 import { FaEquals, FaPlus } from "react-icons/fa";
 import AssetPoint from "@src/components/AssetPoint";
 
+const PlusIcon = FaPlus as React.ElementType;
+const EqualsIcon = FaEquals as React.ElementType;
+
 const amountRound = (amount: number) => Math.round(amount * 100) / 100;
 
 export default function BalanceUpdateDialog(props: {
@@ -188,7 +191,7 @@ function FormColumn(props: {
         textFieldType="plus"
         value={plusValue}
         onChange={handlePlusValueChange}
-        icon={<FaPlus />}
+        icon={<PlusIcon />}
       />
       <ColumnTextField
         required
@@ -196,7 +199,7 @@ function FormColumn(props: {
         textFieldType="new"
         value={props.newValue}
         onChange={props.onNewValueChange}
-        icon={<FaEquals />}
+        icon={<EqualsIcon />}
       />
     </Box>
   );

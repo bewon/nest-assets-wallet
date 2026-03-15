@@ -46,10 +46,10 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
   await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-    route.fulfill({ status: 200, body: JSON.stringify(assets) })
+    route.fulfill({ status: 200, body: JSON.stringify(assets) }),
   );
   await page.route("/api/portfolios/default/performance-statistics", (route) =>
-    route.fulfill({ status: 200, body: JSON.stringify(performance) })
+    route.fulfill({ status: 200, body: JSON.stringify(performance) }),
   );
 });
 

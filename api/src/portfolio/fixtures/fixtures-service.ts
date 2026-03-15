@@ -1,6 +1,6 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { PortfolioEntity } from '../model/portfolio.entity';
 import { Repository } from 'typeorm';
-import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 import { AssetEntity } from '../model/asset.entity';
 import { promises as fs } from 'fs';
 import { AssetBalanceChangeEntity } from '../model/asset-balance-change.entity';
@@ -16,7 +16,7 @@ export const entities = [
   UserEntity,
 ];
 
-export const testDataSourceConfig: DataSourceOptions = {
+export const testDataSourceConfig: TypeOrmModuleOptions = {
   type: 'better-sqlite3',
   database: ':memory:',
   // type: 'postgres',

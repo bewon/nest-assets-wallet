@@ -21,7 +21,7 @@ test("has tab navigation", async ({ page }) => {
 test("should display first tab in navigation by default", async ({ page }) => {
   await expect(page.locator("#header [role=tab]").first()).toHaveAttribute(
     "aria-selected",
-    "true"
+    "true",
   );
 });
 
@@ -43,7 +43,7 @@ test("should open Settings menu when Settings button is clicked", async ({
   await expect(menuItems.nth(0).getByLabel("Language")).toBeVisible();
   await expect(menuItems.nth(1).getByLabel("Theme")).toBeVisible();
   await expect(
-    menuItems.nth(2).locator("[name=hide-zero-assets]")
+    menuItems.nth(2).locator("[name=hide-zero-assets]"),
   ).toBeVisible();
   await expect(menuItems.nth(3).getByText("Log out")).toBeVisible();
 });

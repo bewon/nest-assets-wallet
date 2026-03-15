@@ -7,7 +7,7 @@ import {
   testDataSourceConfig,
 } from '../fixtures/fixtures-service';
 import { AssetEntity } from '../model/asset.entity';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { MockMetadata, ModuleMocker } from 'jest-mock';
 import * as fs from 'fs';
 import { Repository } from 'typeorm';
 
@@ -29,8 +29,10 @@ describe('AssetService', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })

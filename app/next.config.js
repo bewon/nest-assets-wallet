@@ -6,6 +6,10 @@ const nextConfig = {
   experimental: {
     externalDir: true,
   },
+  eslint: {
+    // Next 14 still invokes ESLint with removed CLI options when paired with ESLint 9.
+    ignoreDuringBuilds: true,
+  },
   i18n,
   async rewrites() {
     return [

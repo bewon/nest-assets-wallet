@@ -14,7 +14,7 @@ test("should make API call for assets snapshot", async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
   const requestPromise = page.waitForRequest(
-    "/api/portfolios/default/assets-snapshot"
+    "/api/portfolios/default/assets-snapshot",
   );
   await page.goto("/snapshot");
   const request = await requestPromise;
@@ -26,7 +26,7 @@ test("should make API call for performance statistics", async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
   const requestPromise = page.waitForRequest(
-    "/api/portfolios/default/performance-statistics"
+    "/api/portfolios/default/performance-statistics",
   );
   await page.goto("/snapshot");
   const request = await requestPromise;
@@ -37,10 +37,10 @@ test("should make API call for performance statistics", async ({ page }) => {
 test("should display error message when API call fails", async ({ page }) => {
   await page.addInitScript(loginScript);
   await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-    route.fulfill({ status: 500 })
+    route.fulfill({ status: 500 }),
   );
   await page.route("/api/portfolios/default/performance-statistics", (route) =>
-    route.fulfill({ status: 200 })
+    route.fulfill({ status: 200 }),
   );
   await page.goto("/snapshot");
   await page.waitForFunction(async () => {

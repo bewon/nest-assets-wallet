@@ -73,7 +73,7 @@ test.describe("new asset dialog", () => {
     await dialog.locator("[name=Capital]").fill("9200");
     await dialog.locator("[name=Value]").fill("9500");
     const newAssetRequestPromise = page.waitForRequest(
-      "/api/portfolios/default/assets"
+      "/api/portfolios/default/assets",
     );
     await dialog.locator("button[type=submit]").click();
     const newAssetRequest = await newAssetRequestPromise;
@@ -91,15 +91,15 @@ test.describe("new asset dialog", () => {
 test.describe("assets list elements", () => {
   test("has all assets on list", async ({ page }) => {
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify([assetA, assetB]) })
+      route.fulfill({ status: 200, body: JSON.stringify([assetA, assetB]) }),
     );
     await page.goto("/snapshot");
 
     await expect(
-      page.locator("#assets-list [data-id='a0b1c2d3-532']")
+      page.locator("#assets-list [data-id='a0b1c2d3-532']"),
     ).toBeVisible();
     await expect(
-      page.locator("#assets-list [data-id='b0b1c2d3-7e2']")
+      page.locator("#assets-list [data-id='b0b1c2d3-7e2']"),
     ).toBeVisible();
   });
 
@@ -107,12 +107,12 @@ test.describe("assets list elements", () => {
     page,
   }) => {
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify([zeroValueAsset]) })
+      route.fulfill({ status: 200, body: JSON.stringify([zeroValueAsset]) }),
     );
     await page.goto("/snapshot");
 
     await expect(
-      page.locator("#assets-list [data-id='c0b1c2d3-641']")
+      page.locator("#assets-list [data-id='c0b1c2d3-641']"),
     ).not.toBeVisible();
   });
 
@@ -122,27 +122,27 @@ test.describe("assets list elements", () => {
     await page.addInitScript(() =>
       localStorage.setItem(
         "user-settings.hide-zero-assets",
-        JSON.stringify(false)
-      )
+        JSON.stringify(false),
+      ),
     );
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify([zeroValueAsset]) })
+      route.fulfill({ status: 200, body: JSON.stringify([zeroValueAsset]) }),
     );
     await page.goto("/snapshot");
 
     await expect(
-      page.locator("#assets-list [data-id='c0b1c2d3-641']")
+      page.locator("#assets-list [data-id='c0b1c2d3-641']"),
     ).toBeVisible();
   });
 
   test("should display assets name", async ({ page }) => {
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify([assetA]) })
+      route.fulfill({ status: 200, body: JSON.stringify([assetA]) }),
     );
     await page.goto("/snapshot");
 
     await expect(
-      page.locator("#assets-list [data-id='a0b1c2d3-532'] [title='Asset A']")
+      page.locator("#assets-list [data-id='a0b1c2d3-532'] [title='Asset A']"),
     ).toHaveText("Asset A");
   });
 });
@@ -150,7 +150,7 @@ test.describe("assets list elements", () => {
 test.describe("asset actions", () => {
   test.beforeEach(async ({ page }) => {
     await page.route("/api/portfolios/default/assets-snapshot", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify([assetA]) })
+      route.fulfill({ status: 200, body: JSON.stringify([assetA]) }),
     );
     await page.goto("/snapshot");
     const assetMenu = page
@@ -161,13 +161,13 @@ test.describe("asset actions", () => {
 
   test("should display menu for each asset", async ({ page }) => {
     await expect(
-      page.getByRole("menuitem").getByText("Update asset balance")
+      page.getByRole("menuitem").getByText("Update asset balance"),
     ).toBeVisible();
     await expect(
-      page.getByRole("menuitem").getByText("Asset balance changes list")
+      page.getByRole("menuitem").getByText("Asset balance changes list"),
     ).toBeVisible();
     await expect(
-      page.getByRole("menuitem").getByText("Edit asset")
+      page.getByRole("menuitem").getByText("Edit asset"),
     ).toBeVisible();
   });
 
@@ -196,7 +196,7 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=capital-plus]").fill("300");
     await dialog.locator("[name=value-plus]").fill("200");
     const updateAssetRequestPromise = page.waitForRequest(
-      "/api/assets/a0b1c2d3-532/balance-changes"
+      "/api/assets/a0b1c2d3-532/balance-changes",
     );
     await dialog.locator("button[type=submit]").click();
     const updateAssetRequest = await updateAssetRequestPromise;
@@ -259,7 +259,7 @@ test.describe("asset actions", () => {
       },
     ];
     await page.route("/api/assets/*/balance-changes*", (route) =>
-      route.fulfill({ status: 200, body: JSON.stringify(changes) })
+      route.fulfill({ status: 200, body: JSON.stringify(changes) }),
     );
 
     await page
@@ -299,7 +299,7 @@ test.describe("asset actions", () => {
             date: "2023-01-01",
           },
         ]),
-      })
+      }),
     );
 
     await page
@@ -311,7 +311,7 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=capital]").fill("8000");
     await dialog.locator("[name=value]").fill("8500");
     const updateChangeRequestPromise = page.waitForRequest(
-      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
+      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561",
     );
     await dialog.locator("[title='Save']").click();
     const updateChangeRequest = await updateChangeRequestPromise;
@@ -332,7 +332,7 @@ test.describe("asset actions", () => {
       route.fulfill({
         status: 200,
         body: JSON.stringify([{ id: "a0b1c2d3-561" }]),
-      })
+      }),
     );
 
     await page
@@ -341,7 +341,7 @@ test.describe("asset actions", () => {
       .click();
     const dialog = page.getByRole("dialog");
     const deleteChangeRequestPromise = page.waitForRequest(
-      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561"
+      "/api/assets/a0b1c2d3-532/balance-changes/a0b1c2d3-561",
     );
     await dialog.locator("[title='Delete']").click();
     const deleteChangeRequest = await deleteChangeRequestPromise;
@@ -366,7 +366,7 @@ test.describe("asset actions", () => {
     await dialog.locator("[name=name]").fill("Asset X");
     await dialog.locator("[name=group]").fill("Y");
     const updateAssetRequestPromise = page.waitForRequest(
-      "/api/assets/a0b1c2d3-532"
+      "/api/assets/a0b1c2d3-532",
     );
     await dialog.locator("button[type=submit]").click();
     const updateAssetRequest = await updateAssetRequestPromise;
@@ -390,7 +390,7 @@ test.describe("asset actions", () => {
 
     const dialog = page.getByRole("dialog");
     const deleteAssetRequestPromise = page.waitForRequest(
-      "/api/assets/a0b1c2d3-532"
+      "/api/assets/a0b1c2d3-532",
     );
     await dialog.locator("[type=button]").getByText("Delete").click();
     const deleteAssetRequest = await deleteAssetRequestPromise;

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BalanceChangesController } from './balance-changes.controller';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { MockMetadata, ModuleMocker } from 'jest-mock';
 import { PortfolioService } from '../service/portfolio.service';
 import { AssetEntity } from '../model/asset.entity';
 import { PortfolioEntity } from '../model/portfolio.entity';
@@ -124,8 +124,10 @@ describe('BalanceChangesController', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })
@@ -166,7 +168,7 @@ describe('BalanceChangesController', () => {
         value: 100,
         capital: 90,
       }),
-    ).rejects.toThrowError(NotFoundException);
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('should update a balance change', async () => {
@@ -188,7 +190,7 @@ describe('BalanceChangesController', () => {
         value: 50.5,
         capital: 60.5,
       }),
-    ).rejects.toThrowError(NotFoundException);
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('should remove a balance change', async () => {
@@ -199,6 +201,6 @@ describe('BalanceChangesController', () => {
   it('should throw an error during removing a balance change if asset does not exist', async () => {
     await expect(
       controller.remove(request, 'non-existing-id', 'id-2020-02-01'),
-    ).rejects.toThrowError(NotFoundException);
+    ).rejects.toThrow(NotFoundException);
   });
 });

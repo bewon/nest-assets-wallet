@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PortfoliosController } from './portfolios.controller';
 import { PortfolioService } from '../service/portfolio.service';
 import { PortfolioEntity } from '../model/portfolio.entity';
-import { ModuleMocker, MockFunctionMetadata } from 'jest-mock';
+import { ModuleMocker, MockMetadata } from 'jest-mock';
 import { AssetSnapshotDto } from '../dto/asset-snapshot.dto';
 import { createMock } from '@golevelup/ts-jest';
 import { Request as ExpressRequest } from 'express';
@@ -48,8 +48,10 @@ describe('PortfoliosController', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })

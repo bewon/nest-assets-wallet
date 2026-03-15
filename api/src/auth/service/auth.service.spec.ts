@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { MockMetadata, ModuleMocker } from 'jest-mock';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from './user.service';
@@ -35,8 +35,10 @@ describe('AuthService', () => {
         if (typeof token === 'function') {
           const mockMetadata = moduleMocker.getMetadata(
             token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
+          ) as MockMetadata<any>;
+          const Mock = moduleMocker.generateFromMetadata(
+            mockMetadata,
+          ) as new () => unknown;
           return new Mock();
         }
       })
@@ -59,7 +61,7 @@ describe('AuthService', () => {
         accessToken: expect.stringMatching(/.{10,}/),
         userEmail: user.email,
       });
-      expect(jwtService.sign).toBeCalledWith({
+      expect(jwtService.sign).toHaveBeenCalledWith({
         email: user.email,
         sub: user.id,
       });
@@ -86,7 +88,7 @@ describe('AuthService', () => {
 
       const result = await service.validateUser('test@test.com', 'password');
       expect(result).toEqual({ id: userInDb.id, email: userInDb.email });
-      expect(userService.findOneByEmail).toBeCalledWith('test@test.com');
+      expect(userService.findOneByEmail).toHaveBeenCalledWith('test@test.com');
     });
 
     it('should return null when password is wrong', async () => {
@@ -112,10 +114,10 @@ describe('AuthService', () => {
         'password',
       );
       expect(result).toBeNull();
-      expect(userService.findOneByEmail).toBeCalledWith(
+      expect(userService.findOneByEmail).toHaveBeenCalledWith(
         'non-existent@test.com',
       );
-      expect(bcrypt.compare).not.toBeCalled();
+      expect(bcrypt.compare).not.toHaveBeenCalled();
     });
   });
 });

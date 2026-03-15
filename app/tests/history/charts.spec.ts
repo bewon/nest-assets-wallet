@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
   await page.route("/api/portfolios/default/history-statistics?*", (route) =>
-    route.fulfill({ status: 200, body: JSON.stringify({ portfolio: [] }) })
+    route.fulfill({ status: 200, body: JSON.stringify({ portfolio: [] }) }),
   );
 });
 

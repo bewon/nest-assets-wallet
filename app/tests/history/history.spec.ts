@@ -24,7 +24,7 @@ test("should make API call for history statistics", async ({ page }) => {
   await page.addInitScript(loginScript);
   await stubDataApiRequests(page);
   const requestPromise = page.waitForRequest(
-    "/api/portfolios/default/history-statistics?withAssets=false"
+    "/api/portfolios/default/history-statistics?withAssets=false",
   );
   await page.goto("/history");
   const request = await requestPromise;
@@ -35,13 +35,13 @@ test("should make API call for history statistics", async ({ page }) => {
 test("should display error message when API call fails", async ({ page }) => {
   await page.addInitScript(loginScript);
   await page.route("/api/portfolios/default/groups", (route) =>
-    route.fulfill({ status: 200 })
+    route.fulfill({ status: 200 }),
   );
   await page.route("/api/portfolios/default/history-statistics?*", (route) =>
-    route.fulfill({ status: 500 })
+    route.fulfill({ status: 500 }),
   );
   const requestPromise = page.waitForRequest(
-    "/api/portfolios/default/history-statistics?*"
+    "/api/portfolios/default/history-statistics?*",
   );
   await page.goto("/history");
   await requestPromise;
@@ -73,10 +73,10 @@ test("has Show Assets switch", async ({ page }) => {
 test("should display group selector after loading groups", async ({ page }) => {
   await page.addInitScript(loginScript);
   await page.route("/api/portfolios/default/groups", (route) =>
-    route.fulfill({ status: 200, body: JSON.stringify(["G1", "G2"]) })
+    route.fulfill({ status: 200, body: JSON.stringify(["G1", "G2"]) }),
   );
   await page.route("/api/portfolios/default/history-statistics?*", (route) =>
-    route.fulfill({ status: 200 })
+    route.fulfill({ status: 200 }),
   );
   const requestPromise = page.waitForRequest("/api/portfolios/default/groups");
   await page.goto("/history");

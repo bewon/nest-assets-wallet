@@ -30,7 +30,6 @@ import ListIcon from "@mui/icons-material/List";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import useFormat from "@src/utils/useFormat";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
-import { TFunction } from "i18next";
 import type { Theme } from "@mui/material/styles";
 import NewAssetDialog from "@src/components/NewAssetDialog";
 import { AppSnackbarState } from "@src/components/AppSnackbar";
@@ -51,8 +50,8 @@ type ColumnDefinition<P> = {
   getActions?: (params: P) => JSX.Element[];
 };
 
-function prepareColumns<P>(
-  t: TFunction<"common", undefined>,
+function prepareColumns<P, TTranslate extends (...args: any[]) => string>(
+  t: TTranslate,
   valueFormatter: (params: { value?: number }) => string,
   getActions: (params: P) => JSX.Element[],
 ): ColumnDefinition<P>[] {

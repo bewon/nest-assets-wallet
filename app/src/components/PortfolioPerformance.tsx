@@ -33,6 +33,11 @@ import useApi from "@src/utils/useApi";
 import { AxiosResponse } from "axios";
 import PeriodSelector from "@src/components/PeriodSelector";
 
+const PigMoneyIcon = TbPigMoney as React.ElementType;
+const ReportMoneyIcon = TbReportMoney as React.ElementType;
+const TrendingDownIcon = TbTrendingDown as React.ElementType;
+const TrendingUpIcon = TbTrendingUp as React.ElementType;
+
 type PerformanceData = {
   assetsList: string;
   capitalChange?: number;
@@ -203,7 +208,7 @@ const PerformanceValues = (props: {
       <Box sx={{ minWidth: [0, 130], mb: 1, mr: 1 }}>
         <Tooltip title={t("portfolioPerformance.capitalChange")} arrow>
           <Chip
-            icon={<TbPigMoney />}
+            icon={<PigMoneyIcon />}
             label={
               amountFormat(props.performanceData?.capitalChange, 0, true) ?? "-"
             }
@@ -214,7 +219,7 @@ const PerformanceValues = (props: {
       <Box sx={{ minWidth: [0, 130], mb: 1, mr: 1 }}>
         <Tooltip title={t("portfolioPerformance.valueChange")} arrow>
           <Chip
-            icon={<TbReportMoney />}
+            icon={<ReportMoneyIcon />}
             label={
               amountFormat(props.performanceData?.valueChange, 0, true) ?? "-"
             }
@@ -226,7 +231,7 @@ const PerformanceValues = (props: {
       <Tooltip title={profitTooltip} arrow>
         <Chip
           icon={
-            (annualizedTwr ?? 0) < 0 ? <TbTrendingDown /> : <TbTrendingUp />
+            (annualizedTwr ?? 0) < 0 ? <TrendingDownIcon /> : <TrendingUpIcon />
           }
           label={profitLabel}
           variant={variant}
