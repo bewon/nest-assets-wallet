@@ -58,6 +58,7 @@ describe('AssetService', () => {
       const assetSnapshot = JSON.parse(
         fs.readFileSync('src/portfolio/fixtures/assets-snapshot.json', 'utf8'),
       )[0];
+      delete assetSnapshot.groupWeight;
       const asset = await assetRepository.findOneByOrFail({
         id: '47158934-82df-43ac-8a24-000000000001',
       });
@@ -74,6 +75,7 @@ describe('AssetService', () => {
         const assetSnapshot = JSON.parse(
           fs.readFileSync(`src/portfolio/fixtures/${file}`, 'utf8'),
         )[0];
+        delete assetSnapshot.groupWeight;
         const asset = await assetRepository.findOneByOrFail({
           id: '47158934-82df-43ac-8a24-000000000001',
         });
@@ -90,6 +92,11 @@ describe('AssetService', () => {
         id: asset.id,
         name: asset.name,
         group: asset.group,
+        capital: undefined,
+        value: undefined,
+        profit: undefined,
+        date: undefined,
+        targetGroupWeight: asset.targetGroupWeight,
       };
       const result = await service.prepareAssetSnapshot(asset, '2012-12-12');
       expect(result).toEqual(assetSnapshot);
@@ -105,6 +112,11 @@ describe('AssetService', () => {
         id: emptyAsset.id,
         name: emptyAsset.name,
         group: emptyAsset.group,
+        capital: undefined,
+        value: undefined,
+        profit: undefined,
+        date: undefined,
+        targetGroupWeight: null,
       };
       const result = await service.prepareAssetSnapshot(emptyAsset);
       expect(result).toEqual(assetSnapshot);

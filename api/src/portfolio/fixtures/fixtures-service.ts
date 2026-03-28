@@ -17,8 +17,8 @@ export const entities = [
 ];
 
 export const testDataSourceConfig: TypeOrmModuleOptions = {
-  type: 'better-sqlite3',
-  database: ':memory:',
+  type: 'sqljs',
+  autoSave: false,
   // type: 'postgres',
   // host: 'localhost',
   // port: 5432,

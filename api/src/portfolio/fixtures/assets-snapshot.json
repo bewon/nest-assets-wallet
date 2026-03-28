@@ -6,7 +6,9 @@
     "capital": 117.0,
     "value": 94.5,
     "profit": -22.5,
-    "date": "2016-03-02"
+    "date": "2016-03-02",
+    "targetGroupWeight": 35,
+    "groupWeight": 44
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000002",
@@ -15,7 +17,9 @@
     "capital": 110.0,
     "value": 122.5,
     "profit": 12.5,
-    "date": "2015-01-01"
+    "date": "2015-01-01",
+    "targetGroupWeight": null,
+    "groupWeight": 56
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000003",
@@ -24,7 +28,9 @@
     "capital": 115.0,
     "value": 138.5,
     "profit": 23.5,
-    "date": "2015-05-04"
+    "date": "2015-05-04",
+    "targetGroupWeight": null,
+    "groupWeight": 47
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000004",
@@ -33,7 +39,9 @@
     "capital": 110.0,
     "value": 154.5,
     "profit": 44.5,
-    "date": "2015-10-05"
+    "date": "2015-10-05",
+    "targetGroupWeight": 60,
+    "groupWeight": 53
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000005",
@@ -42,6 +50,8 @@
     "capital": 115.0,
     "value": 170.5,
     "profit": 55.5,
-    "date": "2016-03-05"
+    "date": "2016-03-05",
+    "targetGroupWeight": null,
+    "groupWeight": 100
   }
 ]

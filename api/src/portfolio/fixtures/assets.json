@@ -2,7 +2,8 @@
   {
     "id": "47158934-82df-43ac-8a24-000000000001",
     "name": "Asset 1",
-    "group": "Safe"
+    "group": "Safe",
+    "targetGroupWeight": 35
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000002",
@@ -17,7 +18,8 @@
   {
     "id": "47158934-82df-43ac-8a24-000000000004",
     "name": "Asset 4",
-    "group": "Risky"
+    "group": "Risky",
+    "targetGroupWeight": 60
   },
   {
     "id": "47158934-82df-43ac-8a24-000000000005",
