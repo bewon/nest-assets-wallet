@@ -365,6 +365,7 @@ test.describe("asset actions", () => {
     const dialog = page.getByRole("dialog");
     await dialog.locator("[name=name]").fill("Asset X");
     await dialog.locator("[name=group]").fill("Y");
+    await dialog.locator("[name=targetGroupWeight]").fill("35");
     const updateAssetRequestPromise = page.waitForRequest(
       "/api/assets/a0b1c2d3-532",
     );
@@ -375,6 +376,7 @@ test.describe("asset actions", () => {
     expect(updateAssetRequest.postDataJSON()).toEqual({
       name: "Asset X",
       group: "Y",
+      targetGroupWeight: 35,
     });
   });
 

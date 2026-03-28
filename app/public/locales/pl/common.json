@@ -5,7 +5,10 @@
     "group": "Grupa",
     "name": "Nazwa",
     "profit": "Całkowity zysk / strata",
-    "value": "Wartość"
+    "value": "Wartość",
+    "targetGroupWeight": "Docelowy udział w grupie (%)",
+    "groupWeightTooltip": "Udział w grupie: {{weight}}% (cel: {{target}}%)",
+    "groupWeightOnly": "Udział w grupie: {{weight}}%"
   },
   "assetsList": {
     "balanceUpdate": "Aktualizacja salda",

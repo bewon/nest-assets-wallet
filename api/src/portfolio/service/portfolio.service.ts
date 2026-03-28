@@ -62,9 +62,12 @@ export class PortfolioService {
       this.assetService.prepareAssetSnapshot(asset, date),
     );
     const snapshots = await Promise.all(promises);
-    return snapshots.filter(
+    const filtered = snapshots.filter(
       (snapshot) => snapshot != null,
     ) as AssetSnapshotDto[];
+    this.assignGroupWeights(filtered);
+
+    return filtered;
   }
 
   // prepare summary of portfolio and it's asset changes
@@ -167,6 +170,21 @@ export class PortfolioService {
       }
     });
     return result;
+  }
+
+  private assignGroupWeights(snapshots: AssetSnapshotDto[]) {
+    const groupTotals = new Map<string, number>();
+    for (const snapshot of snapshots) {
+      const group = snapshot.group ?? '';
+      const current = groupTotals.get(group) ?? 0;
+      groupTotals.set(group, current + (snapshot.value ?? 0));
+    }
+    for (const snapshot of snapshots) {
+      const group = snapshot.group ?? '';
+      const total = groupTotals.get(group) ?? 0;
+      snapshot.groupWeight =
+        total === 0 ? 0 : Math.round(((snapshot.value ?? 0) / total) * 100);
+    }
   }
 
   // prepare history/statistics of asset changes from changes Set

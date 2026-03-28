@@ -5,7 +5,10 @@
     "group": "Group",
     "name": "Name",
     "profit": "Total Gain / Loss",
-    "value": "Value"
+    "value": "Value",
+    "targetGroupWeight": "Target group weight (%)",
+    "groupWeightTooltip": "Group weight: {{weight}}% (target: {{target}}%)",
+    "groupWeightOnly": "Group weight: {{weight}}%"
   },
   "assetsList": {
     "balanceUpdate": "Balance Update",

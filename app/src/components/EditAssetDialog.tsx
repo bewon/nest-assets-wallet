@@ -25,6 +25,7 @@ export default function EditAssetDialog(props: {
 }) {
   const [name, setName] = useState("");
   const [group, setGroup] = useState("");
+  const [targetGroupWeight, setTargetGroupWeight] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ export default function EditAssetDialog(props: {
     startTransition(() => {
       setName("");
       setGroup("");
+      setTargetGroupWeight("");
     });
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -41,7 +43,12 @@ export default function EditAssetDialog(props: {
       return;
     }
     const { makeRequest } = api.updateAsset({
-      data: { name, group },
+      data: {
+        name,
+        group,
+        targetGroupWeight:
+          targetGroupWeight === "" ? null : Number(targetGroupWeight),
+      },
       params: { assetId: props.asset.id },
     });
     try {
@@ -102,6 +109,11 @@ export default function EditAssetDialog(props: {
     if (props.asset) {
       setName(props.asset.name ?? "");
       setGroup(props.asset.group ?? "");
+      setTargetGroupWeight(
+        props.asset.targetGroupWeight != null
+          ? String(props.asset.targetGroupWeight)
+          : "",
+      );
     }
   }, [props.asset]);
   useEffect(() => {
@@ -125,8 +137,10 @@ export default function EditAssetDialog(props: {
             name={name}
             group={group}
             groups={props.groups}
+            targetGroupWeight={targetGroupWeight}
             onNameChange={setName}
             onGroupChange={setGroup}
+            onTargetGroupWeightChange={setTargetGroupWeight}
           />
         </DialogContent>
         <DialogActions sx={{ justifyContent: "space-between" }}>
@@ -176,8 +190,10 @@ function FormFields(props: {
   name: string;
   group: string;
   groups: string[];
+  targetGroupWeight: string;
   onNameChange: (name: string) => void;
   onGroupChange: (group: string) => void;
+  onTargetGroupWeightChange: (value: string) => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -208,6 +224,15 @@ function FormFields(props: {
             label={t("assetAttributes.group")}
           />
         )}
+      />
+      <TextField
+        name="targetGroupWeight"
+        label={t("assetAttributes.targetGroupWeight")}
+        value={props.targetGroupWeight}
+        onChange={(e) => props.onTargetGroupWeightChange(e.target.value)}
+        type="number"
+        inputProps={{ min: 0, max: 100 }}
+        sx={{ m: 0, flexGrow: 1, flexBasis: 200 }}
       />
     </>
   );

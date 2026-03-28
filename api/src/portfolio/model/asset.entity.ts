@@ -34,6 +34,9 @@ export class AssetEntity {
   })
   balanceChanges: AssetBalanceChangeEntity[];
 
+  @Column({ type: 'int', nullable: true })
+  targetGroupWeight: number | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

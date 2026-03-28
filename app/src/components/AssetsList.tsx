@@ -28,6 +28,9 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import PieChartIcon from "@mui/icons-material/PieChart";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import useFormat from "@src/utils/useFormat";
 import { UserSettingsContext } from "@src/components/UserSettingsProvider";
 import type { Theme } from "@mui/material/styles";
@@ -47,12 +50,14 @@ type ColumnDefinition<P> = {
   flex: number;
   valueFormatter?: (params: { value?: number }) => string;
   valueGetter?: (params: GridValueGetterParams) => string | Date | null;
+  renderCell?: (params: any) => React.ReactNode;
   getActions?: (params: P) => JSX.Element[];
 };
 
 function prepareColumns<P, TTranslate extends (...args: any[]) => string>(
   t: TTranslate,
   valueFormatter: (params: { value?: number }) => string,
+  renderValueCell: (params: any) => React.ReactNode,
   getActions: (params: P) => JSX.Element[],
 ): ColumnDefinition<P>[] {
   return [
@@ -69,7 +74,7 @@ function prepareColumns<P, TTranslate extends (...args: any[]) => string>(
       headerName: t("assetAttributes.value"),
       type: "number",
       flex: 2,
-      valueFormatter,
+      renderCell: renderValueCell,
     },
     {
       field: "profit",
@@ -225,6 +230,16 @@ function AssetsGrid(props: {
     return prepareColumns(
       t,
       ({ value }) => amountFormat(value) ?? "-",
+      (params: { value?: number; row: AssetSnapshotInterface }) => (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          {amountFormat(params.value) ?? "-"}
+          <GroupWeightIcon
+            groupWeight={params.row.groupWeight}
+            targetGroupWeight={params.row.targetGroupWeight}
+            t={t}
+          />
+        </Box>
+      ),
       (params: GridRowParams<AssetSnapshotInterface>) =>
         actions.map((action) => (
           <GridActionsCellItem
@@ -285,6 +300,11 @@ function NarrowAssetsListItem(props: {
           label={t("assetAttributes.value")}
           value={amountFormat(props.asset.value)}
         />
+        <GroupWeightIcon
+          groupWeight={props.asset.groupWeight}
+          targetGroupWeight={props.asset.targetGroupWeight}
+          t={t}
+        />
         {" · "}
         <NarrowAssetSummary
           label={t("assetAttributes.profit")}
@@ -335,6 +355,51 @@ function NarrowAssetsListItem(props: {
         ))}
       </Menu>
     </>
+  );
+}
+
+function GroupWeightIcon(props: {
+  groupWeight?: number;
+  targetGroupWeight?: number | null;
+  t: ReturnType<typeof useTranslation>["t"];
+}) {
+  const { groupWeight, targetGroupWeight, t } = props;
+  if (groupWeight == null) return null;
+
+  const hasTarget = targetGroupWeight != null;
+  const diff = hasTarget ? groupWeight - targetGroupWeight : 0;
+  const isOver = hasTarget && diff > 5;
+  const isUnder = hasTarget && diff < -5;
+
+  const tooltipText = hasTarget
+    ? t("assetAttributes.groupWeightTooltip", {
+        weight: groupWeight,
+        target: targetGroupWeight,
+      })
+    : t("assetAttributes.groupWeightOnly", { weight: groupWeight });
+
+  const iconSx = { fontSize: 16, ml: 0.25 };
+
+  if (isOver) {
+    return (
+      <Tooltip title={tooltipText}>
+        <ArrowUpwardIcon sx={iconSx} color="warning" />
+      </Tooltip>
+    );
+  }
+  if (isUnder) {
+    return (
+      <Tooltip title={tooltipText}>
+        <ArrowDownwardIcon sx={iconSx} color="info" />
+      </Tooltip>
+    );
+  }
+  return (
+    <Tooltip title={tooltipText}>
+      <PieChartIcon
+        sx={{ ...iconSx, color: hasTarget ? "success.main" : "text.disabled" }}
+      />
+    </Tooltip>
   );
 }
 

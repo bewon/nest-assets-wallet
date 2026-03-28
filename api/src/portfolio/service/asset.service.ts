@@ -36,6 +36,7 @@ export class AssetService {
     snapshot.value = change?.value;
     snapshot.profit = change?.getProfit();
     snapshot.date = change?.date;
+    snapshot.targetGroupWeight = asset.targetGroupWeight;
     return snapshot;
   }
 
@@ -131,6 +132,9 @@ export class AssetService {
   async update(asset: AssetEntity, updateAssetDto: UpdateAssetDto) {
     asset.name = updateAssetDto.name;
     asset.group = updateAssetDto.group;
+    if (updateAssetDto.targetGroupWeight !== undefined) {
+      asset.targetGroupWeight = updateAssetDto.targetGroupWeight ?? null;
+    }
     return this.assetRepository.save(asset);
   }
 

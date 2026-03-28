@@ -8,4 +8,6 @@ export class AssetSnapshotDto implements AssetSnapshotInterface {
   value?: number;
   profit?: number;
   date?: string;
+  targetGroupWeight?: number | null;
+  groupWeight?: number;
 }
